@@ -177,7 +177,7 @@ void ACppMultiShooterCharacter::OnCreateSessionComplete(FName SessionName, bool 
 		UWorld* World = GetWorld();
 		if (World)
 		{
-			World->ServerTravel(FString("/Game/ThirdPersonCPP/Maps/Lobby?listen"));
+			World->ServerTravel(FString("/Game/ThirdPerson/Maps/Lobby?listen"));
 		}
 	}
 	else
