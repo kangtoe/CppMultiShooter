@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -24,6 +25,9 @@ AShooterCharacter::AShooterCharacter()
 	// 캐릭터가 회전하는 방식 설정
 	bUseControllerRotationYaw = false; // 컨트롤러의 Yaw 회전을 사용하지 않음
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향으로 회전하도록 설정
+
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(RootComponent);
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
