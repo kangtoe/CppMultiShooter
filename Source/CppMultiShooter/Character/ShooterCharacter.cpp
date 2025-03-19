@@ -122,6 +122,11 @@ void AShooterCharacter::BeginPlay()
 	}	
 }
 
+void AShooterCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 #pragma region 캐릭터 입력 처리
 void AShooterCharacter::Move(const FInputActionInstance& Instance)
 {
@@ -216,9 +221,6 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	}
 }
 
-
-
-// 서버에서만 호출되는 별도 처리?
 void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
 	if (OverlappingWeapon)
@@ -235,8 +237,7 @@ void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
-void AShooterCharacter::Tick(float DeltaTime)
+bool AShooterCharacter::IsWeaponEquipped()
 {
-	Super::Tick(DeltaTime);
-
+	return (Combat && Combat->EquippedWeapon);
 }

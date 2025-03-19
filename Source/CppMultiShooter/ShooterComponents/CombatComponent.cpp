@@ -55,7 +55,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	//DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	//DOREPLIFETIME(UCombatComponent, bAiming);
 	//DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
