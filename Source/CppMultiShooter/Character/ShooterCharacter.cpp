@@ -157,28 +157,50 @@ void AShooterCharacter::Equip(const FInputActionInstance& Instance)
 {	
 	UE_LOG(LogTemp, Display, TEXT("EquipAction"));
 
-	if (HasAuthority() && Combat)
-	{
-		Combat->EquipWeapon(OverlappingWeapon);
-	}
-
-	/*if (bDisableGameplay) return;
 	if (Combat)
 	{
-		if (Combat->bHoldingTheFlag) return;
-		if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipButtonPressed();
-		bool bSwap = Combat->ShouldSwapWeapons() &&
-			!HasAuthority() &&
-			Combat->CombatState == ECombatState::ECS_Unoccupied &&
-			OverlappingWeapon == nullptr;
-
-		if (bSwap)
+		if (HasAuthority())
 		{
-			PlaySwapMontage();
-			Combat->CombatState = ECombatState::ECS_SwappingWeapons;
-			bFinishedSwapping = false;
+			Combat->EquipWeapon(OverlappingWeapon);
 		}
-	}*/
+		else
+		{
+			ServerEquip();
+		}
+	}
+
+	//if (bDisableGameplay) return;
+	//if (Combat)
+	//{
+	//	if (Combat->bHoldingTheFlag) return;
+	//	if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipButtonPressed();
+	//	bool bSwap = Combat->ShouldSwapWeapons() &&
+	//		!HasAuthority() &&
+	//		Combat->CombatState == ECombatState::ECS_Unoccupied &&
+	//		OverlappingWeapon == nullptr;
+
+	//	if (bSwap)
+	//	{
+	//		PlaySwapMontage();
+	//		Combat->CombatState = ECombatState::ECS_SwappingWeapons;
+	//		bFinishedSwapping = false;
+	//	}
+	//}
+}
+
+void AShooterCharacter::ServerEquip_Implementation()
+{
+	if (Combat)
+	{
+		if (OverlappingWeapon)
+		{
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+		/*else if (Combat->ShouldSwapWeapons())
+		{
+			Combat->SwapWeapons();
+		}*/
+	}
 }
 #pragma endregion
 
@@ -193,6 +215,8 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 		LastWeapon->ShowPickupWidget(false);
 	}
 }
+
+
 
 // 서버에서만 호출되는 별도 처리?
 void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
