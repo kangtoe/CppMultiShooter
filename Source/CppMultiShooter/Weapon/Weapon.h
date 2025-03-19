@@ -42,10 +42,10 @@ public:
 
 protected:	
 	virtual void BeginPlay() override;
-	/*virtual void OnWeaponStateSet();
+	virtual void OnWeaponStateSet();
 	virtual void OnEquipped();
 	virtual void OnDropped();
-	virtual void OnEquippedSecondary();*/
+	virtual void OnEquippedSecondary();
 
 	UFUNCTION()
 	virtual void OnSphereOverlap(
@@ -80,4 +80,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
+
+public:
+	void SetWeaponState(EWeaponState State);
 };

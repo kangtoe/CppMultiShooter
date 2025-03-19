@@ -9,6 +9,7 @@
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "CppMultiShooter/Weapon/Weapon.h"
+#include "CppMultiShooter/ShooterComponents/CombatComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -30,6 +31,9 @@ AShooterCharacter::AShooterCharacter()
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
+
+	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	Combat->SetIsReplicated(true);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -42,26 +46,44 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	//DOREPLIFETIME(AShooterCharacter, bDisableGameplay);
 }
 
+void AShooterCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (Combat)
+	{
+		Combat->Character = this;
+	}
+	/*if (Buff)
+	{
+		Buff->Character = this;
+		Buff->SetInitialSpeeds(
+			GetCharacterMovement()->MaxWalkSpeed,
+			GetCharacterMovement()->MaxWalkSpeedCrouched
+		);
+		Buff->SetInitialJumpVelocity(GetCharacterMovement()->JumpZVelocity);
+	}
+	if (LagCompensation)
+	{
+		LagCompensation->Character = this;
+		if (Controller)
+		{
+			LagCompensation->Controller = Cast<ABlasterPlayerController>(Controller);
+		}
+	}*/
+}
+
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// EnhancedInputComponent로 캐스팅하여 입력 바인딩 수행
 	if (UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		if (MoveAction) // 이동 입력 바인딩
-		{
-			UE_LOG(LogTemp, Display, TEXT("Binding MoveAction"));
-			Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Move);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("MoveAction is null!"));
-		}
-
-		// 시점 이동, 점프 입력 바인딩
-		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Look);
+	{		
+		// 입력 바인딩		
 		Input->BindAction(JumpAction, ETriggerEvent::Started, this, &AShooterCharacter::Jump);
+		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Move);
+		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Look);
+		Input->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AShooterCharacter::Equip);
 	}
 }
 
@@ -100,7 +122,7 @@ void AShooterCharacter::BeginPlay()
 	}	
 }
 
-#pragma region 캐릭터 이동 입력 처리
+#pragma region 캐릭터 입력 처리
 void AShooterCharacter::Move(const FInputActionInstance& Instance)
 {
 	// 입력된 이동 방향 값 가져오기
@@ -129,6 +151,34 @@ void AShooterCharacter::Jump(const FInputActionInstance& Instance)
 {
 	Super::Jump();
 	UE_LOG(LogTemp, Display, TEXT("JumpAction")); // 점프 로그 출력
+}
+
+void AShooterCharacter::Equip(const FInputActionInstance& Instance)
+{	
+	UE_LOG(LogTemp, Display, TEXT("EquipAction"));
+
+	if (HasAuthority() && Combat)
+	{
+		Combat->EquipWeapon(OverlappingWeapon);
+	}
+
+	/*if (bDisableGameplay) return;
+	if (Combat)
+	{
+		if (Combat->bHoldingTheFlag) return;
+		if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipButtonPressed();
+		bool bSwap = Combat->ShouldSwapWeapons() &&
+			!HasAuthority() &&
+			Combat->CombatState == ECombatState::ECS_Unoccupied &&
+			OverlappingWeapon == nullptr;
+
+		if (bSwap)
+		{
+			PlaySwapMontage();
+			Combat->CombatState = ECombatState::ECS_SwappingWeapons;
+			bFinishedSwapping = false;
+		}
+	}*/
 }
 #pragma endregion
 

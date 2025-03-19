@@ -18,7 +18,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	//virtual void PostInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMapping;
@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* JumpAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* EquipAction;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,6 +42,7 @@ protected:
 	void Move(const FInputActionInstance& Instance);
 	void Look(const FInputActionInstance& Instance);
 	void Jump(const FInputActionInstance& Instance);
+	void Equip(const FInputActionInstance& Instance);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -55,6 +59,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UCombatComponent* Combat;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
