@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* CrouchAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* AimAction;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -47,6 +50,7 @@ protected:
 	void OnInputJump(const FInputActionInstance& Instance);
 	void OnInputEquip(const FInputActionInstance& Instance);
 	void OnInputCrouch(const FInputActionInstance& Instance);
+	void OnInputAim(const FInputActionInstance& Instance);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -73,4 +77,5 @@ private:
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
+	bool IsAiming();
 };

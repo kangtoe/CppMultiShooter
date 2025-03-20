@@ -87,6 +87,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputLook);
 		Input->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputEquip);
 		Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputCrouch);
+		Input->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputEquip);
+		Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputCrouch);
+		Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputAim);
 	}
 }
 
@@ -224,6 +227,21 @@ void AShooterCharacter::OnInputCrouch(const FInputActionInstance& Instance)
 		Crouch();
 	}
 }
+
+void AShooterCharacter::OnInputAim(const FInputActionInstance& Instance)
+{
+	bool Aimed = Instance.GetValue().Get<bool>();
+
+	if (Combat && Aimed)
+	{
+		Combat->SetAiming(true);
+	}
+	else
+	{
+		Combat->SetAiming(false);
+	}
+}
+
 #pragma endregion
 
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
@@ -257,4 +275,9 @@ void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 bool AShooterCharacter::IsWeaponEquipped()
 {
 	return (Combat && Combat->EquippedWeapon);
+}
+
+bool AShooterCharacter::IsAiming()
+{
+	return (Combat && Combat->bAiming);
 }
