@@ -93,6 +93,8 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		Character->bUseControllerRotationYaw = true;
 	}*/
 
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
 	EquipPrimaryWeapon(WeaponToEquip);
 }
 
@@ -101,13 +103,13 @@ void UCombatComponent::OnRep_EquippedWeapon()
 {
 	if (EquippedWeapon && Character)
 	{
-		/*EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		AttachActorToRightHand(EquippedWeapon);
+		//EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		//AttachActorToRightHand(EquippedWeapon);
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
-		PlayEquipWeaponSound(EquippedWeapon);
-		EquippedWeapon->EnableCustomDepth(false);
-		EquippedWeapon->SetHUDAmmo();*/
+		//PlayEquipWeaponSound(EquippedWeapon);
+		//EquippedWeapon->EnableCustomDepth(false);
+		//EquippedWeapon->SetHUDAmmo();
 	}
 }
 
