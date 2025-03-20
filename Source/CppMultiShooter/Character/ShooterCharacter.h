@@ -35,14 +35,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* EquipAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* CrouchAction;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void Move(const FInputActionInstance& Instance);
-	void Look(const FInputActionInstance& Instance);
-	void Jump(const FInputActionInstance& Instance);
-	void Equip(const FInputActionInstance& Instance);
+	void OnInputMove(const FInputActionInstance& Instance);
+	void OnInputLook(const FInputActionInstance& Instance);
+	void OnInputJump(const FInputActionInstance& Instance);
+	void OnInputEquip(const FInputActionInstance& Instance);
+	void OnInputCrouch(const FInputActionInstance& Instance);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
