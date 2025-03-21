@@ -13,7 +13,8 @@ UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-
+	BaseWalkSpeed = 600.f;
+	AimWalkSpeed = 300.f;
 }
 
 void UCombatComponent::BeginPlay()
@@ -22,7 +23,7 @@ void UCombatComponent::BeginPlay()
 
 	if (Character)
 	{
-		//Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 		//if (Character->GetFollowCamera())
 		//{
@@ -141,10 +142,18 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
+	if (Character)
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 {
 	bAiming = bIsAiming;
+	if (Character)
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
 }
 
