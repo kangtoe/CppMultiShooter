@@ -11,6 +11,7 @@
 #include "CppMultiShooter/Weapon/Weapon.h"
 #include "CppMultiShooter/ShooterComponents/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -134,6 +135,8 @@ void AShooterCharacter::BeginPlay()
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	AimOffset(DeltaTime);
 }
 
 #pragma region 캐릭터 입력 처리
@@ -179,7 +182,7 @@ void AShooterCharacter::OnInputEquip(const FInputActionInstance& Instance)
 		}
 		else
 		{
-			ServerEquip();
+			ServerOnInputEquip();
 		}
 	}
 
@@ -202,7 +205,7 @@ void AShooterCharacter::OnInputEquip(const FInputActionInstance& Instance)
 	//}
 }
 
-void AShooterCharacter::ServerEquip_Implementation()
+void AShooterCharacter::ServerOnInputEquip_Implementation()
 {
 	if (Combat)
 	{
@@ -273,6 +276,40 @@ void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 			OverlappingWeapon->ShowPickupWidget(true);
 		}
 	}
+}
+
+void AShooterCharacter::AimOffset(float DeltaTime)
+{
+	if (Combat && Combat->EquippedWeapon == nullptr) return;
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0.f;
+	float Speed = Velocity.Size();
+	bool bIsInAir = GetCharacterMovement()->IsFalling();
+
+	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
+	{
+
+		// AO_Yaw sloution1 (in TPS cource)
+		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+		AO_Yaw = DeltaAimRotation.Yaw;
+		bUseControllerRotationYaw = false;
+
+		// AO_Yaw sloution2 (for FPS)
+		//float const Yaw = GetBaseAimRotation().Yaw;
+		//FVector2D InRange(0.f, 360.f);
+		//FVector2D OutRange(10.f, 20.f);
+		//AO_Yaw = FMath::GetMappedRangeValueClamped(InRange, OutRange, Yaw);
+	}
+	if (Speed > 0.f || bIsInAir) // running, or jumping
+	{
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		AO_Yaw = 0.f;
+		bUseControllerRotationYaw = true;
+	}
+	
+	// GetNormalized 사용 이유: AO_Pitch > 90인 경우, 언리얼 내부 멀티플레이 동기화 로직이 값을 압축/해제하는 과정에서 바꿔버림
+	AO_Pitch = GetBaseAimRotation().GetNormalized().Pitch;	
 }
 
 bool AShooterCharacter::IsWeaponEquipped()

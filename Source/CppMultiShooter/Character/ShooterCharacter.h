@@ -52,6 +52,8 @@ protected:
 	void OnInputCrouch(const FInputActionInstance& Instance);
 	void OnInputAim(const FInputActionInstance& Instance);
 
+	void AimOffset(float DeltaTime);
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -72,10 +74,17 @@ private:
 	class UCombatComponent* Combat;
 
 	UFUNCTION(Server, Reliable)
-	void ServerEquip();
+	void ServerOnInputEquip();
+
+	float AO_Yaw;
+	float AO_Pitch;
+	FRotator StartingAimRotation;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
 	bool IsAiming();
+
+	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
+	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 };
