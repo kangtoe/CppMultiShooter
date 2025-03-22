@@ -40,6 +40,8 @@ AShooterCharacter::AShooterCharacter()
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -292,24 +294,56 @@ void AShooterCharacter::AimOffset(float DeltaTime)
 		// AO_Yaw sloution1 (in TPS cource)
 		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
-		AO_Yaw = DeltaAimRotation.Yaw;
-		bUseControllerRotationYaw = false;
+		AO_Yaw = DeltaAimRotation.Yaw;		
 
 		// AO_Yaw sloution2 (for FPS)
 		//float const Yaw = GetBaseAimRotation().Yaw;
 		//FVector2D InRange(0.f, 360.f);
 		//FVector2D OutRange(10.f, 20.f);
 		//AO_Yaw = FMath::GetMappedRangeValueClamped(InRange, OutRange, Yaw);
+
+		if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+		{
+			InterpAO_Yaw = AO_Yaw;
+		}
+		bUseControllerRotationYaw = true;
+
+		TurnInPlace(DeltaTime);
 	}
 	if (Speed > 0.f || bIsInAir) // running, or jumping
 	{
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		AO_Yaw = 0.f;
 		bUseControllerRotationYaw = true;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 	
 	// GetNormalized 사용 이유: AO_Pitch > 90인 경우, 언리얼 내부 멀티플레이 동기화 로직이 값을 압축/해제하는 과정에서 바꿔버림
-	AO_Pitch = GetBaseAimRotation().GetNormalized().Pitch;	
+	AO_Pitch = GetBaseAimRotation().GetNormalized().Pitch;
+}
+
+void AShooterCharacter::TurnInPlace(float DeltaTime)
+{
+	if (AO_Yaw > 90.f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Right;
+	}
+	else if (AO_Yaw < -90.f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Left;
+	}
+
+	// AO_Yaw 보간
+	if (TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+	{
+		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 4.f);
+		AO_Yaw = InterpAO_Yaw;
+		if (FMath::Abs(AO_Yaw) < 15.f) // 일정 이하 각도에서는 회전하지 않음
+		{
+			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
+	}
 }
 
 bool AShooterCharacter::IsWeaponEquipped()
