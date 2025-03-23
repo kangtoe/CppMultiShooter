@@ -41,7 +41,9 @@ AShooterCharacter::AShooterCharacter()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 850.f, 0.f);
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 }
@@ -170,8 +172,14 @@ void AShooterCharacter::OnInputLook(const FInputActionInstance& Instance)
 // 점프 입력 처리 함수
 void AShooterCharacter::OnInputJump(const FInputActionInstance& Instance)
 {
-	Super::Jump();
-	UE_LOG(LogTemp, Display, TEXT("JumpAction")); // 점프 로그 출력
+	if (bIsCrouched)
+	{
+		UnCrouch();		
+	}
+	else
+	{
+		Super::Jump();
+	}
 }
 
 void AShooterCharacter::OnInputEquip(const FInputActionInstance& Instance)
