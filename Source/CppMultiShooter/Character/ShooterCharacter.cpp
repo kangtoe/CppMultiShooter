@@ -12,6 +12,7 @@
 #include "CppMultiShooter/ShooterComponents/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ShooterAnimInstance.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -100,6 +101,21 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		Input->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputEquip);
 		Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputCrouch);
 		Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputAim);
+		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputFire);
+	}
+}
+
+void AShooterCharacter::PlayFireMontage(bool bAiming)
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName;
+		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
 
@@ -248,6 +264,7 @@ void AShooterCharacter::OnInputCrouch(const FInputActionInstance& Instance)
 
 void AShooterCharacter::OnInputAim(const FInputActionInstance& Instance)
 {
+	if (!Combat) return;
 	bool Aimed = Instance.GetValue().Get<bool>();
 
 	if (Combat && Aimed)
@@ -257,6 +274,21 @@ void AShooterCharacter::OnInputAim(const FInputActionInstance& Instance)
 	else
 	{
 		Combat->SetAiming(false);
+	}
+}
+
+void AShooterCharacter::OnInputFire(const FInputActionInstance& Instance)
+{
+	if (!Combat) return;
+	bool fire = Instance.GetValue().Get<bool>();
+
+	if (Combat && fire)
+	{
+		Combat->SetFiring(true);
+	}
+	else
+	{
+		Combat->SetFiring(false);
 	}
 }
 

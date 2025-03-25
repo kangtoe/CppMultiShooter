@@ -31,6 +31,9 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	void SetFiring(bool bIsFire);
+
+
 	/*UFUNCTION()
 	void OnRep_SecondaryWeapon();*/
 
@@ -64,4 +67,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed;
+
+	bool bFiring;
 };

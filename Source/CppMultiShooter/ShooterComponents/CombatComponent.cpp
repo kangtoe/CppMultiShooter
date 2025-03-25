@@ -114,6 +114,15 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	}
 }
 
+void UCombatComponent::SetFiring(bool bIsFire)
+{
+	bFiring = bIsFire;
+	if (Character && bFiring)
+	{
+		Character->PlayFireMontage(bFiring);
+	}
+}
+
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
