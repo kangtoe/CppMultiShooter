@@ -33,6 +33,12 @@ protected:
 
 	void SetFiring(bool bIsFire);
 
+	UFUNCTION(Server, Reliable)
+	void ServerFire();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastFire();
+
 
 	/*UFUNCTION()
 	void OnRep_SecondaryWeapon();*/

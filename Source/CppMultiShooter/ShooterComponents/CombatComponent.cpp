@@ -17,6 +17,21 @@ UCombatComponent::UCombatComponent()
 	AimWalkSpeed = 300.f;
 }
 
+
+#pragma region Unreal Lifecycle
+void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	//DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
+	DOREPLIFETIME(UCombatComponent, bAiming);
+	//DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
+	//DOREPLIFETIME(UCombatComponent, CombatState);
+	//DOREPLIFETIME(UCombatComponent, Grenades);
+	//DOREPLIFETIME(UCombatComponent, bHoldingTheFlag);
+}
+
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -52,19 +67,9 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 }
 
-void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+#pragma endregion
 
-	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
-	//DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
-	DOREPLIFETIME(UCombatComponent, bAiming);
-	//DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
-	//DOREPLIFETIME(UCombatComponent, CombatState);
-	//DOREPLIFETIME(UCombatComponent, Grenades);
-	//DOREPLIFETIME(UCombatComponent, bHoldingTheFlag);
-}
-
+#pragma region Equip
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
@@ -99,7 +104,6 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	EquipPrimaryWeapon(WeaponToEquip);
 }
 
-
 void UCombatComponent::OnRep_EquippedWeapon()
 {
 	if (EquippedWeapon && Character)
@@ -113,16 +117,6 @@ void UCombatComponent::OnRep_EquippedWeapon()
 		//EquippedWeapon->SetHUDAmmo();
 	}
 }
-
-void UCombatComponent::SetFiring(bool bIsFire)
-{
-	bFiring = bIsFire;
-	if (Character && bFiring)
-	{
-		Character->PlayFireMontage(bFiring);
-	}
-}
-
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
@@ -136,17 +130,40 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 	//PlayEquipWeaponSound(WeaponToEquip);
 	//ReloadEmptyWeapon();
 }
+#pragma endregion
 
-void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
+#pragma region Fire
+void UCombatComponent::SetFiring(bool bIsFire)
 {
-	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
-	if (HandSocket)
+	if (EquippedWeapon == nullptr) return;
+
+	bFiring = bIsFire;
+	if (bFiring)
 	{
-		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
+		ServerFire();
 	}
 }
 
+// 서버에서 멀티캐스트 RPC를 호출하는 경우에만 실행 가능
+void UCombatComponent::ServerFire_Implementation()
+{
+	MulticastFire();
+}
+
+void UCombatComponent::MulticastFire_Implementation()
+{
+	if (EquippedWeapon == nullptr) return;
+
+	if (Character)
+		if (Character)
+		{
+			Character->PlayFireMontage(bAiming);
+			EquippedWeapon->Fire();
+		}
+}
+#pragma endregion
+
+#pragma region Aim
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	bAiming = bIsAiming;
@@ -165,4 +182,14 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
 	}
 }
+#pragma endregion
 
+void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
+{
+	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
+	if (HandSocket)
+	{
+		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
+}
