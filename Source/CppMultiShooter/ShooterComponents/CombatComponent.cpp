@@ -60,9 +60,6 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (Character && Character->IsLocallyControlled())
 	{
-		FHitResult HitResult;		
-		TraceUnderCrosshairs(HitResult);
-
 		/*TraceUnderCrosshairs(HitResult);
 		HitTarget = HitResult.ImpactPoint;
 
@@ -144,17 +141,19 @@ void UCombatComponent::SetFiring(bool bIsFire)
 	bFireButtonPressed = bIsFire;
 	if (bFireButtonPressed)
 	{
-		ServerFire();
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+		ServerFire(HitResult.ImpactPoint);
 	}
 }
 
 // 서버에서 멀티캐스트 RPC를 호출하는 경우에만 실행 가능
-void UCombatComponent::ServerFire_Implementation()
+void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	MulticastFire();
+	MulticastFire(TraceHitTarget);
 }
 
-void UCombatComponent::MulticastFire_Implementation()
+void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	if (EquippedWeapon == nullptr) return;
 
@@ -162,7 +161,7 @@ void UCombatComponent::MulticastFire_Implementation()
 		if (Character)
 		{
 			Character->PlayFireMontage(bAiming);
-			EquippedWeapon->Fire(HitTarget);
+			EquippedWeapon->Fire(TraceHitTarget);
 		}
 }
 
@@ -196,23 +195,9 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			End,
 			ECollisionChannel::ECC_Visibility
 		);
-		if (!TraceHitResult.bBlockingHit)
-		{
-			TraceHitResult.ImpactPoint = End;
-			HitTarget = End;
-		}
-		else
-		{
-			HitTarget = TraceHitResult.ImpactPoint;
 
-			DrawDebugSphere(
-				GetWorld(),
-				TraceHitResult.ImpactPoint,
-				12.f,
-				12,
-				FColor::Red
-			);
-		}
+		// Hit Target 없는 경우를 보완하는 임시 코드
+		if (!TraceHitResult.bBlockingHit) { TraceHitResult.ImpactPoint = End; }
 	}
 }
 #pragma endregion
