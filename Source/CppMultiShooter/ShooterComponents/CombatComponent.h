@@ -32,7 +32,7 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
-	void SetFiring(bool bIsFire);
+	void SetFiring(bool bIsFire);	
 
 	UFUNCTION(Server, Reliable)
 	void ServerFire();
@@ -76,5 +76,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed;
 
-	bool bFiring;
+	bool bFireButtonPressed;
+	FVector HitTarget;
 };
