@@ -7,6 +7,7 @@
 
 #include "CombatComponent.generated.h"
 
+#define TRACE_LENGTH 80000.f
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CPPMULTISHOOTER_API UCombatComponent : public UActorComponent
@@ -39,6 +40,7 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire();
 
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
 	/*UFUNCTION()
 	void OnRep_SecondaryWeapon();*/
