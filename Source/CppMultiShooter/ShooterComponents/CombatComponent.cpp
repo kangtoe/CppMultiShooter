@@ -42,7 +42,7 @@ void UCombatComponent::BeginPlay()
 
 	if (Character)
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;		
 
 		//if (Character->GetFollowCamera())
 		//{
@@ -265,6 +265,6 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 				HUDPackage.CrosshairsTop = nullptr;
 			}
 			HUD->SetHUDPackage(HUDPackage);
-		}
+		}		
 	}
 }
