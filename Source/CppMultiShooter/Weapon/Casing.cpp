@@ -17,6 +17,8 @@ ACasing::ACasing()
     CasingMesh->SetEnableGravity(true);
     CasingMesh->SetNotifyRigidBodyCollision(true);
     ShellEjectionImpulse = 10.f;
+
+    SetLifeSpan(3.f); // 일정 시간 후 destory
 }
 
 void ACasing::BeginPlay()
@@ -33,5 +35,7 @@ void ACasing::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitive
     {
         UGameplayStatics::PlaySoundAtLocation(this, ShellSound, GetActorLocation());
     }
-    Destroy();
+
+    // Deactivate further sounds when a bullet is hit by another one
+    CasingMesh->SetNotifyRigidBodyCollision(false);
 }
