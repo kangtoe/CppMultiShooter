@@ -403,3 +403,9 @@ AWeapon* AShooterCharacter::GetEquippedWeapon()
 	if (Combat == nullptr) return nullptr;
 	return Combat->EquippedWeapon;
 }
+
+FVector AShooterCharacter::GetHitTarget() const
+{
+	if (Combat == nullptr) return FVector();
+	return Combat->HitTarget;
+}

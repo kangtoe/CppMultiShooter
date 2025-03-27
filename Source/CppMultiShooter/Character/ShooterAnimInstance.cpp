@@ -57,5 +57,14 @@ void UShooterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		ShooterCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation); // 오른손 본에 대해 상대적으로 고정된 위치 구하기 
 		LeftHandTransform.SetLocation(OutPosition);
 		LeftHandTransform.SetRotation(FQuat(OutRotation));
+
+		if (ShooterCharacter->IsLocallyControlled())
+		{
+			bLocallyControlled = true;
+			//FTransform RightHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Hand_R"), ERelativeTransformSpace::RTS_World); // 강의에서 실수한 버전
+			FTransform RightHandTransform = ShooterCharacter->GetMesh()->GetSocketTransform(FName("Hand_R"), ERelativeTransformSpace::RTS_World); // 오타 수정 버전
+			// 타깃을 향하도록 하는 오른손 회전값 구하기
+			RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - ShooterCharacter->GetHitTarget()));
+		}
 	}
 }
