@@ -236,7 +236,6 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 }
 #pragma endregion
 
-
 void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 {
 	if (Character == nullptr || Character->Controller == nullptr) return;
@@ -264,6 +263,30 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 				HUDPackage.CrosshairsBottom = nullptr;
 				HUDPackage.CrosshairsTop = nullptr;
 			}
+
+			// Calculate crosshair spread
+			{
+				// [0, 600] -> [0, 1]
+				FVector2D WalkSpeedRange(0.f, Character->GetCharacterMovement()->MaxWalkSpeed);
+				FVector2D VelocityMultiplierRange(0.f, 1.f);
+				FVector Velocity = Character->GetVelocity();
+				Velocity.Z = 0.f;
+
+				// 이동 중 크로스헤어 벌어짐 적용
+				CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
+
+				if (Character->GetCharacterMovement()->IsFalling()) // 체공 중 더 크게 벌어짐
+				{
+					CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 2.25f, DeltaTime, 2.25f);
+				}
+				else
+				{
+					CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
+				}
+
+				HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
+			}			
+
 			HUD->SetHUDPackage(HUDPackage);
 		}		
 	}
