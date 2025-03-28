@@ -160,6 +160,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+	HideCameraIfCharacterClose();
 }
 
 #pragma region 캐릭터 입력 처리
@@ -386,6 +387,18 @@ void AShooterCharacter::TurnInPlace(float DeltaTime)
 			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		}
+	}
+}
+
+void AShooterCharacter::HideCameraIfCharacterClose() // 카메라에 캐릭터가 너무 가까우면 숨기기
+{
+	if (!IsLocallyControlled()) return;
+
+	const bool bCameraTooClose = (FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold;
+	GetMesh()->SetVisibility(!bCameraTooClose);
+	if (Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = bCameraTooClose;
 	}
 }
 
