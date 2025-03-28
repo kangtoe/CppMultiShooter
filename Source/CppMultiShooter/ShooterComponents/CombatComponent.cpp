@@ -159,6 +159,7 @@ void UCombatComponent::SetFiring(bool bIsFire)
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
 		ServerFire(HitResult.ImpactPoint);
+		//CrosshairShootingFactor = .75f; // SetHUDCrosshairs에서 보간으로 처리
 	}
 }
 
@@ -171,13 +172,12 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	if (EquippedWeapon == nullptr) return;
-
+	
 	if (Character)
-		if (Character)
-		{
-			Character->PlayFireMontage(bAiming);
-			EquippedWeapon->Fire(TraceHitTarget);
-		}
+	{
+		Character->PlayFireMontage(bAiming);
+		EquippedWeapon->Fire(TraceHitTarget);
+	}
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
@@ -302,9 +302,32 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 				{
 					CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
 				}
+								
+				if (bAiming)
+				{
+					CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.58f, DeltaTime, 30.f);
+				}
+				else
+				{
+					CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 20.f);
+				}
+				
+				if (EquippedWeapon && bFireButtonPressed)
+				{
+					CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, DeltaTime, 20.f); // 사격 시 벌어짐
+				}
+				else
+				{
+					CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 10.f); // 벌어짐 줄이기
+				}				
 
-				HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
-			}			
+				HUDPackage.CrosshairSpread =
+					0.5f + // 기본 벌어짐
+					CrosshairVelocityFactor +
+					CrosshairInAirFactor -
+					CrosshairAimFactor +
+					CrosshairShootingFactor;
+			}						
 
 			HUD->SetHUDPackage(HUDPackage);
 		}		
