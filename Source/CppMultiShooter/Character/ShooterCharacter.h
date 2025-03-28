@@ -6,11 +6,12 @@
 #include "GameFramework/Character.h"
 #include "InputMappingContext.h"
 #include "CppMultiShooter/CustomTypes/TurningInPlace.h"
+#include "CppMultiShooter/Interfaces/InteractWithCrosshairsInterface.h"
 
 #include "ShooterCharacter.generated.h"
 
 UCLASS()
-class CPPMULTISHOOTER_API AShooterCharacter : public ACharacter
+class CPPMULTISHOOTER_API AShooterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 

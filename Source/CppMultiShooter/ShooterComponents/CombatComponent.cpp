@@ -11,7 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
-#include "CppMultiShooter/HUD/ShooterHUD.h"
+//#include "CppMultiShooter/HUD/ShooterHUD.h"
 #include "Camera/CameraComponent.h"
 
 UCombatComponent::UCombatComponent()
@@ -211,6 +211,15 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			ECollisionChannel::ECC_Visibility
 		);
 
+		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::Red;
+		}
+		else
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::White;
+		}
+
 		// Hit Target 없는 경우를 보완하는 임시 코드
 		if (!TraceHitResult.bBlockingHit) { TraceHitResult.ImpactPoint = End; }
 	}
@@ -264,8 +273,7 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	{
 		HUD = HUD == nullptr ? Cast<AShooterHUD>(Controller->GetHUD()) : HUD;
 		if (HUD)
-		{
-			FHUDPackage HUDPackage;
+		{			
 			if (EquippedWeapon)
 			{
 				HUDPackage.CrosshairsCenter = EquippedWeapon->CrosshairsCenter;

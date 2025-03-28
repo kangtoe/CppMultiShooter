@@ -41,6 +41,7 @@ AShooterCharacter::AShooterCharacter()
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 850.f, 0.f);
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
