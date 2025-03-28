@@ -24,29 +24,27 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
+
+	// IMC & AIs
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMapping;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* MoveAction;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* LookAction;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* JumpAction;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* EquipAction;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* CrouchAction;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* AimAction;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* FireAction;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -61,6 +59,8 @@ protected:
 	void OnInputFire(const FInputActionInstance& Instance);
 
 	void AimOffset(float DeltaTime);
+
+	void PlayHitReactMontage();	
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -94,6 +94,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* HitReactMontage;
 
 	void HideCameraIfCharacterClose();
 
