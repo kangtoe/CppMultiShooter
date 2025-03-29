@@ -8,3 +8,5 @@
 - 시뮬레이트 프록시 캐릭터dml 제자리 회전 중 떨림 현상 수정
   - 떨림이 발생하는 것은 네트워크 동기화가 매 프레임마다 발생하지 않기 때문임
   - 시뮬레이트 프록시 권한인 경우 tick 마다 별도의 회전 수정 처리하는 것을 고려하였으나, 개선에 실패함 ([참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31515548#questions))
+- 프록시 캐릭터 오른손 회전이 복제처리되지 않는 문제 수정(특히 점프 중 잘 나타남) ([참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31479896#questions/17917798))
+- 카메라가 사격음 음원에 너무 가까운 경우, 에코 생략됨
