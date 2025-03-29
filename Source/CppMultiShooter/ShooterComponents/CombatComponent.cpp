@@ -11,7 +11,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
-//#include "CppMultiShooter/HUD/ShooterHUD.h"
 #include "Camera/CameraComponent.h"
 
 UCombatComponent::UCombatComponent()
@@ -151,15 +150,44 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 #pragma region Fire
 void UCombatComponent::SetFiring(bool bIsFire)
 {
-	if (EquippedWeapon == nullptr) return;
-
 	bFireButtonPressed = bIsFire;
-	if (bFireButtonPressed)
+	if (bFireButtonPressed && EquippedWeapon)
 	{
-		FHitResult HitResult;
-		TraceUnderCrosshairs(HitResult);
-		ServerFire(HitResult.ImpactPoint);
-		//CrosshairShootingFactor = .75f; // SetHUDCrosshairs에서 보간으로 처리
+		Fire();
+	}
+}
+
+void UCombatComponent::Fire()
+{
+	if (bCanFire)
+	{
+		bCanFire = false;
+		ServerFire(HitTarget);
+		if (EquippedWeapon)
+		{		
+			//CrosshairShootingFactor = .75f; // SetHUDCrosshairs에서 보간으로 처리
+		}
+		StartFireTimer();
+	}
+}
+
+void UCombatComponent::StartFireTimer()
+{
+	if (EquippedWeapon == nullptr || Character == nullptr) return;
+	Character->GetWorldTimerManager().SetTimer(
+		FireTimer,
+		this,
+		&UCombatComponent::FireTimerFinished,
+		EquippedWeapon->FireDelay
+	);
+}
+void UCombatComponent::FireTimerFinished()
+{
+	if (EquippedWeapon == nullptr) return;
+	bCanFire = true;
+	if (bFireButtonPressed && EquippedWeapon->bAutomatic)
+	{
+		Fire();
 	}
 }
 
