@@ -53,11 +53,23 @@ void AProjectile::BeginPlay()
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
+    bool bCharacterHit = false;
     if (ShooterCharacter)
     {
         ShooterCharacter->MulticastHit();
+        bCharacterHit = true;
+        ImpactParticles = ImpactCharacterParticles;
     }
 
+    // optional challange to show different particles on hit.
+    MultiCast_OnHit(bCharacterHit);
+    // original code
+    // Destroy();
+}
+
+void AProjectile::MultiCast_OnHit_Implementation(bool bCharacterHit)
+{
+    ImpactParticles = bCharacterHit ? ImpactCharacterParticles : ImpactObstacleParticles;
     Destroy();
 }
 
