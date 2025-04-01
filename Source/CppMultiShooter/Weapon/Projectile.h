@@ -25,6 +25,9 @@ protected:
     UFUNCTION(NetMulticast, Reliable)
     void MultiCast_OnHit(bool bCharacterHit);
 
+    UPROPERTY(EditAnywhere)
+    float Damage = 20.f;
+
 private:
 
     UPROPERTY(EditAnywhere)

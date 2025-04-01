@@ -24,9 +24,6 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
-
 	// IMC & AIs
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMapping;
@@ -61,6 +58,10 @@ protected:
 	void AimOffset(float DeltaTime);
 
 	void PlayHitReactMontage();	
+
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+	void UpdateHUDHealth();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -115,6 +116,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_Health();
+
+	class AShooterPlayerController* ShooterPlayerController;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);

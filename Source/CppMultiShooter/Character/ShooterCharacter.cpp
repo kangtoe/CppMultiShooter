@@ -14,6 +14,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "ShooterAnimInstance.h"
 #include "CppMultiShooter/CppMultiShooter.h"
+#include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -126,15 +127,21 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UpdateHUDHealth();
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::ReceiveDamage);
+	}
+
 	// 캐릭터가 컨트롤러에 의해 조종되고 있는지 확인
-	if (Controller)
+	/*if (Controller)
 	{
 		UE_LOG(LogTemp, Display, TEXT("%s is possessed by %s"), *GetName(), *Controller->GetName());
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is not possessed"), *GetName());
-	}
+	}*/
 
 	// 플레이어 컨트롤러 확인
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -312,6 +319,24 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 
 void AShooterCharacter::OnRep_Health()
 {
+	UpdateHUDHealth();
+	PlayHitReactMontage();
+}
+
+void AShooterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	UpdateHUDHealth();
+	PlayHitReactMontage();
+}
+
+void AShooterCharacter::UpdateHUDHealth()
+{	
+	ShooterPlayerController = ShooterPlayerController == nullptr ? Cast<AShooterPlayerController>(Controller) : ShooterPlayerController;
+	if (ShooterPlayerController)
+	{
+		ShooterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
@@ -407,11 +432,6 @@ void AShooterCharacter::TurnInPlace(float DeltaTime)
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		}
 	}
-}
-
-void AShooterCharacter::MulticastHit_Implementation()
-{
-	PlayHitReactMontage();
 }
 
 void AShooterCharacter::HideCameraIfCharacterClose() // 카메라에 캐릭터가 너무 가까우면 숨기기
