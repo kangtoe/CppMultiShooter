@@ -57,7 +57,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly);
-	//DOREPLIFETIME(AShooterCharacter, Health);
+	DOREPLIFETIME(AShooterCharacter, Health);
 	//DOREPLIFETIME(AShooterCharacter, Shield);
 	//DOREPLIFETIME(AShooterCharacter, bDisableGameplay);
 }
@@ -308,6 +308,10 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
 	}
+}
+
+void AShooterCharacter::OnRep_Health()
+{
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
