@@ -16,6 +16,7 @@
 #include "CppMultiShooter/CppMultiShooter.h"
 #include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
 #include "CppMultiShooter\GameMode\ShooterGameMode.h"
+#include "TimerManager.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -124,9 +125,28 @@ void AShooterCharacter::PlayFireMontage(bool bAiming)
 	}
 }
 
-void AShooterCharacter::Elim_Implementation()
+void AShooterCharacter::Elim()
 {
+	MulticastElim();
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&AShooterCharacter::ElimTimerFinished,
+		ElimDelay
+	);
+}
 
+void AShooterCharacter::ElimTimerFinished()
+{
+	AShooterGameMode* ShooterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+	if (ShooterGameMode)
+	{
+		ShooterGameMode->RequestRespawn(this, Controller);
+	}
+}
+
+void AShooterCharacter::MulticastElim_Implementation()
+{
 	bElimmed = true;
 	PlayElimMontage();
 }

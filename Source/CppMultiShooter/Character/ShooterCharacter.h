@@ -23,9 +23,10 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	void PlayFireMontage(bool bAiming);
-
-	UFUNCTION(NetMulticast, Reliable)
+	
 	void Elim();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastElim();
 
 	// IMC & AIs
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -113,19 +114,23 @@ private:
 	/**
 	* Player health
 	*/
-
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
-
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float Health = 100.f;
-
 	UFUNCTION()
 	void OnRep_Health();
 
 	class AShooterPlayerController* ShooterPlayerController;
 
 	bool bElimmed = false;
+
+	FTimerHandle ElimTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+
+	void ElimTimerFinished();
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
