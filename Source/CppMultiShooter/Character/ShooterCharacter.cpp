@@ -328,7 +328,10 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 void AShooterCharacter::OnRep_Health()
 {
 	UpdateHUDHealth();
-	PlayHitReactMontage();
+	if (!bElimmed)
+	{
+		PlayHitReactMontage();
+	}	
 }
 
 void AShooterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
