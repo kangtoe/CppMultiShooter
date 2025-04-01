@@ -15,6 +15,7 @@
 #include "ShooterAnimInstance.h"
 #include "CppMultiShooter/CppMultiShooter.h"
 #include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
+#include "CppMultiShooter\GameMode\ShooterGameMode.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -121,6 +122,13 @@ void AShooterCharacter::PlayFireMontage(bool bAiming)
 		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
+}
+
+void AShooterCharacter::Elim_Implementation()
+{
+
+	bElimmed = true;
+	PlayElimMontage();
 }
 
 void AShooterCharacter::BeginPlay()
@@ -328,6 +336,17 @@ void AShooterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
 	PlayHitReactMontage();
+
+	if (Health == 0.f)
+	{
+		AShooterGameMode* ShooterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+		if (ShooterGameMode)
+		{
+			ShooterPlayerController = ShooterPlayerController == nullptr ? Cast<AShooterPlayerController>(Controller) : ShooterPlayerController;
+			AShooterPlayerController* AttackerController = Cast<AShooterPlayerController>(InstigatorController);
+			ShooterGameMode->PlayerEliminated(this, ShooterPlayerController, AttackerController);
+		}
+	}
 }
 
 void AShooterCharacter::UpdateHUDHealth()
@@ -407,6 +426,15 @@ void AShooterCharacter::PlayHitReactMontage()
 		AnimInstance->Montage_Play(HitReactMontage);
 		FName SectionName("FromFront");
 		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void AShooterCharacter::PlayElimMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ElimMontage)
+	{
+		AnimInstance->Montage_Play(ElimMontage);
 	}
 }
 

@@ -24,6 +24,9 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Elim();
+
 	// IMC & AIs
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMapping;
@@ -42,7 +45,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* FireAction;
 
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,6 +60,7 @@ protected:
 	void AimOffset(float DeltaTime);
 
 	void PlayHitReactMontage();	
+	void PlayElimMontage();
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
@@ -99,6 +102,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ElimMontage;
+
 	void HideCameraIfCharacterClose();
 
 	UPROPERTY(EditAnywhere)
@@ -119,6 +125,8 @@ private:
 
 	class AShooterPlayerController* ShooterPlayerController;
 
+	bool bElimmed = false;
+
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
@@ -130,4 +138,5 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FVector GetHitTarget() const;
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE bool IsElimmed() const { return bElimmed; }
 };
