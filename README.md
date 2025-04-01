@@ -11,3 +11,4 @@
 - 프록시 캐릭터 오른손 회전이 복제처리되지 않는 문제 수정(특히 점프 중 잘 나타남) ([참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31479896#questions/17917798))
   - [시도해보기](https://discord.com/channels/807733033192390676/955151938582876170/1296503295635882054)
 - 카메라가 사격음 음원에 너무 가까운 경우, 에코 생략됨
+- 폰트 적용 ([링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31545426#questions/18972252))
