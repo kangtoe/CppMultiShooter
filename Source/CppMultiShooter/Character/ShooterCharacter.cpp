@@ -154,7 +154,7 @@ void AShooterCharacter::MulticastElim_Implementation()
 	bElimmed = true;
 	PlayElimMontage();
 
-	if (DissolveMaterialInstance) // init dissolve
+	if (DissolveMaterialInstance) // Start dissolve effect
 	{
 		DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
 		GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
@@ -162,6 +162,17 @@ void AShooterCharacter::MulticastElim_Implementation()
 		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Glow"), 200.f);
 	}
 	StartDissolve();
+
+	// Disable character movement
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	if (ShooterPlayerController)
+	{
+		DisableInput(ShooterPlayerController);
+	}
+	// Disable collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AShooterCharacter::BeginPlay()
