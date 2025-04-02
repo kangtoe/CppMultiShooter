@@ -301,7 +301,7 @@ void AShooterCharacter::OnInputJump(const FInputActionInstance& Instance)
 
 void AShooterCharacter::OnInputEquip(const FInputActionInstance& Instance)
 {	
-	UE_LOG(LogTemp, Display, TEXT("EquipAction"));
+	//UE_LOG(LogTemp, Display, TEXT("EquipAction"));
 
 	if (Combat)
 	{

@@ -7,12 +7,23 @@
 #include "CppMultiShooter/HUD/CharacterOverlay.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "CppMultiShooter/Character/ShooterCharacter.h"
 
 void AShooterPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
     ShooterHUD = Cast<AShooterHUD>(GetHUD());
+}
+
+void AShooterPlayerController::OnPossess(APawn* InPawn)
+{
+    Super::OnPossess(InPawn);
+    AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
+    if (ShooterCharacter)
+    {
+        SetHUDHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth()); // update health HUD
+    }
 }
 
 void AShooterPlayerController::SetHUDHealth(float Health, float MaxHealth)
