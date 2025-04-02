@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+	// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,6 +28,7 @@ public:
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
+	virtual void Destroyed() override;
 
 	// IMC & AIs
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -148,6 +149,17 @@ private:
 	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;	
 	UPROPERTY(EditAnywhere, Category = Elim) // Material instance set on the Blueprint, used with the dynamic material instance
 	UMaterialInstance* DissolveMaterialInstance;
+
+	/**
+	* Elim bot
+	*/
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* ElimBotEffect;
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent* ElimBotComponent;
+	UPROPERTY(EditAnywhere)
+	class USoundCue* ElimBotSound;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
