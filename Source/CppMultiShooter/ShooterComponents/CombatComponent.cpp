@@ -113,8 +113,8 @@ void UCombatComponent::OnRep_EquippedWeapon()
 {
 	if (EquippedWeapon && Character)
 	{
-		//EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		//AttachActorToRightHand(EquippedWeapon);
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		AttachActorToRightHand(EquippedWeapon);
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
 		//PlayEquipWeaponSound(EquippedWeapon);
@@ -127,7 +127,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	//DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped); // OnRep_EquippedWeapon()와 중복된 코드 같아 보이나, 리플리케이션은 네트워크 상태에 따라 실행 시간이 달라지기에 명확하게 실행되도록 함
 	AttachActorToRightHand(EquippedWeapon);
 	EquippedWeapon->SetOwner(Character);
 	//EquippedWeapon->SetHUDAmmo();

@@ -108,7 +108,10 @@ void AWeapon::SetWeaponState(EWeaponState State)
 	OnWeaponStateSet();
 }
 
-
+void AWeapon::OnRep_WeaponState()
+{
+	OnWeaponStateSet();
+}
 
 void AWeapon::OnWeaponStateSet()
 {
@@ -126,10 +129,6 @@ void AWeapon::OnWeaponStateSet()
 	}
 }
 
-void AWeapon::OnRep_WeaponState()
-{
-	OnWeaponStateSet();
-}
 
 void AWeapon::OnEquipped()
 {
@@ -159,7 +158,7 @@ void AWeapon::OnEquipped()
 
 void AWeapon::OnDropped()
 {
-	/*if (HasAuthority())
+	if (HasAuthority())
 	{
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
@@ -170,6 +169,7 @@ void AWeapon::OnDropped()
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
+	/*
 	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
 	WeaponMesh->MarkRenderStateDirty();
 	EnableCustomDepth(true);
@@ -247,5 +247,13 @@ void AWeapon::Fire(const FVector& HitTarget)
 			}
 		}
 	}
+}
+
+void AWeapon::Dropped()
+{
+	SetWeaponState(EWeaponState::EWS_Dropped);
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	WeaponMesh->DetachFromComponent(DetachRules);
+	SetOwner(nullptr);
 }
 

@@ -131,6 +131,11 @@ void AShooterCharacter::PlayFireMontage(bool bAiming)
 
 void AShooterCharacter::Elim()
 {
+	if (Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Dropped();
+	}
+
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
