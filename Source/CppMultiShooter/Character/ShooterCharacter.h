@@ -24,6 +24,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	void PlayFireMontage(bool bAiming);
+	void PlayReloadMontage();
 	
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
@@ -47,6 +48,8 @@ public:
 	UInputAction* AimAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* FireAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* ReloadAction;
 
 protected:
 	// Called when the game starts or when spawned
@@ -59,6 +62,7 @@ protected:
 	void OnInputCrouch(const FInputActionInstance& Instance);
 	void OnInputAim(const FInputActionInstance& Instance);
 	void OnInputFire(const FInputActionInstance& Instance);
+	void OnInputReload(const FInputActionInstance& Instance);
 
 	void AimOffset(float DeltaTime);
 
@@ -101,12 +105,15 @@ private:
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
 
+	/**
+	* Animation montages
+	*/
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
-
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ReloadMontage;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
-
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ElimMontage;
 

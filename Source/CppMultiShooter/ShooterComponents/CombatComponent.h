@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "CppMultiShooter/HUD/ShooterHUD.h"
+#include "CppMultiShooter/Weapon/WeaponTypes.h"
 
 #include "CombatComponent.generated.h"
 
@@ -22,6 +23,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;	
 
 	void EquipWeapon(class AWeapon* WeaponToEquip);
+
+	void Reload();
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,12 +54,16 @@ protected:
 
 	//void DropEquippedWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
+	void UpdateCarriedAmmo();
 	//void AttachActorToLeftHand(AActor* ActorToAttach);
 	//void AttachFlagToLeftHand(AWeapon* Flag);
 	//void AttachActorToBackpack(AActor* ActorToAttach);
 
 	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
 	//void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
 
 private:
 	UPROPERTY()
@@ -116,4 +123,19 @@ private:
 	void FireTimerFinished();
 
 	bool CanFire();
+
+	// Carried ammo for the currently-equipped weapon
+	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+
+	UFUNCTION()
+	void OnRep_CarriedAmmo();
+
+	//UPROPERTY(EditAnywhere)
+	TMap<EWeaponType, int32> CarriedAmmoMap;
+
+	UPROPERTY(EditAnywhere)
+	int32 StartingARAmmo = 30;
+
+	void InitializeCarriedAmmo();
 };

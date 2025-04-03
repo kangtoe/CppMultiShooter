@@ -21,6 +21,7 @@
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
+#include "CppMultiShooter/Weapon/WeaponTypes.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -116,6 +117,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputCrouch);
 		Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputAim);
 		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputFire);
+		Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputReload);
 	}
 }
 
@@ -129,6 +131,27 @@ void AShooterCharacter::PlayFireMontage(bool bAiming)
 		AnimInstance->Montage_Play(FireWeaponMontage);
 		FName SectionName;
 		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void AShooterCharacter::PlayReloadMontage()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName;
+
+		switch (Combat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponType::EWT_AssaultRifle:
+			SectionName = FName("Rifle");
+			break;
+		}
+
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
@@ -397,6 +420,14 @@ void AShooterCharacter::OnInputFire(const FInputActionInstance& Instance)
 	else
 	{
 		Combat->SetFiring(false);
+	}
+}
+
+void AShooterCharacter::OnInputReload(const FInputActionInstance& Instance)
+{
+	if (Combat)
+	{
+		Combat->Reload();
 	}
 }
 

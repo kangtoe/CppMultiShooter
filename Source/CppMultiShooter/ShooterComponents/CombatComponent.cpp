@@ -30,7 +30,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	//DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
-	//DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 	//DOREPLIFETIME(UCombatComponent, CombatState);
 	//DOREPLIFETIME(UCombatComponent, Grenades);
 	//DOREPLIFETIME(UCombatComponent, bHoldingTheFlag);
@@ -52,7 +52,7 @@ void UCombatComponent::BeginPlay()
 
 		if (Character->HasAuthority())
 		{
-			//InitializeCarriedAmmo();
+			InitializeCarriedAmmo();
 		}
 	}
 }
@@ -123,7 +123,7 @@ void UCombatComponent::OnRep_EquippedWeapon()
 		Character->bUseControllerRotationYaw = true;
 		//PlayEquipWeaponSound(EquippedWeapon);
 		//EquippedWeapon->EnableCustomDepth(false);
-		//EquippedWeapon->SetHUDAmmo();
+		EquippedWeapon->SetHUDAmmo();
 	}
 }
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
@@ -135,7 +135,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 	AttachActorToRightHand(EquippedWeapon);
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetHUDAmmo();
-	//UpdateCarriedAmmo();
+	UpdateCarriedAmmo();
 	//PlayEquipWeaponSound(WeaponToEquip);
 	//ReloadEmptyWeapon();
 }
@@ -147,6 +147,20 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
+}
+
+void UCombatComponent::UpdateCarriedAmmo()
+{
+	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+	{
+		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+	}
+
+	Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
+	if (Controller)
+	{
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);
 	}
 }
 #pragma endregion
@@ -301,6 +315,21 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 }
 #pragma endregion
 
+void UCombatComponent::Reload()
+{
+	if (CarriedAmmo > 0)
+	{
+		ServerReload();
+	}
+}
+
+void UCombatComponent::ServerReload_Implementation()
+{
+	if (Character == nullptr) return;
+
+	Character->PlayReloadMontage();
+}
+
 void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 {
 	if (Character == nullptr || Character->Controller == nullptr) return;
@@ -386,4 +415,18 @@ bool UCombatComponent::CanFire()
 	if (!bCanFire) return false;
 
 	return true;
+}
+
+void UCombatComponent::OnRep_CarriedAmmo()
+{
+	Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
+	if (Controller)
+	{
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);
+	}
+}
+
+void UCombatComponent::InitializeCarriedAmmo()
+{
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
 }
