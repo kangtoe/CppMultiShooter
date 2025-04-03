@@ -8,6 +8,7 @@
 #include "CppMultiShooter/CustomTypes/TurningInPlace.h"
 #include "CppMultiShooter/Interfaces/InteractWithCrosshairsInterface.h"
 #include "Components/TimelineComponent.h"
+#include "CppMultiShooter/CustomTypes/CombatState.h"
 
 #include "ShooterCharacter.generated.h"
 
@@ -188,4 +189,5 @@ public:
 	FORCEINLINE bool IsElimmed() const { return bElimmed; }
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	ECombatState GetCombatState() const;
 };

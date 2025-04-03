@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "CppMultiShooter/Weapon/Weapon.h"
+#include "CppMultiShooter/CustomTypes/CombatState.h"
 
 void UShooterAnimInstance::NativeInitializeAnimation()
 {
@@ -70,4 +71,6 @@ void UShooterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaTime, 30.f);
 		}
 	}
+
+	bUseFABRIK = ShooterCharacter->GetCombatState() != ECombatState::ECS_Reloading;
 }
