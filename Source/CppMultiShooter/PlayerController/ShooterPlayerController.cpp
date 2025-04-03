@@ -26,6 +26,32 @@ void AShooterPlayerController::OnPossess(APawn* InPawn)
     }
 }
 
+void AShooterPlayerController::SetHUDScore(float Score)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->ScoreAmount;
+    if (bHUDValid)
+    {
+        FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
+        ShooterHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
+    }
+}
+
+void AShooterPlayerController::SetHUDDefeats(int32 Defeats)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->ScoreAmount;
+    if (bHUDValid)
+    {
+        FString DefeatsText = FString::Printf(TEXT("%d"), Defeats);
+        ShooterHUD->CharacterOverlay->DefeatsAmount->SetText(FText::FromString(DefeatsText));
+    }
+}
+
 void AShooterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
     ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;

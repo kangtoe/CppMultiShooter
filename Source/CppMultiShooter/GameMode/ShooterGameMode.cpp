@@ -6,9 +6,24 @@
 #include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
 
 void AShooterGameMode::PlayerEliminated(AShooterCharacter* ElimmedCharacter, AShooterPlayerController* VictimController, AShooterPlayerController* AttackerController)
 {
+    if (AttackerController == nullptr || AttackerController->PlayerState == nullptr) return;
+    if (VictimController == nullptr || VictimController->PlayerState == nullptr) return;
+    AShooterPlayerState* AttackerPlayerState = AttackerController ? Cast<AShooterPlayerState>(AttackerController->PlayerState) : nullptr;
+    AShooterPlayerState* VictimPlayerState = VictimController ? Cast<AShooterPlayerState>(VictimController->PlayerState) : nullptr;
+
+    if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
+    {
+        AttackerPlayerState->AddToScore(1.f);
+    }
+    if (VictimPlayerState)
+    {
+        VictimPlayerState->AddToDefeats(1);
+    }
+
     if (ElimmedCharacter)
     {
         ElimmedCharacter->Elim();

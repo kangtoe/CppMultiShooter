@@ -20,6 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -260,6 +261,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	AimOffset(DeltaTime);
 	HideCameraIfCharacterClose();
+	PollInit();
 }
 
 #pragma region 캐릭터 입력 처리
@@ -440,6 +442,19 @@ void AShooterCharacter::UpdateHUDHealth()
 	if (ShooterPlayerController)
 	{
 		ShooterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
+void AShooterCharacter::PollInit()
+{
+	if (ShooterPlayerState == nullptr)
+	{
+		ShooterPlayerState = GetPlayerState<AShooterPlayerState>();
+		if (ShooterPlayerState)
+		{
+			ShooterPlayerState->AddToScore(0.f);
+			ShooterPlayerState->AddToDefeats(0);
+		}
 	}
 }
 
