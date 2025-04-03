@@ -163,7 +163,7 @@ void UCombatComponent::SetFiring(bool bIsFire)
 
 void UCombatComponent::Fire()
 {
-	if (bCanFire)
+	if (CanFire())
 	{
 		bCanFire = false;
 		ServerFire(HitTarget);
@@ -377,4 +377,13 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 			HUD->SetHUDPackage(HUDPackage);
 		}		
 	}
+}
+
+bool UCombatComponent::CanFire()
+{
+	if (!EquippedWeapon) return false;
+	if (EquippedWeapon->IsEmpty()) return false;
+	if (!bCanFire) return false;
+
+	return true;
 }

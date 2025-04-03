@@ -119,7 +119,7 @@ void AWeapon::SetHUDAmmo()
 
 void AWeapon::SpendRound()
 {
-	--Ammo;
+	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
 	SetHUDAmmo();
 }
 
@@ -302,3 +302,7 @@ void AWeapon::Dropped()
 	ShooterOwnerController = nullptr;
 }
 
+bool AWeapon::IsEmpty()
+{
+	return Ammo <= 0;
+}
