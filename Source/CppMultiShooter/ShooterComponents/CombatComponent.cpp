@@ -78,6 +78,10 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
+	}
 	//if (CombatState != ECombatState::ECS_Unoccupied) return;
 
 	//if (WeaponToEquip->GetWeaponType() == EWeaponType::EWT_Flag)
@@ -130,7 +134,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped); // OnRep_EquippedWeapon()와 중복된 코드 같아 보이나, 리플리케이션은 네트워크 상태에 따라 실행 시간이 달라지기에 명확하게 실행되도록 함
 	AttachActorToRightHand(EquippedWeapon);
 	EquippedWeapon->SetOwner(Character);
-	//EquippedWeapon->SetHUDAmmo();
+	EquippedWeapon->SetHUDAmmo();
 	//UpdateCarriedAmmo();
 	//PlayEquipWeaponSound(WeaponToEquip);
 	//ReloadEmptyWeapon();

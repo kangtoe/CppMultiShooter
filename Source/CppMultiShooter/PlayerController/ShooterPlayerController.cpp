@@ -52,6 +52,20 @@ void AShooterPlayerController::SetHUDDefeats(int32 Defeats)
     }
 }
 
+void AShooterPlayerController::SetHUDWeaponAmmo(int32 Ammo)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->WeaponAmmoAmount;
+    if (bHUDValid)
+    {
+        FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
+        ShooterHUD->CharacterOverlay->WeaponAmmoAmount->SetText(FText::FromString(AmmoText));
+    }
+}
+
 void AShooterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
     ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;

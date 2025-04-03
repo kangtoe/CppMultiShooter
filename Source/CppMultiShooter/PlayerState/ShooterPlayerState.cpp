@@ -15,14 +15,14 @@ void AShooterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 void AShooterPlayerState::AddToScore(float ScoreAmount)
 {
-    SetScore(Score + ScoreAmount);
+    SetScore(GetScore() + ScoreAmount);
     Character = Character == nullptr ? Cast<AShooterCharacter>(GetPawn()) : Character;
-    if (Character && Character->Controller)
+    if (Character)
     {
         Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
         if (Controller)
         {
-            Controller->SetHUDScore(Score);
+            Controller->SetHUDScore(GetScore());
         }
     }
 }
@@ -32,12 +32,12 @@ void AShooterPlayerState::OnRep_Score()
     Super::OnRep_Score();
     
     Character = Character == nullptr ? Cast<AShooterCharacter>(GetPawn()) : Character;
-    if (Character && Character->Controller)
+    if (Character)
     {
         Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
         if (Controller)
         {
-            Controller->SetHUDScore(Score);
+            Controller->SetHUDScore(GetScore());
         }
     }
 }
@@ -46,7 +46,7 @@ void AShooterPlayerState::AddToDefeats(int32 DefeatsAmount)
 {
     Defeats += DefeatsAmount;
     Character = Character == nullptr ? Cast<AShooterCharacter>(GetPawn()) : Character;
-    if (Character && Character->Controller)
+    if (Character)
     {
         Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
         if (Controller)
@@ -59,7 +59,7 @@ void AShooterPlayerState::AddToDefeats(int32 DefeatsAmount)
 void AShooterPlayerState::OnRep_Defeats()
 {
     Character = Character == nullptr ? Cast<AShooterCharacter>(GetPawn()) : Character;
-    if (Character && Character->Controller)
+    if (Character)
     {
         Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
         if (Controller)

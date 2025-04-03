@@ -160,6 +160,11 @@ void AShooterCharacter::ElimTimerFinished()
 
 void AShooterCharacter::MulticastElim_Implementation()
 {
+	if (ShooterPlayerController)
+	{
+		ShooterPlayerController->SetHUDWeaponAmmo(0);
+	}
+
 	bElimmed = true;
 	PlayElimMontage();
 
