@@ -25,6 +25,7 @@ public:
 
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 
+	void ReloadEmptyWeapon();
 	void Reload();
 
 	UFUNCTION(BlueprintCallable)

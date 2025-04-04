@@ -133,7 +133,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
 	PlayEquipWeaponSound(WeaponToEquip);
-	//ReloadEmptyWeapon();
+	ReloadEmptyWeapon();
 }
 
 void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
@@ -202,6 +202,7 @@ void UCombatComponent::FireTimerFinished()
 	{
 		Fire();
 	}
+	ReloadEmptyWeapon();
 }
 
 // 서버에서 멀티캐스트 RPC를 호출하는 경우에만 실행 가능
@@ -311,6 +312,14 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 #pragma endregion
 
 #pragma region Reload
+void UCombatComponent::ReloadEmptyWeapon()
+{
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
+	}
+}
+
 void UCombatComponent::Reload()
 {
 	if (CarriedAmmo > 0 && CombatState != ECombatState::ECS_Reloading)
