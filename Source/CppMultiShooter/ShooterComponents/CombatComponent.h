@@ -63,7 +63,7 @@ protected:
 	//void AttachFlagToLeftHand(AWeapon* Flag);
 	//void AttachActorToBackpack(AActor* ActorToAttach);
 
-	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
+	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);	
 	//void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
 
 	UFUNCTION(Server, Reliable)
@@ -148,4 +148,6 @@ private:
 	void OnRep_CombatState();
 
 	void UpdateAmmoValues();
+
+	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
 };
