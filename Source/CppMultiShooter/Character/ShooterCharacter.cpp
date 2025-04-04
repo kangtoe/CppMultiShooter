@@ -121,6 +121,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 }
 
+#pragma region Play Montage
+
 void AShooterCharacter::PlayFireMontage(bool bAiming)
 {
 	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
@@ -128,7 +130,7 @@ void AShooterCharacter::PlayFireMontage(bool bAiming)
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && FireWeaponMontage)
 	{
-		AnimInstance->Montage_Play(FireWeaponMontage);
+		AnimInstance->Montage_Play(FireWeaponMontage, 1, EMontagePlayReturnType::MontageLength, 0, false);
 		FName SectionName;
 		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
 		AnimInstance->Montage_JumpToSection(SectionName);
@@ -142,7 +144,7 @@ void AShooterCharacter::PlayReloadMontage()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && ReloadMontage)
 	{
-		AnimInstance->Montage_Play(ReloadMontage);
+		AnimInstance->Montage_Play(ReloadMontage, 1, EMontagePlayReturnType::MontageLength, 0, false);
 		FName SectionName;
 
 		switch (Combat->EquippedWeapon->GetWeaponType())
@@ -155,6 +157,32 @@ void AShooterCharacter::PlayReloadMontage()
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
+
+void AShooterCharacter::PlayHitReactMontage()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage, 1, EMontagePlayReturnType::MontageLength, 0, false);
+		FName SectionName("FromFront");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void AShooterCharacter::PlayElimMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ElimMontage)
+	{
+		AnimInstance->Montage_Play(ElimMontage, 1, EMontagePlayReturnType::MontageLength, 0, true);
+	}
+}
+#pragma endregion
+
+
+
 
 void AShooterCharacter::Elim()
 {
@@ -568,28 +596,6 @@ void AShooterCharacter::AimOffset(float DeltaTime)
 	
 	// GetNormalized 사용 이유: AO_Pitch > 90인 경우, 언리얼 내부 멀티플레이 동기화 로직이 값을 압축/해제하는 과정에서 바꿔버림
 	AO_Pitch = GetBaseAimRotation().GetNormalized().Pitch;
-}
-
-void AShooterCharacter::PlayHitReactMontage()
-{
-	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && HitReactMontage)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		FName SectionName("FromFront");
-		AnimInstance->Montage_JumpToSection(SectionName);
-	}
-}
-
-void AShooterCharacter::PlayElimMontage()
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && ElimMontage)
-	{
-		AnimInstance->Montage_Play(ElimMontage);
-	}
 }
 
 void AShooterCharacter::TurnInPlace(float DeltaTime)
