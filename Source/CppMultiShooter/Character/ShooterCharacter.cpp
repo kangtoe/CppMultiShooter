@@ -292,23 +292,24 @@ void AShooterCharacter::BeginPlay()
 
 	// 플레이어 컨트롤러 확인
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		UE_LOG(LogTemp, Display, TEXT("Player Controller is %s"), *PlayerController->GetName());
-
+	{		
 		// 입력 서브시스템을 가져와 입력 매핑 컨텍스트 추가
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			if (InputMapping)
 			{
 				Subsystem->AddMappingContext(InputMapping, 0);
-				UE_LOG(LogTemp, Display, TEXT("Input Mapping Context added"));
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("InputMapping is null!"));
 			}
 		}
 	}	
+	else if (const ULocalPlayer* Player = (GEngine && GetWorld()) ? GEngine->GetFirstGamePlayer(GetWorld()) : nullptr) // for server (match state의 웜업 기간, 해당 시점에 APlayerController가 없음)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player);
+		if (InputMapping)
+		{
+			Subsystem->AddMappingContext(InputMapping, 0);
+		}
+	}
 }
 
 void AShooterCharacter::Tick(float DeltaTime)

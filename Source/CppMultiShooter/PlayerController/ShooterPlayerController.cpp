@@ -8,6 +8,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "CppMultiShooter/Character/ShooterCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 void AShooterPlayerController::BeginPlay()
 {
