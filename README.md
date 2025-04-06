@@ -13,3 +13,4 @@
 - 카메라가 사격음 음원에 너무 가까운 경우, 에코 생략됨
 - 폰트 적용 ([링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31545426#questions/18972252))
 - 몽타주 중단되는 경우 처리-재장전 중 점프 등([링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31658008#questions/21017278))
+- match state 리플리케이션 관련 코드 리펙토링 권장 ([링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31686162#questions))
