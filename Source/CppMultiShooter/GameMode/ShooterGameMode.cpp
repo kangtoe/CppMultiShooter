@@ -20,6 +20,20 @@ void AShooterGameMode::BeginPlay()
     LevelStartingTime = GetWorld()->GetTimeSeconds();
 }
 
+void AShooterGameMode::OnMatchStateSet()
+{
+    Super::OnMatchStateSet();
+
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        AShooterPlayerController* ShooterPlayer = Cast<AShooterPlayerController>(*It);
+        if (ShooterPlayer)
+        {
+            ShooterPlayer->OnMatchStateSet(MatchState);
+        }
+    }
+}
+
 void AShooterGameMode::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);

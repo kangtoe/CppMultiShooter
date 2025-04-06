@@ -40,9 +40,10 @@ public:
     UPROPERTY()
     class UCharacterOverlay* CharacterOverlay;
 
-protected:
-    virtual void BeginPlay() override;
     void AddCharacterOverlay();
+
+protected:
+    virtual void BeginPlay() override;    
 
 private:
     FHUDPackage HUDPackage;

@@ -9,15 +9,17 @@ void AShooterHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    AddCharacterOverlay();
+    APlayerController* PlayerController = GetOwningPlayerController();
+    if (PlayerController && CharacterOverlayClass)
+    {
+        CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);        
+    }
 }
 
 void AShooterHUD::AddCharacterOverlay()
 {
-    APlayerController* PlayerController = GetOwningPlayerController();
-    if (PlayerController && CharacterOverlayClass)
+    if (CharacterOverlay)
     {
-        CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
         CharacterOverlay->AddToViewport();
     }
 }
