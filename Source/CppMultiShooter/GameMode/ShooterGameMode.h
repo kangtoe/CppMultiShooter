@@ -7,6 +7,11 @@
 
 #include "ShooterGameMode.generated.h"
 
+namespace MatchState // 커스텀 MatchState를 추가적으로 정의
+{
+	extern CPPMULTISHOOTER_API const FName Cooldown; // Match duration has been reached. Display winner and begin cooldown timer.
+}
+
 /**
  * 
  */
@@ -26,6 +31,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MatchTime = 120.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float CooldownTime = 10.f;
 
 	float LevelStartingTime = 0.f;
 
