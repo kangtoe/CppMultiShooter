@@ -136,6 +136,17 @@ void AShooterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 
 void AShooterPlayerController::SetHUDTime()
 {
+    // for server (may ServerCheckMatchState() is called in the PlayerController's BeginPlay())
+    if (HasAuthority())
+    {
+        AShooterGameMode* ShooterGameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+        if (ShooterGameMode)
+        {
+            LevelStartingTime = ShooterGameMode->LevelStartingTime;
+            //or -> LevelStartingTime = BlasterGameMode->GetLevelStartingTime();
+        }
+    }
+
     float TimeLeft = 0.f;
     if (MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
     else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
