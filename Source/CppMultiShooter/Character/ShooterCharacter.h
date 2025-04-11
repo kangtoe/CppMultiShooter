@@ -32,6 +32,9 @@ public:
 	void MulticastElim();
 	virtual void Destroyed() override;
 
+	UPROPERTY(Replicated)
+	bool bDisableGameplay = false;
+
 	// IMC & AIs
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMapping;
@@ -190,4 +193,6 @@ public:
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	ECombatState GetCombatState() const;
+	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
+	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
 };

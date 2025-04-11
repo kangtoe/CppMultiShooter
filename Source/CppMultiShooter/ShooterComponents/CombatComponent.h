@@ -31,6 +31,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 
+	void SetFiring(bool bIsFire);
+
 protected:
 	virtual void BeginPlay() override;
 	void SetAiming(bool bIsAiming);
@@ -41,7 +43,7 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
-	void SetFiring(bool bIsFire);	
+	
 	void Fire();
 
 	UFUNCTION(Server, Reliable)

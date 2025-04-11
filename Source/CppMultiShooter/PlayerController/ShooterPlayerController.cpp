@@ -13,6 +13,8 @@
 #include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
 #include "CppMultiShooter/HUD/Announcement.h"
 #include "Kismet/GameplayStatics.h"
+#include "CppMultiShooter/ShooterComponents/CombatComponent.h"
+#include "CppMultiShooter/Weapon/Weapon.h"
 
 void AShooterPlayerController::BeginPlay()
 {
@@ -355,6 +357,12 @@ void AShooterPlayerController::HandleCooldown()
             FString AnnouncementText("New Match Starts In:");
             ShooterHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
             ShooterHUD->Announcement->InfoText->SetText(FText());
+        }
+        AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
+        if (ShooterCharacter && ShooterCharacter->GetCombat())
+        {
+            ShooterCharacter->bDisableGameplay = true;
+            ShooterCharacter->GetCombat()->SetFiring(false);
         }
     }
 }

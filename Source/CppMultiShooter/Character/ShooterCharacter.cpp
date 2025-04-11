@@ -71,7 +71,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(AShooterCharacter, Health);
 	//DOREPLIFETIME(AShooterCharacter, Shield);
-	//DOREPLIFETIME(AShooterCharacter, bDisableGameplay);
+	DOREPLIFETIME(AShooterCharacter, bDisableGameplay);
 }
 
 void AShooterCharacter::PostInitializeComponents()
@@ -229,12 +229,8 @@ void AShooterCharacter::MulticastElim_Implementation()
 	StartDissolve();
 
 	// Disable character movement
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->StopMovementImmediately();
-	if (ShooterPlayerController)
-	{
-		DisableInput(ShooterPlayerController);
-	}
+	bDisableGameplay = true;
+
 	// Disable collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -267,6 +263,10 @@ void AShooterCharacter::Destroyed()
 	if (ElimBotComponent)
 	{
 		ElimBotComponent->DestroyComponent();
+	}
+	if (Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Destroy();
 	}
 }
 
@@ -324,6 +324,8 @@ void AShooterCharacter::Tick(float DeltaTime)
 #pragma region 캐릭터 입력 처리
 void AShooterCharacter::OnInputMove(const FInputActionInstance& Instance)
 {
+	if (bDisableGameplay) return;
+
 	// 입력된 이동 방향 값 가져오기
 	FVector2D MovementDirection = Instance.GetValue().Get<FVector2D>();
 
@@ -340,6 +342,8 @@ void AShooterCharacter::OnInputMove(const FInputActionInstance& Instance)
 // 마우스 또는 컨트롤러를 사용한 카메라 회전 처리
 void AShooterCharacter::OnInputLook(const FInputActionInstance& Instance)
 {
+	if (bDisableGameplay) return;
+
 	FVector2D LookDirection = Instance.GetValue().Get<FVector2D>();
 	AddControllerYawInput(LookDirection.X); // 좌우 회전
 	AddControllerPitchInput(LookDirection.Y); // 상하 회전
@@ -348,6 +352,7 @@ void AShooterCharacter::OnInputLook(const FInputActionInstance& Instance)
 // 점프 입력 처리 함수
 void AShooterCharacter::OnInputJump(const FInputActionInstance& Instance)
 {
+	if (bDisableGameplay) return;
 	if (bIsCrouched)
 	{
 		UnCrouch();		
@@ -360,8 +365,7 @@ void AShooterCharacter::OnInputJump(const FInputActionInstance& Instance)
 
 void AShooterCharacter::OnInputEquip(const FInputActionInstance& Instance)
 {	
-	//UE_LOG(LogTemp, Display, TEXT("EquipAction"));
-
+	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		if (HasAuthority())
@@ -374,8 +378,6 @@ void AShooterCharacter::OnInputEquip(const FInputActionInstance& Instance)
 		}
 	}
 
-	//if (bDisableGameplay) return;
-	//if (Combat)
 	//{
 	//	if (Combat->bHoldingTheFlag) return;
 	//	if (Combat->CombatState == ECombatState::ECS_Unoccupied) ServerEquipButtonPressed();
@@ -409,9 +411,9 @@ void AShooterCharacter::ServerOnInputEquip_Implementation()
 }
 
 void AShooterCharacter::OnInputCrouch(const FInputActionInstance& Instance)
-{
+{	
+	if (bDisableGameplay) return;
 	//if (Combat && Combat->bHoldingTheFlag) return;
-	//if (bDisableGameplay) return;
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -424,6 +426,7 @@ void AShooterCharacter::OnInputCrouch(const FInputActionInstance& Instance)
 
 void AShooterCharacter::OnInputAim(const FInputActionInstance& Instance)
 {
+	if (bDisableGameplay) return;
 	if (!Combat) return;
 	bool Aimed = Instance.GetValue().Get<bool>();
 
@@ -439,6 +442,7 @@ void AShooterCharacter::OnInputAim(const FInputActionInstance& Instance)
 
 void AShooterCharacter::OnInputFire(const FInputActionInstance& Instance)
 {
+	if (bDisableGameplay) return;
 	if (!Combat) return;
 	bool fire = Instance.GetValue().Get<bool>();
 
@@ -454,6 +458,7 @@ void AShooterCharacter::OnInputFire(const FInputActionInstance& Instance)
 
 void AShooterCharacter::OnInputReload(const FInputActionInstance& Instance)
 {
+	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		Combat->Reload();
