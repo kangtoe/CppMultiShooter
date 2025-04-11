@@ -139,7 +139,12 @@ void AShooterPlayerController::SetHUDTime()
     // for server (may ServerCheckMatchState() is called in the PlayerController's BeginPlay())
     if (HasAuthority())
     {
-        AShooterGameMode* ShooterGameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));      
+        AShooterGameMode* ShooterGameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+        if (ShooterGameMode == nullptr)
+        {
+            ShooterGameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+            LevelStartingTime = ShooterGameMode->LevelStartingTime;
+        }        
         if (ShooterGameMode)
         {
             LevelStartingTime = ShooterGameMode->LevelStartingTime;
