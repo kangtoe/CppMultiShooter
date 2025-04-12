@@ -316,7 +316,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AimOffset(DeltaTime);
+	RotateInPlace(DeltaTime);	
 	HideCameraIfCharacterClose();
 	PollInit();
 }
@@ -342,7 +342,7 @@ void AShooterCharacter::OnInputMove(const FInputActionInstance& Instance)
 // 마우스 또는 컨트롤러를 사용한 카메라 회전 처리
 void AShooterCharacter::OnInputLook(const FInputActionInstance& Instance)
 {
-	if (bDisableGameplay) return;
+	//if (bDisableGameplay) return; // 회전은 허용?
 
 	FVector2D LookDirection = Instance.GetValue().Get<FVector2D>();
 	AddControllerYawInput(LookDirection.X); // 좌우 회전
@@ -528,6 +528,21 @@ void AShooterCharacter::PollInit()
 	}
 }
 
+void AShooterCharacter::RotateInPlace(float DeltaTime)
+{
+	if (bDisableGameplay)
+	{
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
+	else
+	{
+		AimOffset(DeltaTime);
+	}
+	
+}
+
 void AShooterCharacter::UpdateDissolveMaterial(float DissolveValue)
 {
 	if (DynamicDissolveMaterialInstance)
@@ -563,7 +578,7 @@ void AShooterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 }
 
 void AShooterCharacter::AimOffset(float DeltaTime)
-{
+{	
 	if (Combat && Combat->EquippedWeapon == nullptr) return;
 	FVector Velocity = GetVelocity();
 	Velocity.Z = 0.f;
