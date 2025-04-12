@@ -160,7 +160,7 @@ void AShooterPlayerController::SetHUDTime()
     else if (MatchState == MatchState::Cooldown) TimeLeft = CooldownTime + WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
 
     uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
-
+    if (TimeLeft < 0) TimeLeft = 0;
 
     if (CountdownInt != SecondsLeft)
     {
