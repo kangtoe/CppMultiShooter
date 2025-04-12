@@ -14,3 +14,5 @@
 - 폰트 적용 ([링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31545426#questions/18972252))
 - 몽타주 중단되는 경우 처리-재장전 중 점프 등([링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31658008#questions/21017278))
 - match state 리플리케이션 관련 코드 리펙토링 권장 ([링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31686162#questions))
+- 무기 장비 중 쿨다운 상태 진입시, 크로스헤어 UI가 사라지지 않는 문제 ( UCombatComponent::SetHUDCrosshairs()에서 game state 검사 로직 추가 고려)
+- 1인칭 시점 크로스헤어 스타일 참조 - https://discord.com/channels/807733033192390676/955151938582876170/1335061468835610804
