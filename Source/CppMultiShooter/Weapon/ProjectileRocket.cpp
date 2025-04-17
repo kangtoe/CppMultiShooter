@@ -95,6 +95,7 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
     );
 
     // 충돌 처리 및 추가 파티클 생성 방지
+    ImpactParticles = ImpactObstacleParticles ? ImpactObstacleParticles : ImpactCharacterParticles; // 임시코드 - 캐릭터 적중 여부와 상관없이 파티클 효과 주기
     if (ImpactParticles)
     {
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, GetActorTransform());

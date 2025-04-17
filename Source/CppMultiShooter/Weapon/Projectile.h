@@ -31,13 +31,15 @@ protected:
     UPROPERTY(EditAnywhere)
     class UBoxComponent* CollisionBox;
 
+    UPROPERTY(EditAnywhere)
+    UParticleSystem* ImpactObstacleParticles;
+    UPROPERTY(EditAnywhere)
+    UParticleSystem* ImpactCharacterParticles;
     UParticleSystem* ImpactParticles;
     UPROPERTY(EditAnywhere)
     class USoundCue* ImpactSound;
 
 private:
-
-
 
     UPROPERTY(VisibleAnywhere)
     class UProjectileMovementComponent* ProjectileMovementComponent;
@@ -47,14 +49,6 @@ private:
 
     UPROPERTY()
     class UParticleSystemComponent* TracerComponent;
-
-    
-    UPROPERTY(EditAnywhere)
-    UParticleSystem* ImpactObstacleParticles;
-    UPROPERTY(EditAnywhere)
-    UParticleSystem* ImpactCharacterParticles;
-
-
 
 public:
 
