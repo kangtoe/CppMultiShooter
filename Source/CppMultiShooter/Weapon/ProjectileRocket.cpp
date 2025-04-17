@@ -25,6 +25,7 @@ void AProjectileRocket::BeginPlay()
     if (!HasAuthority())
     {
         CollisionBox->OnComponentHit.AddDynamic(this, &AProjectileRocket::OnHit);
+        CollisionBox->IgnoreActorWhenMoving(Owner, true);
     }
 
     if (TrailSystem)
