@@ -6,6 +6,7 @@
 #include "CppMultiShooter/Character/ShooterCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "particles/ParticleSystemComponent.h"
+#include "Sound/SoundCue.h"
 
 void AHitScanWeapon::Fire(const FVector& HitTarget)
 {
@@ -36,7 +37,6 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
             if (FireHit.bBlockingHit)
             {
                 BeamEnd = FireHit.ImpactPoint;
-
                 AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(FireHit.GetActor());
                 if (ShooterCharacter && HasAuthority() && InstigatorController)
                 {
@@ -56,9 +56,16 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
                         FireHit.ImpactPoint,
                         FireHit.ImpactNormal.Rotation()
                     );
-                }                
+                }
+                if (HitSound)
+                {
+                    UGameplayStatics::PlaySoundAtLocation(
+                        this,
+                        HitSound,
+                        FireHit.ImpactPoint
+                    );
+                }
             }
-
             if (BeamParticles)
             {
                 UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(
@@ -71,6 +78,22 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
                     Beam->SetVectorParameter(FName("Target"), BeamEnd);
                 }
             }
+        }
+        if (MuzzleFlash)
+        {
+            UGameplayStatics::SpawnEmitterAtLocation(
+                World,
+                MuzzleFlash,
+                SocketTransform
+            );
+        }
+        if (FireSound)
+        {
+            UGameplayStatics::PlaySoundAtLocation(
+                this,
+                FireSound,
+                GetActorLocation()
+            );
         }
     }
 }
