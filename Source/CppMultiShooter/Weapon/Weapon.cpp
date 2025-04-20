@@ -173,18 +173,18 @@ void AWeapon::OnWeaponStateSet()
 
 void AWeapon::OnEquipped()
 {
-	ShowPickupWidget(false);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh->SetSimulatePhysics(false);
+	ShowPickupWidget(false);	
+	/*WeaponMesh->SetSimulatePhysics(false);
 	WeaponMesh->SetEnableGravity(false);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	/*if (WeaponType == EWeaponType::EWT_SubmachineGun)
-	{
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		WeaponMesh->SetEnableGravity(true);
-		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	}
-	EnableCustomDepth(false);
+	if (WeaponType == EWeaponType::EWT_SubmachineGun)*/
+	// 기관단총 뿐 아니라, 모든 무기에 물리 시뮬레이션 적용
+	WeaponMesh->SetSimulatePhysics(false);	
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	WeaponMesh->SetEnableGravity(true);
+	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+	/*EnableCustomDepth(false);
 
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<AShooterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 	if (BlasterOwnerCharacter && bUseServerSideRewind)
