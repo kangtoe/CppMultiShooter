@@ -14,6 +14,8 @@
 
 void AHitScanWeapon::Fire(const FVector& HitTarget) // shotgun tmp
 { 
+    Super::Fire(HitTarget);
+
     APawn* OwnerPawn = Cast<APawn>(GetOwner());
     if (OwnerPawn == nullptr) return;
     AController* InstigatorController = OwnerPawn->GetController();
