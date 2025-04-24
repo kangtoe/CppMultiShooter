@@ -30,6 +30,8 @@ public:
     void HandleMatchHasStarted();
     void HandleCooldown();
 
+    void SetHUDScope(bool bIsAiming);
+
 protected:
     virtual void BeginPlay() override;    
     void SetHUDTime();

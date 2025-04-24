@@ -43,12 +43,15 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Announcements")
     TSubclassOf<UUserWidget> AnnouncementClass;
-
     UPROPERTY()
-    class UAnnouncement* Announcement;
-
+    class UAnnouncement* Announcement;    
     void AddAnnouncement();
    
+    UPROPERTY(EditAnywhere, Category = "ScopeWidget")
+    TSubclassOf<UUserWidget> ScopeClass;
+    UPROPERTY()
+    class UScopeWidget* ScopeWidget;
+    void AddScopeWidget();
 
 protected:
     virtual void BeginPlay() override;    

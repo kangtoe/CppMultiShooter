@@ -45,6 +45,9 @@ public:
 	void Dropped();
 	void AddAmmo(int32 AmmoToAdd);
 
+	UPROPERTY(EditAnywhere)
+	bool bUseScope;
+
 	/**
 	* Textures for the weapon crosshairs
 	*/

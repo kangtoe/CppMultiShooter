@@ -452,9 +452,9 @@ void AShooterCharacter::OnInputAim(const FInputActionInstance& Instance)
 {
 	if (bDisableGameplay) return;
 	if (!Combat) return;
-	bool Aimed = Instance.GetValue().Get<bool>();
+	bool Aimed = Instance.GetValue().Get<bool>();	
 
-	if (Combat && Aimed)
+	if (Aimed)
 	{
 		Combat->SetAiming(true);
 	}
@@ -470,7 +470,7 @@ void AShooterCharacter::OnInputFire(const FInputActionInstance& Instance)
 	if (!Combat) return;
 	bool fire = Instance.GetValue().Get<bool>();
 
-	if (Combat && fire)
+	if (fire)
 	{
 		Combat->SetFiring(true);
 	}

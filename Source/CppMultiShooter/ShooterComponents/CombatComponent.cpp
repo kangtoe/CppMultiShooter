@@ -276,11 +276,34 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 #pragma region Aim
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
-	bAiming = bIsAiming;
+	if (Character == nullptr || EquippedWeapon == nullptr) return;
+
+	bAiming = bIsAiming;	
+
 	ServerSetAiming(bIsAiming);
 	if (Character)
 	{
 		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
+
+	//
+	if (Character->IsLocallyControlled() && EquippedWeapon->bUseScope)
+	{
+		Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
+		if (Controller)
+		{			
+			Controller->SetHUDScope(bIsAiming);			
+
+			// play aim sound
+			/*if (bIsAiming)
+			{
+				UGameplayStatics::PlaySound2D(this, ZoomInSniperRifle);
+			}
+			else
+			{
+				UGameplayStatics::PlaySound2D(this, ZoomOutSniperRifle);
+			}*/
+		}
 	}
 }
 

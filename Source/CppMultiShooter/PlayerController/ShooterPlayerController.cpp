@@ -16,6 +16,7 @@
 #include "CppMultiShooter/ShooterComponents/CombatComponent.h"
 #include "CppMultiShooter/Weapon/Weapon.h"
 #include "CppMultiShooter/GameState/ShooterGameState.h"
+#include "CppMultiShooter/HUD/ScopeWidget.h"
 
 void AShooterPlayerController::BeginPlay()
 {
@@ -395,6 +396,39 @@ void AShooterPlayerController::HandleCooldown()
         {
             ShooterCharacter->bDisableGameplay = true;
             ShooterCharacter->GetCombat()->SetFiring(false);
+        }
+    }
+}
+
+void AShooterPlayerController::SetHUDScope(bool bIsAiming)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+
+    UE_LOG(LogTemp, Warning, TEXT("bIsAiming: %d"), bIsAiming);
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->ScopeWidget &&
+        ShooterHUD->ScopeWidget->ScopeZoomIn;
+    UE_LOG(LogTemp, Warning, TEXT("bIsAiming: %d"), bIsAiming);
+
+    if (!ShooterHUD->ScopeWidget)
+    {
+        ShooterHUD->AddScopeWidget();
+    }
+
+    if (bHUDValid)
+    {
+        if (bIsAiming)
+        {
+            ShooterHUD->ScopeWidget->PlayAnimation(ShooterHUD->ScopeWidget->ScopeZoomIn);
+        }
+        else
+        {
+            ShooterHUD->ScopeWidget->PlayAnimation(
+                ShooterHUD->ScopeWidget->ScopeZoomIn,
+                0.f,
+                1,
+                EUMGSequencePlayMode::Reverse
+            );
         }
     }
 }

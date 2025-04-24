@@ -5,6 +5,7 @@
 #include "GameFramework/PlayerController.h"
 #include "CharacterOverlay.h"
 #include "Announcement.h"
+#include "ScopeWidget.h"
 
 void AShooterHUD::AddAnnouncement()
 {
@@ -13,6 +14,16 @@ void AShooterHUD::AddAnnouncement()
     {
         Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
         Announcement->AddToViewport();
+    }
+}
+
+void AShooterHUD::AddScopeWidget()
+{
+    APlayerController* PlayerController = GetOwningPlayerController();
+    if (PlayerController && ScopeClass)
+    {
+        ScopeWidget = CreateWidget<UScopeWidget>(PlayerController, ScopeClass);
+        ScopeWidget->AddToViewport();
     }
 }
 
