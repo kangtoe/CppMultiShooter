@@ -267,6 +267,12 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			HUDPackage.CrosshairsColor = FLinearColor::White;
 		}
 
+		// 조준 중 크로스헤어 사라짐
+		if (EquippedWeapon && EquippedWeapon->bUseScope && bAiming)
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::Transparent;
+		}
+
 		// Hit Target 없는 경우를 보완하는 임시 코드
 		if (!TraceHitResult.bBlockingHit) { TraceHitResult.ImpactPoint = End; }
 	}
