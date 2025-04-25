@@ -3,7 +3,6 @@
 
 #include "ProjectileRocket.h"
 #include "Kismet/GameplayStatics.h"
-#include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Sound/SoundCue.h"
 #include "Components/BoxComponent.h"
@@ -13,9 +12,9 @@
 
 AProjectileRocket::AProjectileRocket()
 {
-    RocketMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Rocket Mesh"));
-    RocketMesh->SetupAttachment(RootComponent);
-    RocketMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Rocket Mesh"));
+    ProjectileMesh->SetupAttachment(RootComponent);
+    ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AProjectileRocket::BeginPlay()
@@ -28,18 +27,8 @@ void AProjectileRocket::BeginPlay()
         CollisionBox->IgnoreActorWhenMoving(Owner, true);
     }
 
-    if (TrailSystem)
-    {
-        TrailSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
-            TrailSystem,
-            GetRootComponent(),
-            FName(),
-            GetActorLocation(),
-            GetActorRotation(),
-            EAttachLocation::KeepWorldPosition,
-            false
-        );
-    }
+    SpawnTrailSystem();
+
     if (ProjectileLoop && LoopingSoundAttenuation)
     {
         ProjectileLoopComponent = UGameplayStatics::SpawnSoundAttached(
@@ -59,44 +48,11 @@ void AProjectileRocket::BeginPlay()
     }
 }
 
-void AProjectileRocket::DestroyTimerFinished()
-{
-    Destroy();
-}
-
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-    APawn* FiringPawn = GetInstigator();
-    if (FiringPawn && HasAuthority())
-    {
-        AController* FiringController = FiringPawn->GetController();
-        if (FiringController)
-        {
-            UGameplayStatics::ApplyRadialDamageWithFalloff(
-                this, // World context object
-                Damage, // BaseDamage
-                Damage/4.f, // MinimumDamage
-                GetActorLocation(), // Origin
-                200.f, // DamageInnerRadius
-                500.f, // DamageOuterRadius
-                1.f, // DamageFalloff
-                UDamageType::StaticClass(), // DamageTypeClass
-                TArray<AActor*>(), // IgnoreActors
-                this, // DamageCauser
-                FiringController // InstigatorController
-            );
-        }
-    }    
+{    
+    ExplodeDamage();
 
-    GetWorldTimerManager().SetTimer(
-        DestroyTimer,
-        this,
-        &AProjectileRocket::DestroyTimerFinished,
-        DestroyTime
-    );
-
-    // 충돌 처리 및 추가 파티클 생성 방지
-    ImpactParticles = ImpactObstacleParticles ? ImpactObstacleParticles : ImpactCharacterParticles; // 임시코드 - 캐릭터 적중 여부와 상관없이 파티클 효과 주기
+    // 사운드/매시 비지블/충돌처리/트레일 파티클 생성 비활성화
     if (ImpactParticles)
     {
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, GetActorTransform());
@@ -105,9 +61,9 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
     {
         UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
     }
-    if (RocketMesh)
+    if (ProjectileMesh)
     {
-        RocketMesh->SetVisibility(false);
+        ProjectileMesh->SetVisibility(false);
     }
     if (CollisionBox)
     {
@@ -122,8 +78,9 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
         ProjectileLoopComponent->Stop();
     }
 
-    // dont destroy
+    // 기존 적중 처리와는 다르게, 일정 시간 후 삭제 -> 기존 생성된 파티클/사운드 등이 충분히 사라지도록 유예
     //Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+    StartDestroyTimer();
 }
 
 void AProjectileRocket::Destroyed()
