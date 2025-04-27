@@ -27,13 +27,7 @@ AWeapon::AWeapon()
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	//EnableCustomDepth(true);
-	//WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
-	//WeaponMesh->MarkRenderStateDirty();
-
-	//EnableCustomDepth(true);
-	//WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
-	//WeaponMesh->MarkRenderStateDirty();
+	EnableCustomDepth(true);
 
 	// 클라이언트에서는 상호작용 영역 콜리전 무시 (서버에서만 처리)
 	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
@@ -43,6 +37,16 @@ AWeapon::AWeapon()
 
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(RootComponent);
+}
+
+void AWeapon::EnableCustomDepth(bool bEnable)
+{
+	if (WeaponMesh)
+	{		
+		WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
+		WeaponMesh->MarkRenderStateDirty();
+		WeaponMesh->SetRenderCustomDepth(bEnable);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -185,8 +189,9 @@ void AWeapon::OnEquipped()
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	/*EnableCustomDepth(false);
+	EnableCustomDepth(false);
 
+	/*
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<AShooterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 	if (BlasterOwnerCharacter && bUseServerSideRewind)
 	{
@@ -210,12 +215,10 @@ void AWeapon::OnDropped()
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-
-	/*
-	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
-	WeaponMesh->MarkRenderStateDirty();
+	
 	EnableCustomDepth(true);
 
+	/*
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 	if (BlasterOwnerCharacter)
 	{
