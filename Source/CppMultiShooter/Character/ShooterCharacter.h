@@ -26,6 +26,7 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
+	void PlayThrowMontage();
 	
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
@@ -54,6 +55,8 @@ public:
 	UInputAction* FireAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ReloadAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* ThrowAction;
 
 protected:
 	// Called when the game starts or when spawned
@@ -67,11 +70,12 @@ protected:
 	void OnInputAim(const FInputActionInstance& Instance);
 	void OnInputFire(const FInputActionInstance& Instance);
 	void OnInputReload(const FInputActionInstance& Instance);
+	void OnInputThrow(const FInputActionInstance& Instance);
 
 	void AimOffset(float DeltaTime);
 
 	void PlayHitReactMontage();	
-	void PlayElimMontage();
+	void PlayElimMontage();	
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
@@ -121,6 +125,8 @@ private:
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ElimMontage;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ThrowMontage;
 
 	void HideCameraIfCharacterClose();
 

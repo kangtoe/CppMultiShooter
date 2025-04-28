@@ -31,6 +31,10 @@ public:
 
 	void SetFiring(bool bIsFire);
 
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenadeFinished(); // call in montage?
+
+
 protected:
 	virtual void BeginPlay() override;
 	void SetAiming(bool bIsAiming);
@@ -72,6 +76,14 @@ protected:
 
 	void HandleReload();
 	int32 AmountToReload();
+
+	void ThrowGrenade();
+
+	UFUNCTION(Server, Reliable)
+	void ServerThrowGrenade();
+
+	UFUNCTION()
+	void AnimNotify_FinishThrow();
 
 private:
 	UPROPERTY()

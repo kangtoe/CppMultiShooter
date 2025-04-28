@@ -118,6 +118,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputAim);
 		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputFire);
 		Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputReload);
+		Input->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputThrow);
 	}
 }
 
@@ -195,6 +196,14 @@ void AShooterCharacter::PlayElimMontage()
 	if (AnimInstance && ElimMontage)
 	{
 		AnimInstance->Montage_Play(ElimMontage, 1, EMontagePlayReturnType::MontageLength, 0, true);
+	}
+}
+void AShooterCharacter::PlayThrowMontage()
+{	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ThrowMontage)
+	{		
+		AnimInstance->Montage_Play(ThrowMontage, 1, EMontagePlayReturnType::MontageLength, 0, false);
 	}
 }
 #pragma endregion
@@ -483,11 +492,19 @@ void AShooterCharacter::OnInputFire(const FInputActionInstance& Instance)
 }
 
 void AShooterCharacter::OnInputReload(const FInputActionInstance& Instance)
-{
+{	
 	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		Combat->Reload();
+	}
+}
+
+void AShooterCharacter::OnInputThrow(const FInputActionInstance& Instance)
+{	
+	if (Combat)
+	{
+		Combat->ThrowGrenade();
 	}
 }
 
