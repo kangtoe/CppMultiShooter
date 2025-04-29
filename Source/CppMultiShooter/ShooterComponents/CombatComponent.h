@@ -61,10 +61,11 @@ protected:
 	/*UFUNCTION()
 	void OnRep_SecondaryWeapon();*/
 
-	//void DropEquippedWeapon();
+	void DropEquippedWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
-	void UpdateCarriedAmmo();
-	//void AttachActorToLeftHand(AActor* ActorToAttach);
+	void AttachActorToLeftHand(AActor* ActorToAttach);
+	void AttachActorBasedOnSocket(USceneComponent* SkeletalMeshComp, FName SocketA, FName SocketB, AActor* TargetActor);
+	void UpdateCarriedAmmo();	
 	//void AttachFlagToLeftHand(AWeapon* Flag);
 	//void AttachActorToBackpack(AActor* ActorToAttach);
 
@@ -81,9 +82,6 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void ServerThrowGrenade();
-
-	UFUNCTION()
-	void AnimNotify_FinishThrow();
 
 private:
 	UPROPERTY()

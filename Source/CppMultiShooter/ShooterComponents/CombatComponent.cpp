@@ -75,10 +75,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->Dropped();
-	}	
+	DropEquippedWeapon();
 
 	//if (WeaponToEquip->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
@@ -125,7 +122,7 @@ void UCombatComponent::OnRep_EquippedWeapon()
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
-	//DropEquippedWeapon();
+	DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped); // OnRep_EquippedWeapon()와 중복된 코드 같아 보이나, 리플리케이션은 네트워크 상태에 따라 실행 시간이 달라지기에 명확하게 실행되도록 함
 	AttachActorToRightHand(EquippedWeapon);
@@ -138,13 +135,21 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 {
-	if (EquippedWeapon->EquipSound)
+	if (Character && EquippedWeapon && EquippedWeapon->EquipSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(
 			this,
 			EquippedWeapon->EquipSound,
 			Character->GetActorLocation()
 		);
+	}
+}
+
+void UCombatComponent::DropEquippedWeapon()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
 	}
 }
 
@@ -156,6 +161,48 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 	{
 		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
 	}
+}
+
+void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
+{
+	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr || EquippedWeapon == nullptr) return;
+
+	/*bool bUsePistolSocket =
+		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol ||
+		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SubmachineGun;
+	FName SocketName = bUsePistolSocket ? FName("PistolSocket") : FName("LeftHandSocket");*/
+	FName SocketName = FName("LeftHandSocket");
+
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(SocketName);
+	if (HandSocket)
+	{
+		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
+}
+
+void UCombatComponent::AttachActorBasedOnSocket(USceneComponent* SkeletalMeshComp, FName SocketA, FName SocketB, AActor* TargetActor)
+{
+	if (!SkeletalMeshComp || !TargetActor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid SkeletalMeshComp or TargetActor"));
+		return;
+	}
+
+	// 1. 기준 소켓(SocketA)의 월드 변환 가져오기
+	FTransform SocketATransform = SkeletalMeshComp->GetSocketTransform(SocketA, RTS_World);
+
+	// 2. 붙일 소켓(SocketB)의 로컬 변환 가져오기
+	FTransform SocketBLocalTransform = SkeletalMeshComp->GetSocketTransform(SocketB, RTS_ParentBoneSpace);
+
+	// 3. SocketA 기준으로 SocketB에 붙이기 위한 최종 변환 계산
+	// SocketB를 기준으로 SocketA의 상대 위치를 만들어야 함
+	FTransform FinalTransform = SocketBLocalTransform.GetRelativeTransform(SocketATransform);
+
+	// 4. TargetActor를 SocketB에 붙이기
+	TargetActor->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketB);
+
+	// 5. TargetActor의 위치/회전 맞춰주기
+	TargetActor->SetActorRelativeTransform(FinalTransform);
 }
 
 #pragma endregion
@@ -213,8 +260,7 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 
 void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (EquippedWeapon == nullptr) return;
-	
+	if (EquippedWeapon == nullptr) return;	
 	if (Character && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		Character->PlayFireMontage(bAiming);
@@ -401,11 +447,11 @@ int32 UCombatComponent::AmountToReload()
 void UCombatComponent::ThrowGrenade()
 {	
 	if (CombatState != ECombatState::ECS_Unoccupied) return;	
-
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 	if (Character)
 	{
 		Character->PlayThrowMontage();
+		AttachActorToLeftHand(EquippedWeapon);
 	}
 	if (Character && !Character->HasAuthority())
 	{
@@ -422,9 +468,10 @@ void UCombatComponent::ServerThrowGrenade_Implementation()
 	}
 }
 
-void UCombatComponent::ThrowGrenadeFinished()
+void UCombatComponent::ThrowGrenadeFinished() // 몽타주 노티파이 이벤트에서 호출
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+	AttachActorToRightHand(EquippedWeapon);
 }
 
 void UCombatComponent::OnRep_CombatState()
@@ -445,6 +492,7 @@ void UCombatComponent::OnRep_CombatState()
 			if (Character && !Character->IsLocallyControlled())
 			{
 				Character->PlayThrowMontage();
+				AttachActorToLeftHand(EquippedWeapon);
 			}
 			break;
 	}
@@ -562,6 +610,7 @@ void UCombatComponent::OnRep_CarriedAmmo()
 
 void UCombatComponent::UpdateCarriedAmmo()
 {
+	if (EquippedWeapon == nullptr) return;
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
