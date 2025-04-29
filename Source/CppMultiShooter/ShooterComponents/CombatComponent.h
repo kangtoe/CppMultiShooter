@@ -79,6 +79,9 @@ protected:
 	void HandleReload();
 	int32 AmountToReload();
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AProjectile> GrenadeClass;
+
 	void ThrowGrenade();
 
 	UFUNCTION(Server, Reliable)

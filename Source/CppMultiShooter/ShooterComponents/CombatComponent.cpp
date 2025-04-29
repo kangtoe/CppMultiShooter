@@ -16,6 +16,7 @@
 #include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Sound/SoundCue.h"
+#include "CppMultiShooter/Weapon/Projectile.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -428,7 +429,7 @@ int32 UCombatComponent::AmountToReload()
 
 void UCombatComponent::ThrowGrenade()
 {	
-	if (CombatState != ECombatState::ECS_Unoccupied) return;	
+	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 	if (Character)
 	{
@@ -462,6 +463,24 @@ void UCombatComponent::ThrowGrenadeFinished() // 몽타주 노티파이 이벤�
 void UCombatComponent::LaunchGrenade()
 {
 	ShowAttachedGrenade(false);
+	if (Character && Character->HasAuthority() && GrenadeClass && Character->GetAttachedGrenade())
+	{
+		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
+		FVector ToTarget = HitTarget - StartingLocation;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = Character;
+		SpawnParams.Instigator = Character;
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			World->SpawnActor<AProjectile>(
+				GrenadeClass,
+				StartingLocation,
+				ToTarget.Rotation(),
+				SpawnParams
+			);
+		}
+	}
 }
 
 void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
