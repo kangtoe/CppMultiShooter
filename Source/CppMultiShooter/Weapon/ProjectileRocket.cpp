@@ -24,7 +24,7 @@ void AProjectileRocket::BeginPlay()
     if (!HasAuthority())
     {
         CollisionBox->OnComponentHit.AddDynamic(this, &AProjectileRocket::OnHit);
-        CollisionBox->IgnoreActorWhenMoving(Owner, true);
+        //CollisionBox->IgnoreActorWhenMoving(Owner, true);
     }
 
     SpawnTrailSystem();
@@ -50,6 +50,7 @@ void AProjectileRocket::BeginPlay()
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {    
+    if (OtherActor == Owner) return;
     ExplodeDamage();
 
     // 사운드/매시 비지블/충돌처리/트레일 파티클 생성 비활성화
