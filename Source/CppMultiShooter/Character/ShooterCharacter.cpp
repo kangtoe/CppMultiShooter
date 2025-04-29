@@ -349,6 +349,11 @@ void AShooterCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMapping, 0);
 		}
 	}
+
+	if (AttachedGrenade)
+	{
+		AttachedGrenade->SetVisibility(false);
+	}
 }
 
 void AShooterCharacter::Tick(float DeltaTime)

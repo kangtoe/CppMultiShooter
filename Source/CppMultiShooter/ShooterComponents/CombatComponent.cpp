@@ -434,6 +434,7 @@ void UCombatComponent::ThrowGrenade()
 	{
 		Character->PlayThrowMontage();
 		AttachActorToLeftHand(EquippedWeapon);
+		ShowAttachedGrenade(true);
 	}
 	if (Character && !Character->HasAuthority())
 	{
@@ -447,6 +448,8 @@ void UCombatComponent::ServerThrowGrenade_Implementation()
 	if (Character)
 	{
 		Character->PlayThrowMontage();
+		AttachActorToLeftHand(EquippedWeapon);
+		ShowAttachedGrenade(true);
 	}
 }
 
@@ -454,6 +457,19 @@ void UCombatComponent::ThrowGrenadeFinished() // 몽타주 노티파이 이벤�
 {
 	CombatState = ECombatState::ECS_Unoccupied;
 	AttachActorToRightHand(EquippedWeapon);
+}
+
+void UCombatComponent::LaunchGrenade()
+{
+	ShowAttachedGrenade(false);
+}
+
+void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
+{
+	if (Character && Character->GetAttachedGrenade())
+	{
+		Character->GetAttachedGrenade()->SetVisibility(bShowGrenade);
+	}
 }
 
 void UCombatComponent::OnRep_CombatState()
@@ -475,6 +491,7 @@ void UCombatComponent::OnRep_CombatState()
 			{
 				Character->PlayThrowMontage();
 				AttachActorToLeftHand(EquippedWeapon);
+				ShowAttachedGrenade(true);
 			}
 			break;
 	}
