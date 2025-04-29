@@ -1,5 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#define RIGHT_HAND_SOCKET "RightHandSocket"
+#define LEFT_HAND_SOCKET "LeftHandSocket"
+
 
 #include "CombatComponent.h"
 #include "CppMultiShooter/Weapon/Weapon.h"
@@ -156,7 +159,8 @@ void UCombatComponent::DropEquippedWeapon()
 void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 {
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
+	
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName(RIGHT_HAND_SOCKET));
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
@@ -164,45 +168,23 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 }
 
 void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
-{
-	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr || EquippedWeapon == nullptr) return;
+{	
+	if (Character == nullptr || ActorToAttach == nullptr || EquippedWeapon == nullptr) return;
 
-	/*bool bUsePistolSocket =
-		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol ||
-		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SubmachineGun;
-	FName SocketName = bUsePistolSocket ? FName("PistolSocket") : FName("LeftHandSocket");*/
-	FName SocketName = FName("LeftHandSocket");
+	/* 무기 타입에 따라 다른 소켓을 쓸 수도 있음 */
+	// bool bUsePistolSocket = EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol || EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SubmachineGun;
+	// FName SocketName = bUsePistolSocket ? FName("PistolSocket") : FName("LeftHandSocket");	
 
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(SocketName);
-	if (HandSocket)
-	{
-		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
-	}
-}
+	// 기준 소켓(BaseSocket), 붙일 소켓(TargetSocket)의 월드 변환 얻기
+	FTransform RightSocket = Character->GetMesh()->GetSocketTransform(RIGHT_HAND_SOCKET, RTS_World);
+	FTransform LeftSocket = Character->GetMesh()->GetSocketTransform(LEFT_HAND_SOCKET, RTS_World);
 
-void UCombatComponent::AttachActorBasedOnSocket(USceneComponent* SkeletalMeshComp, FName SocketA, FName SocketB, AActor* TargetActor)
-{
-	if (!SkeletalMeshComp || !TargetActor)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid SkeletalMeshComp or TargetActor"));
-		return;
-	}
+	// 기준 소켓을 TargetSocket 기준으로 맞추기 위한 변환 계산
+	FTransform RelativeTransform = RightSocket.GetRelativeTransform(LeftSocket);
 
-	// 1. 기준 소켓(SocketA)의 월드 변환 가져오기
-	FTransform SocketATransform = SkeletalMeshComp->GetSocketTransform(SocketA, RTS_World);
-
-	// 2. 붙일 소켓(SocketB)의 로컬 변환 가져오기
-	FTransform SocketBLocalTransform = SkeletalMeshComp->GetSocketTransform(SocketB, RTS_ParentBoneSpace);
-
-	// 3. SocketA 기준으로 SocketB에 붙이기 위한 최종 변환 계산
-	// SocketB를 기준으로 SocketA의 상대 위치를 만들어야 함
-	FTransform FinalTransform = SocketBLocalTransform.GetRelativeTransform(SocketATransform);
-
-	// 4. TargetActor를 SocketB에 붙이기
-	TargetActor->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketB);
-
-	// 5. TargetActor의 위치/회전 맞춰주기
-	TargetActor->SetActorRelativeTransform(FinalTransform);
+	// 실제 TargetSocket에 Actor 붙이기
+	ActorToAttach->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LEFT_HAND_SOCKET);
+	ActorToAttach->SetActorRelativeTransform(RelativeTransform);
 }
 
 #pragma endregion

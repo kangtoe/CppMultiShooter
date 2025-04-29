@@ -63,8 +63,7 @@ protected:
 
 	void DropEquippedWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
-	void AttachActorToLeftHand(AActor* ActorToAttach);
-	void AttachActorBasedOnSocket(USceneComponent* SkeletalMeshComp, FName SocketA, FName SocketB, AActor* TargetActor);
+	void AttachActorToLeftHand(AActor* ActorToAttach);	
 	void UpdateCarriedAmmo();	
 	//void AttachFlagToLeftHand(AWeapon* Flag);
 	//void AttachActorToBackpack(AActor* ActorToAttach);
