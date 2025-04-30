@@ -464,10 +464,18 @@ void UCombatComponent::ThrowGrenadeFinished() // 몽타주 노티파이 이벤�
 void UCombatComponent::LaunchGrenade()
 {
 	ShowAttachedGrenade(false);
-	if (Character && Character->HasAuthority() && GrenadeClass && Character->GetAttachedGrenade())
+	if (Character && Character->IsLocallyControlled())
+	{
+		ServerLaunchGrenade(HitTarget);
+	}
+}
+
+void UCombatComponent::ServerLaunchGrenade_Implementation(const FVector_NetQuantize& Target)
+{
+	if (Character && GrenadeClass && Character->GetAttachedGrenade()) 
 	{
 		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
-		FVector ToTarget = HitTarget - StartingLocation;
+		FVector ToTarget = Target - StartingLocation;
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = Character;
 		SpawnParams.Instigator = Character;
@@ -487,7 +495,7 @@ void UCombatComponent::LaunchGrenade()
 				Grenade->GetCollisionComponent()->IgnoreActorWhenMoving(SpawnParams.Owner, true);
 			}
 		}
-	}
+	}	
 }
 
 void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
