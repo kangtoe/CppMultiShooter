@@ -29,6 +29,18 @@ protected:
 
     UPROPERTY(EditAnywhere)
     USoundAttenuation* LoopingSoundAttenuation;
+    
+    UPROPERTY(EditAnywhere)
+    bool bExplodAsTimer = false;
+
+    UPROPERTY(EditAnywhere)
+    float ExplodeTime = 3.f;
+
+    FTimerHandle ExplodeTimer;
+
+    void Explode();
+    void StartExplodeTimer();
+    void ExplodeTimerFinished();
 
 private:
 };

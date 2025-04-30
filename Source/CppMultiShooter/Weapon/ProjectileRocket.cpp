@@ -46,11 +46,23 @@ void AProjectileRocket::BeginPlay()
             false
         );
     }
+
+    if (bExplodAsTimer) StartExplodeTimer();
 }
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {    
     if (OtherActor == Owner) return;
+    if(!bExplodAsTimer) Explode();
+}
+
+void AProjectileRocket::Destroyed()
+{
+    // override to do nothing
+}
+
+void AProjectileRocket::Explode()
+{
     ExplodeDamage();
 
     // 사운드/매시 비지블/충돌처리/트레일 파티클 생성 비활성화
@@ -84,8 +96,17 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
     StartDestroyTimer();
 }
 
-void AProjectileRocket::Destroyed()
+void AProjectileRocket::StartExplodeTimer()
 {
-
+    GetWorldTimerManager().SetTimer(
+        ExplodeTimer,
+        this,
+        &AProjectileRocket::ExplodeTimerFinished,
+        ExplodeTime
+    );
 }
 
+void AProjectileRocket::ExplodeTimerFinished()
+{
+    Explode();
+}
