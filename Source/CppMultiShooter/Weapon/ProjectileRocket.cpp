@@ -24,7 +24,7 @@ void AProjectileRocket::BeginPlay()
     if (!HasAuthority())
     {
         CollisionBox->OnComponentHit.AddDynamic(this, &AProjectileRocket::OnHit);
-        //CollisionBox->IgnoreActorWhenMoving(Owner, true);
+        CollisionBox->IgnoreActorWhenMoving(Owner, true);               
     }
 
     SpawnTrailSystem();
@@ -51,8 +51,7 @@ void AProjectileRocket::BeginPlay()
 }
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{    
-    if (OtherActor == Owner) return;
+{
     if(!bExplodAsTimer) Explode();
 }
 

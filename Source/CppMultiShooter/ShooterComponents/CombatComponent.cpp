@@ -9,6 +9,7 @@
 #include "CppMultiShooter/Character/ShooterCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -473,12 +474,18 @@ void UCombatComponent::LaunchGrenade()
 		UWorld* World = GetWorld();
 		if (World)
 		{
-			World->SpawnActor<AProjectile>(
+			AProjectile* Grenade = World->SpawnActor<AProjectile>(
 				GrenadeClass,
 				StartingLocation,
 				ToTarget.Rotation(),
 				SpawnParams
 			);
+			if (Grenade) // 던진 수류탄이 자신과 충돌하는 것 방지
+			{
+				FCollisionQueryParams QueryParams;
+				QueryParams.AddIgnoredActor(SpawnParams.Owner);
+				Grenade->GetCollisionComponent()->IgnoreActorWhenMoving(SpawnParams.Owner, true);
+			}
 		}
 	}
 }

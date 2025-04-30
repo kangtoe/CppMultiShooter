@@ -33,7 +33,7 @@ protected:
     float Damage = 20.f;
 
     UPROPERTY(EditAnywhere)
-    class UBoxComponent* CollisionBox;
+    class UPrimitiveComponent* CollisionBox;
 
     UPROPERTY(EditAnywhere)
     class UNiagaraSystem* TrailSystem;
@@ -74,4 +74,5 @@ private:
     class UParticleSystemComponent* TracerComponent;
 
 public:
+    FORCEINLINE UPrimitiveComponent* GetCollisionComponent() { return CollisionBox; }
 };
