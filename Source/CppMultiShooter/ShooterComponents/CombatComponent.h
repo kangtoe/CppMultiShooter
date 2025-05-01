@@ -170,4 +170,16 @@ private:
 	void UpdateAmmoValues();
 
 	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
+		
+	UPROPERTY(EditAnywhere)
+	int32 MaxGrenades = 4;
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Grenades)
+	int32 Grenades = 1;	
+
+	void UpdateHUDGrenades();
+	UFUNCTION()
+	void OnRep_Grenades();
+
+public:
+	FORCEINLINE int32 GetGrenades() const { return Grenades; }
 };

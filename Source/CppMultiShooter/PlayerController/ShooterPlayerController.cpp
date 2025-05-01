@@ -34,6 +34,7 @@ void AShooterPlayerController::OnPossess(APawn* InPawn)
     if (ShooterCharacter)
     {
         SetHUDHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth()); // update health HUD
+        SetHUDGrenades(ShooterCharacter->GetCombat()->GetGrenades());
     }
 }
 
@@ -193,6 +194,19 @@ void AShooterPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 
         FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
         ShooterHUD->Announcement->WarmupTime->SetText(FText::FromString(CountdownText));
+    }
+}
+
+void AShooterPlayerController::SetHUDGrenades(int32 Grenades)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->GrenadesText;
+    if (bHUDValid)
+    {
+        FString GrenadesText = FString::Printf(TEXT("%d"), Grenades);
+        ShooterHUD->CharacterOverlay->GrenadesText->SetText(FText::FromString(GrenadesText));
     }
 }
 
