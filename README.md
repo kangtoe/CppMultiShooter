@@ -16,6 +16,6 @@
 - match state 리플리케이션 관련 코드 리펙토링 권장 - [링크](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31686162#questions)
 - 무기 장비 중 쿨다운 상태 진입시, 크로스헤어 UI가 사라지지 않는 문제 ( UCombatComponent::SetHUDCrosshairs()에서 game state 검사 로직 추가 고려)
 - 1인칭 시점 크로스헤어 스타일 - [참조](https://discord.com/channels/807733033192390676/955151938582876170/1335061468835610804)
-- 반동 구현하기 - [참조](https://discord.com/channels/807733033192390676/955151938582876170/1261158551577956452)
+- 반동 구현하기 - [참조](https://discord.com/channels/807733033192390676/955151938582876170/1261158551577956452), [참조2](https://mstone8370.tistory.com/37?category=1118176)
 - 무기를 캐릭터 크기에 맞게 비율 조절하기(약 1.5배 적절해보임)
 - 산탄총 개별 장전 모션마다 실제 1발씩 장전하도록 적용하기
