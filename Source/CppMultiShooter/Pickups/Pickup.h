@@ -42,6 +42,12 @@ private:
     UPROPERTY(EditAnywhere)
     float BaseTurnRate = 45.f;
 
+    UPROPERTY(VisibleAnywhere)
+    class UNiagaraComponent* PickupEffectComponent;
+
+    UPROPERTY(EditAnywhere)
+    class UNiagaraSystem* PickupEffect;
+
 public:
 
 };

@@ -6,7 +6,8 @@
 #include "Sound/SoundCue.h"
 #include "Components/SphereComponent.h"
 #include "CppMultiShooter/Weapon/WeaponTypes.h"
-
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 APickup::APickup()
 {
@@ -30,6 +31,9 @@ APickup::APickup()
 
     OverlapSphere->AddLocalOffset(FVector(0.f, 0.f, 85.f));
     PickupMesh->SetRelativeScale3D(FVector(3.f, 3.f, 3.f));
+
+    PickupEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PickupEffectComponent"));
+    PickupEffectComponent->SetupAttachment(RootComponent);
 }
 
 void APickup::BeginPlay()
@@ -67,6 +71,15 @@ void APickup::Destroyed()
             this,
             PickupSound,
             GetActorLocation()
+        );
+    }
+    if (PickupEffect)
+    {
+        UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+            this,
+            PickupEffect,
+            GetActorLocation(),
+            GetActorRotation()
         );
     }
 }
