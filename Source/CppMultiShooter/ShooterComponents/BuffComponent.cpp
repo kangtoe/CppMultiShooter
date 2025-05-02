@@ -3,6 +3,7 @@
 
 #include "BuffComponent.h"
 #include "CppMultiShooter/Character/ShooterCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UBuffComponent::UBuffComponent()
 {
@@ -21,6 +22,7 @@ void UBuffComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
     HealRampUp(DeltaTime);
 }
 
+#pragma region Heal
 void UBuffComponent::Heal(float HealAmount, float HealingTime)
 {
     bHealing = true;
@@ -45,3 +47,46 @@ void UBuffComponent::HealRampUp(float DeltaTime)
         return;
     }
 }
+#pragma endregion
+
+#pragma region speed
+void UBuffComponent::SetInitialSpeeds(float BaseSpeed, float CrouchSpeed)
+{
+    InitialBaseSpeed = BaseSpeed;
+    InitialCrouchSpeed = CrouchSpeed;
+}
+
+void UBuffComponent::BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float BuffTime)
+{
+    if (Character == nullptr) return;
+
+    Character->GetWorldTimerManager().SetTimer(
+        SpeedBuffTimer,
+        this,
+        &UBuffComponent::ResetSpeeds,
+        BuffTime
+    );
+
+    if (Character->GetCharacterMovement())
+    {
+        Character->GetCharacterMovement()->MaxWalkSpeed = BuffBaseSpeed;
+        Character->GetCharacterMovement()->MaxWalkSpeedCrouched = BuffCrouchSpeed;
+    }
+    MulticastSpeedBuff(BuffBaseSpeed, BuffCrouchSpeed);
+}
+
+void UBuffComponent::ResetSpeeds()
+{
+    if (Character == nullptr || Character->GetCharacterMovement() == nullptr) return;
+
+    Character->GetCharacterMovement()->MaxWalkSpeed = InitialBaseSpeed;
+    Character->GetCharacterMovement()->MaxWalkSpeedCrouched = InitialCrouchSpeed;
+    MulticastSpeedBuff(InitialBaseSpeed, InitialCrouchSpeed);
+}
+
+void UBuffComponent::MulticastSpeedBuff_Implementation(float BaseSpeed, float CrouchSpeed)
+{
+    Character->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
+    Character->GetCharacterMovement()->MaxWalkSpeedCrouched = CrouchSpeed;
+}
+#pragma endregion

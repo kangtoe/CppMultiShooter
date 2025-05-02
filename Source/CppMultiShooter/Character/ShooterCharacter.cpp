@@ -92,11 +92,11 @@ void AShooterCharacter::PostInitializeComponents()
 	if (Buff)
 	{
 		Buff->Character = this;
-		/*Buff->SetInitialSpeeds(
+		Buff->SetInitialSpeeds(
 			GetCharacterMovement()->MaxWalkSpeed,
 			GetCharacterMovement()->MaxWalkSpeedCrouched
 		);
-		Buff->SetInitialJumpVelocity(GetCharacterMovement()->JumpZVelocity);*/
+		//Buff->SetInitialJumpVelocity(GetCharacterMovement()->JumpZVelocity);
 	}
 	/*
 	if (LagCompensation)
