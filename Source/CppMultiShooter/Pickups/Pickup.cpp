@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Components/SphereComponent.h"
+#include "CppMultiShooter/Weapon/WeaponTypes.h"
 
 
 APickup::APickup()
@@ -19,13 +20,16 @@ APickup::APickup()
     OverlapSphere->SetSphereRadius(150.f);
     OverlapSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     OverlapSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-    OverlapSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+    OverlapSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);    
 
     PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
     PickupMesh->SetupAttachment(OverlapSphere);
     PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    PickupMesh->SetRenderCustomDepth(true);               // Custom Depth 렌더링 활성화
-    PickupMesh->CustomDepthStencilValue = 250;              // 사용할 스텐실 값 설정 (0~255)    
+    PickupMesh->SetRenderCustomDepth(true);
+    PickupMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+
+    OverlapSphere->AddLocalOffset(FVector(0.f, 0.f, 85.f));
+    PickupMesh->SetRelativeScale3D(FVector(3.f, 3.f, 3.f));
 }
 
 void APickup::BeginPlay()
@@ -47,6 +51,10 @@ void APickup::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    if (OverlapSphere)
+    {
+        OverlapSphere->AddWorldRotation(FRotator(0.f, BaseTurnRate * DeltaTime, 0.f));
+    }
 }
 
 void APickup::Destroyed()
