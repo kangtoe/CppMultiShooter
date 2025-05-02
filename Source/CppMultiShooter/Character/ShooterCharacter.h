@@ -153,7 +153,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxShield = 100.f;
 	UPROPERTY(ReplicatedUsing = OnRep_Shield, VisibleAnywhere, Category = "Player Stats")
-	float Shield = 100.f;
+	float Shield = 0.f;
 	UFUNCTION()
 	void OnRep_Shield(float LastShield);
 
@@ -225,6 +225,7 @@ public:
 	
 	FORCEINLINE float GetShield() const { return Shield; }
 	FORCEINLINE float GetMaxShield() const { return MaxShield; }
+	FORCEINLINE void SetShield(float Amount) { Shield = Amount; UpdateHUDShield(); }
 	
 	ECombatState GetCombatState() const;
 	
