@@ -42,6 +42,19 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	//DOREPLIFETIME(UCombatComponent, bHoldingTheFlag);
 }
 
+void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
+{
+	if (CarriedAmmoMap.Contains(WeaponType))
+	{
+		CarriedAmmoMap[WeaponType] = FMath::Clamp(CarriedAmmoMap[WeaponType] + AmmoAmount, 0, 999); // TODO: 999 -> MaxCarriedAmmo
+		UpdateCarriedAmmo();
+	}
+	if (EquippedWeapon && EquippedWeapon->GetWeaponType() == WeaponType)
+	{
+		ReloadEmptyWeapon();
+	}
+}
+
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
