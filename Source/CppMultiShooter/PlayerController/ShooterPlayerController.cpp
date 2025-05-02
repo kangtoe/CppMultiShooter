@@ -24,7 +24,7 @@ void AShooterPlayerController::BeginPlay()
 
     ShooterHUD = Cast<AShooterHUD>(GetHUD());
     
-    ServerCheckMatchState();
+    ServerCheckMatchState();    
 }
 
 void AShooterPlayerController::OnPossess(APawn* InPawn)
@@ -34,7 +34,23 @@ void AShooterPlayerController::OnPossess(APawn* InPawn)
     if (ShooterCharacter)
     {
         SetHUDHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth()); // update health HUD
+        SetHUDShield(ShooterCharacter->GetShield(), ShooterCharacter->GetMaxShield());
         SetHUDGrenades(ShooterCharacter->GetCombat()->GetGrenades());
+        SetHUDScore(HUDScore);
+        SetHUDDefeats(HUDDefeats);
+    }
+}
+
+void AShooterPlayerController::OnRep_Pawn()
+{
+    AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
+    if (ShooterCharacter)
+    {
+        SetHUDHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth()); // update health HUD
+        SetHUDShield(ShooterCharacter->GetShield(), ShooterCharacter->GetMaxShield());
+        SetHUDGrenades(ShooterCharacter->GetCombat()->GetGrenades());
+        SetHUDScore(HUDScore);
+        SetHUDDefeats(HUDDefeats);
     }
 }
 
@@ -53,6 +69,8 @@ void AShooterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
     DOREPLIFETIME(AShooterPlayerController, MatchState);
 }
 
+
+
 void AShooterPlayerController::SetHUDScore(float Score)
 {
     ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
@@ -65,8 +83,7 @@ void AShooterPlayerController::SetHUDScore(float Score)
         ShooterHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
     }
     else
-    {
-        bInitializeCharacterOverlay = true;
+    {        
         HUDScore = Score;
     }
 }
@@ -83,8 +100,7 @@ void AShooterPlayerController::SetHUDDefeats(int32 Defeats)
         ShooterHUD->CharacterOverlay->DefeatsAmount->SetText(FText::FromString(DefeatsText));
     }
     else
-    {
-        bInitializeCharacterOverlay = true;
+    {        
         HUDDefeats = Defeats;
     }
 }
@@ -132,10 +148,30 @@ void AShooterPlayerController::SetHUDHealth(float Health, float MaxHealth)
         ShooterHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
     }
     else
-    {
-        bInitializeCharacterOverlay = true;
+    {     
         HUDHealth = Health;
         HUDMaxHealth = MaxHealth;
+    }
+}
+
+void AShooterPlayerController::SetHUDShield(float Shield, float MaxShield)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->ShieldBar &&
+        ShooterHUD->CharacterOverlay->ShieldText;
+    if (bHUDValid)
+    {
+        const float ShieldPercent = Shield / MaxShield;
+        ShooterHUD->CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
+        FString ShieldText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Shield), FMath::CeilToInt(MaxShield));
+        ShooterHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));
+    }
+    else
+    {        
+        HUDShield = Shield;
+        HUDMaxShield = MaxShield;
     }
 }
 
@@ -231,23 +267,6 @@ void AShooterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 
         FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
         ShooterHUD->CharacterOverlay->MatchCountdownText->SetText(FText::FromString(CountdownText));
-    }
-}
-
-void AShooterPlayerController::PollInit()
-{
-    if (CharacterOverlay == nullptr)
-    {
-        if (ShooterHUD && ShooterHUD->CharacterOverlay)
-        {
-            CharacterOverlay = ShooterHUD->CharacterOverlay;
-            if (CharacterOverlay)
-            {
-                SetHUDHealth(HUDHealth, HUDMaxHealth);
-                SetHUDScore(HUDScore);
-                SetHUDDefeats(HUDDefeats);
-            }
-        }
     }
 }
 

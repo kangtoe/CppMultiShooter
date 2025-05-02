@@ -13,6 +13,7 @@ class CPPMULTISHOOTER_API AShooterPlayerController : public APlayerController
     GENERATED_BODY()
 public:
     void SetHUDHealth(float Health, float MaxHealth);
+    void SetHUDShield(float Shield, float MaxShield);
     void SetHUDScore(float Score);
     void SetHUDDefeats(int32 Defeats);
     void SetHUDWeaponAmmo(int32 Ammo);
@@ -22,8 +23,9 @@ public:
     void SetHUDGrenades(int32 Grenades);
 
     virtual void OnPossess(APawn* InPawn) override;
+    virtual void OnRep_Pawn() override;
     virtual void Tick(float DeltaTime) override;
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;    
 
     virtual float GetServerTime(); // Synced with server world clock
     virtual void ReceivedPlayer() override; // Sync with server clock as soon as possible
@@ -36,7 +38,6 @@ public:
 protected:
     virtual void BeginPlay() override;    
     void SetHUDTime();
-    void PollInit();
 
     /**
     * Sync time between client and server
@@ -74,11 +75,12 @@ private:
     void OnRep_MatchState();
 
     UPROPERTY()
-    class UCharacterOverlay* CharacterOverlay;
-    bool bInitializeCharacterOverlay = false;
+    class UCharacterOverlay* CharacterOverlay;    
 
     float HUDHealth;
     float HUDMaxHealth;
+    float HUDShield;
+    float HUDMaxShield;
     float HUDScore;
     int32 HUDDefeats;
 };
