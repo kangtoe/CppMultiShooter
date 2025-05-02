@@ -10,6 +10,7 @@
 #include "Net/UnrealNetwork.h"
 #include "CppMultiShooter/Weapon/Weapon.h"
 #include "CppMultiShooter/ShooterComponents/CombatComponent.h"
+#include "CppMultiShooter/ShooterComponents/BuffComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ShooterAnimInstance.h"
@@ -49,6 +50,9 @@ AShooterCharacter::AShooterCharacter()
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
 
+	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	Buff->SetIsReplicated(true);
+
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
@@ -85,15 +89,16 @@ void AShooterCharacter::PostInitializeComponents()
 	{
 		Combat->Character = this;
 	}
-	/*if (Buff)
+	if (Buff)
 	{
 		Buff->Character = this;
-		Buff->SetInitialSpeeds(
+		/*Buff->SetInitialSpeeds(
 			GetCharacterMovement()->MaxWalkSpeed,
 			GetCharacterMovement()->MaxWalkSpeedCrouched
 		);
-		Buff->SetInitialJumpVelocity(GetCharacterMovement()->JumpZVelocity);
+		Buff->SetInitialJumpVelocity(GetCharacterMovement()->JumpZVelocity);*/
 	}
+	/*
 	if (LagCompensation)
 	{
 		LagCompensation->Character = this;
@@ -101,7 +106,8 @@ void AShooterCharacter::PostInitializeComponents()
 		{
 			LagCompensation->Controller = Cast<ABlasterPlayerController>(Controller);
 		}
-	}*/
+	}
+	*/
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
