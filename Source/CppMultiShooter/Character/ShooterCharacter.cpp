@@ -610,15 +610,15 @@ void AShooterCharacter::UpdateHUDAmmo()
 	if (ShooterPlayerController && Combat)
 	{
 		if (Combat->EquippedWeapon)
-		{
+		{						
 			ShooterPlayerController->SetHUDCarriedAmmo(Combat->CarriedAmmo);
 			ShooterPlayerController->SetHUDWeaponAmmo(Combat->EquippedWeapon->GetAmmo());
 		}
-		else
+		/*else
 		{
 			ShooterPlayerController->SetHUDCarriedAmmo(-1);
 			ShooterPlayerController->SetHUDWeaponAmmo(-1);
-		}
+		}*/
 	}
 }
 
