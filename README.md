@@ -20,3 +20,4 @@
 - 무기를 캐릭터 크기에 맞게 비율 조절하기(약 1.5배 적절해보임)
 - 산탄총 개별 장전 모션마다 실제 1발씩 장전하도록 적용하기
 - 플레이어 캐릭터 리스폰 시 ammo 관련 hud 초기화
+- 재장전 애니메이션이 멀티플레이에서 정상 동작하는 지 확인하고 문제 잇는 경우 개선 - [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31975848#questions/18778318)

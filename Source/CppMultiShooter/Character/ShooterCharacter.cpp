@@ -59,7 +59,7 @@ AShooterCharacter::AShooterCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
-	// 클라이언트가 (카메라에 안 보여도) 다른 캐릭터 애니메이션 계산을 항상 수행하도록 함
+	// 클라이언트가 (카메라에 안 보여도) 다른 클라이언트의 캐릭터 애니메이션 계산을 항상 수행하도록 함
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 850.f, 0.f);
