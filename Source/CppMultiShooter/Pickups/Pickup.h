@@ -28,6 +28,8 @@ protected:
         const FHitResult& SweepResult
     );
 
+    virtual void OnOverlap(class AShooterCharacter* ShooterCharacter);
+
 private:
 
     UPROPERTY(EditAnywhere)
@@ -47,6 +49,12 @@ private:
 
     UPROPERTY(EditAnywhere)
     class UNiagaraSystem* PickupEffect;
+
+    FTimerHandle BindOverlapTimer;
+    float BindOverlapTime = 0.1f;
+    void BindOverlapTimerFinished();
+
+    AActor* GetClosestActor(const TArray<AActor*> PlayersToCheck) const;
 
 public:
 

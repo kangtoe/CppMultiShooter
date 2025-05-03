@@ -8,6 +8,7 @@
 #include "CppMultiShooter/Weapon/WeaponTypes.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "CppMultiShooter/Character/ShooterCharacter.h"
 
 APickup::APickup()
 {
@@ -42,13 +43,65 @@ void APickup::BeginPlay()
 
     if (HasAuthority())
     {
-        OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnSphereOverlap);
+        GetWorldTimerManager().SetTimer(
+            BindOverlapTimer,
+            this,
+            &APickup::BindOverlapTimerFinished,
+            BindOverlapTime
+        );
     }
 }
 
 void APickup::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+    AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
+    if (ShooterCharacter)
+    {
+        OnOverlap(ShooterCharacter);
+    }
+}
 
+void APickup::OnOverlap(AShooterCharacter* ShooterCharacter)
+{
+}
+
+void APickup::BindOverlapTimerFinished()
+{    
+    GetWorldTimerManager().ClearTimer(BindOverlapTimer);
+    OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnSphereOverlap);    
+
+    if (HasAuthority())
+    {
+        TArray<AActor*> OverlappingActors;
+        GetOverlappingActors(OverlappingActors, AShooterCharacter::StaticClass());           
+
+        AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetClosestActor(OverlappingActors));
+        if (ShooterCharacter)
+        {
+            OnOverlap(ShooterCharacter);
+        }
+    }
+}
+
+AActor* APickup::GetClosestActor(const TArray<AActor*> PlayersToCheck) const
+{
+    AActor* ClosestPlayer = nullptr;
+    float minDist = OverlapSphere->GetScaledSphereRadius();
+
+    for (AActor* PlayerToCheck : PlayersToCheck)
+    {
+        if (PlayerToCheck)
+        {
+            const float checkDist = (GetActorLocation() - PlayerToCheck->GetActorLocation()).Length();
+            if (checkDist < minDist)
+            {
+                ClosestPlayer = PlayerToCheck;
+                minDist = checkDist;
+            }
+        }
+    }
+
+    return ClosestPlayer;
 }
 
 void APickup::Tick(float DeltaTime)
@@ -64,6 +117,7 @@ void APickup::Tick(float DeltaTime)
 void APickup::Destroyed()
 {
     Super::Destroyed();
+    OverlapSphere->OnComponentBeginOverlap.RemoveDynamic(this, &APickup::APickup::OnSphereOverlap); // 함수 중복 호출 방지
 
     if (PickupSound)
     {
