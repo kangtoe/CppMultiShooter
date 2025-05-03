@@ -136,14 +136,14 @@ void AWeapon::OnRep_Ammo()
 void AWeapon::OnRep_Owner()
 {
 	Super::OnRep_Owner();
-	if (Owner == nullptr)
+	ShooterOwnerCharacter = ShooterOwnerCharacter == nullptr ? Cast<AShooterCharacter>(GetOwner()) : ShooterOwnerCharacter;
+	if (ShooterOwnerCharacter)
 	{
-		ShooterOwnerCharacter = nullptr;
-		ShooterOwnerController = nullptr;
-	}
-	else
-	{
-		SetHUDAmmo();
+		ShooterOwnerController = ShooterOwnerController == nullptr ? Cast<AShooterPlayerController>(ShooterOwnerCharacter->Controller) : ShooterOwnerController;
+		if (ShooterOwnerController)
+		{
+			SetHUDAmmo();
+		}
 	}
 }
 
