@@ -57,6 +57,8 @@ public:
 	UInputAction* ReloadAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ThrowAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* SwapAction;
 
 	void UpdateHUDHealth();
 	void UpdateHUDShield();
@@ -77,7 +79,8 @@ protected:
 	void OnInputAim(const FInputActionInstance& Instance);
 	void OnInputFire(const FInputActionInstance& Instance);
 	void OnInputReload(const FInputActionInstance& Instance);
-	void OnInputThrow(const FInputActionInstance& Instance);
+	void OnInputThrow(const FInputActionInstance& Instance);	
+	void OnInputSwap(const FInputActionInstance& Instance);
 
 	void AimOffset(float DeltaTime);
 
@@ -113,6 +116,8 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerOnInputEquip();
+	UFUNCTION(Server, Reliable)
+	void ServerOnInputSwap();
 
 	float AO_Yaw;
 	float InterpAO_Yaw;

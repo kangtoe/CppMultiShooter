@@ -166,7 +166,7 @@ void AWeapon::OnWeaponStateSet()
 		OnEquipped();
 		break;
 	case EWeaponState::EWS_EquippedSecondary:
-		OnEquippedSecondary();
+		OnEquipped();
 		break;
 	case EWeaponState::EWS_Dropped:
 		OnDropped();
@@ -219,35 +219,6 @@ void AWeapon::OnDropped()
 	EnableCustomDepth(true);
 
 	/*
-	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
-	if (BlasterOwnerCharacter)
-	{
-		BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->Controller) : BlasterOwnerController;
-		if (BlasterOwnerController && HasAuthority() && BlasterOwnerController->HighPingDelegate.IsBound())
-		{
-			BlasterOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
-		}
-	}*/
-}
-
-void AWeapon::OnEquippedSecondary()
-{
-	/*ShowPickupWidget(false);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh->SetSimulatePhysics(false);
-	WeaponMesh->SetEnableGravity(false);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	if (WeaponType == EWeaponType::EWT_SubmachineGun)
-	{
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		WeaponMesh->SetEnableGravity(true);
-		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	}
-	if (WeaponMesh)
-	{
-		WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_TAN);
-		WeaponMesh->MarkRenderStateDirty();
-	}
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 	if (BlasterOwnerCharacter)
 	{

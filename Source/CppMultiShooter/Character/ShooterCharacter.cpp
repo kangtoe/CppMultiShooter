@@ -132,6 +132,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputFire);
 		Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputReload);
 		Input->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputThrow);
+		Input->BindAction(SwapAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputSwap);
 	}
 }
 
@@ -505,6 +506,16 @@ void AShooterCharacter::OnInputThrow(const FInputActionInstance& Instance)
 	{
 		Combat->ThrowGrenade();
 	}
+}
+
+void AShooterCharacter::OnInputSwap(const FInputActionInstance& Instance)
+{
+	ServerOnInputSwap();
+}
+
+void AShooterCharacter::ServerOnInputSwap_Implementation()
+{
+	if (Combat) Combat->SwapWeapons();
 }
 
 #pragma endregion

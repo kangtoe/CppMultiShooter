@@ -88,7 +88,7 @@ protected:
 	virtual void OnWeaponStateSet();
 	virtual void OnEquipped();
 	virtual void OnDropped();
-	virtual void OnEquippedSecondary();
+	//virtual void OnEquippedSecondary();
 
 	UFUNCTION()
 	virtual void OnSphereOverlap(
