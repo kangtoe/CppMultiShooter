@@ -6,7 +6,7 @@
 
 APickupSpawnPoint::APickupSpawnPoint()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
     bReplicates = true;
 }
 
@@ -50,9 +50,4 @@ void APickupSpawnPoint::StartSpawnPickupTimer(AActor* DestroyedActor)
     );
 }
 
-void APickupSpawnPoint::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-
-}
 

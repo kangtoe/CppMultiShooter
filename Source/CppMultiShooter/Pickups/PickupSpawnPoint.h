@@ -12,8 +12,7 @@ class CPPMULTISHOOTER_API APickupSpawnPoint : public AActor
 	GENERATED_BODY()
 	
 public:
-    APickupSpawnPoint();
-    virtual void Tick(float DeltaTime) override;
+    APickupSpawnPoint();    
 
 protected:
     virtual void BeginPlay() override;
