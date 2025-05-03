@@ -92,21 +92,24 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
-	DropEquippedWeapon();
+	if (CombatState != ECombatState::ECS_Unoccupied) return;	
 
 	//if (WeaponToEquip->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
 		//Character->Crouch();
 		//bHoldingTheFlag = true;
-		WeaponToEquip->SetWeaponState(EWeaponState::EWS_Equipped);
+		//WeaponToEquip->SetWeaponState(EWeaponState::EWS_Equipped);
 		//AttachFlagToLeftHand(WeaponToEquip);
-		WeaponToEquip->SetOwner(Character);
+		//WeaponToEquip->SetOwner(Character);
 		//TheFlag = WeaponToEquip;
 	}
-	/*else
+	//else
 	{
-		if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
+		if (EquippedWeapon == nullptr)
+		{
+			EquipPrimaryWeapon(WeaponToEquip);
+		}
+		else if (SecondaryWeapon == nullptr)			
 		{
 			EquipSecondaryWeapon(WeaponToEquip);
 		}
@@ -117,11 +120,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
-	}*/
-
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	Character->bUseControllerRotationYaw = true;
-	EquipPrimaryWeapon(WeaponToEquip);
+	}	
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -132,11 +131,11 @@ void UCombatComponent::OnRep_EquippedWeapon()
 		AttachActorToRightHand(EquippedWeapon);
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
-		PlayEquipWeaponSound(EquippedWeapon);
-		//EquippedWeapon->EnableCustomDepth(false);
+		PlayEquipWeaponSound(EquippedWeapon);		
 		EquippedWeapon->SetHUDAmmo();
 	}
 }
+
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
@@ -151,13 +150,45 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 	ReloadEmptyWeapon();
 }
 
+void UCombatComponent::EquipSecondaryWeapon(AWeapon* WeaponToEquip)
+{
+	if (WeaponToEquip == nullptr) return;
+	SecondaryWeapon = WeaponToEquip;
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	AttachActorToBackpack(WeaponToEquip);
+	PlayEquipWeaponSound(WeaponToEquip);
+	if (SecondaryWeapon->GetWeaponMesh())
+	{
+		SecondaryWeapon->GetWeaponMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_TAN);
+		SecondaryWeapon->GetWeaponMesh()->MarkRenderStateDirty();
+	}
+
+	if (EquippedWeapon == nullptr) return;
+	EquippedWeapon->SetOwner(Character);
+}
+
+void UCombatComponent::OnRep_SecondaryWeapon()
+{
+	if (SecondaryWeapon && Character)
+	{
+		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		AttachActorToBackpack(SecondaryWeapon);
+		PlayEquipWeaponSound(EquippedWeapon);
+		if (SecondaryWeapon->GetWeaponMesh())
+		{
+			SecondaryWeapon->GetWeaponMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_TAN);
+			SecondaryWeapon->GetWeaponMesh()->MarkRenderStateDirty();
+		}
+	}
+}
+
 void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 {
-	if (Character && EquippedWeapon && EquippedWeapon->EquipSound)
+	if (Character && WeaponToEquip && WeaponToEquip->EquipSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(
 			this,
-			EquippedWeapon->EquipSound,
+			WeaponToEquip->EquipSound,
 			Character->GetActorLocation()
 		);
 	}
@@ -304,6 +335,16 @@ void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
 	// 실제 TargetSocket에 Actor 붙이기
 	ActorToAttach->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LEFT_HAND_SOCKET);
 	ActorToAttach->SetActorRelativeTransform(RelativeTransform);
+}
+
+void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
+{
+	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
+	const USkeletalMeshSocket* BackpackSocket = Character->GetMesh()->GetSocketByName(FName("BackpackSocket"));
+	if (BackpackSocket)
+	{
+		BackpackSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
 }
 
 #pragma endregion

@@ -44,20 +44,19 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	
 	void SetAiming(bool bIsAiming);
-
 	UFUNCTION(Server, Reliable)
 	void ServerSetAiming(bool bIsAiming);
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
-
+	UFUNCTION()
+	void OnRep_SecondaryWeapon();
 	
 	void Fire();
-
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
-
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
@@ -65,33 +64,27 @@ protected:
 
 	void SetHUDCrosshairs(float DeltaTime);
 
-	/*UFUNCTION()
-	void OnRep_SecondaryWeapon();*/
-
 	void DropEquippedWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
 	void AttachActorToLeftHand(AActor* ActorToAttach);	
-	void UpdateCarriedAmmo();	
+	void AttachActorToBackpack(AActor* ActorToAttach);	
 	//void AttachFlagToLeftHand(AWeapon* Flag);
-	//void AttachActorToBackpack(AActor* ActorToAttach);
+	
+	void UpdateCarriedAmmo();
 
 	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);	
-	//void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
+	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
 
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
-
 	void HandleReload();
 	int32 AmountToReload();
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> GrenadeClass;
-
 	void ThrowGrenade();
-
 	UFUNCTION(Server, Reliable)
 	void ServerThrowGrenade();
-
 	void ShowAttachedGrenade(bool bShowGrenade);
 
 private:
@@ -104,8 +97,8 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeapon* EquippedWeapon;
-	/*UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
-	AWeapon* SecondaryWeapon;*/
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	AWeapon* SecondaryWeapon;
 
 	UPROPERTY(Replicated)
 	bool bAiming;
@@ -156,7 +149,6 @@ private:
 	// Carried ammo for the currently-equipped weapon
 	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
 	int32 CarriedAmmo;
-
 	UFUNCTION()
 	void OnRep_CarriedAmmo();
 
@@ -177,7 +169,6 @@ private:
 	int32 MaxGrenades = 4;
 	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Grenades)
 	int32 Grenades = 1;	
-
 	void UpdateHUDGrenades();
 	UFUNCTION()
 	void OnRep_Grenades();

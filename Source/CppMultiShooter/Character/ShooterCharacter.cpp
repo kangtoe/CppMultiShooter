@@ -410,17 +410,7 @@ void AShooterCharacter::OnInputJump(const FInputActionInstance& Instance)
 void AShooterCharacter::OnInputEquip(const FInputActionInstance& Instance)
 {	
 	if (bDisableGameplay) return;
-	if (Combat)
-	{
-		if (HasAuthority())
-		{
-			Combat->EquipWeapon(OverlappingWeapon);
-		}
-		else
-		{
-			ServerOnInputEquip();
-		}
-	}
+	ServerOnInputEquip();
 
 	//{
 	//	if (Combat->bHoldingTheFlag) return;
