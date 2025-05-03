@@ -361,8 +361,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RotateInPlace(DeltaTime);	
-	HideCameraIfCharacterClose();
-	PollInit();
+	HideCameraIfCharacterClose();	
 }
 
 #pragma region 캐릭터 입력 처리
@@ -605,17 +604,32 @@ void AShooterCharacter::UpdateHUDShield()
 	}
 }
 
-void AShooterCharacter::PollInit()
+void AShooterCharacter::UpdateHUDAmmo()
 {
-	if (ShooterPlayerState == nullptr)
+	ShooterPlayerController = ShooterPlayerController == nullptr ? Cast<AShooterPlayerController>(Controller) : ShooterPlayerController;
+	if (ShooterPlayerController && Combat)
 	{
-		ShooterPlayerState = GetPlayerState<AShooterPlayerState>();
-		if (ShooterPlayerState)
+		if (Combat->EquippedWeapon)
 		{
-			ShooterPlayerState->AddToScore(0.f);
-			ShooterPlayerState->AddToDefeats(0);
+			ShooterPlayerController->SetHUDCarriedAmmo(Combat->CarriedAmmo);
+			ShooterPlayerController->SetHUDWeaponAmmo(Combat->EquippedWeapon->GetAmmo());
+		}
+		else
+		{
+			ShooterPlayerController->SetHUDCarriedAmmo(-1);
+			ShooterPlayerController->SetHUDWeaponAmmo(-1);
 		}
 	}
+}
+
+void AShooterCharacter::UpdateHUDGrenade()
+{
+	ShooterPlayerController = ShooterPlayerController == nullptr ? Cast<AShooterPlayerController>(Controller) : ShooterPlayerController;
+	if (ShooterPlayerController && Combat)
+	{
+		ShooterPlayerController->SetHUDGrenades(GetCombat()->GetGrenades());
+	}
+	
 }
 
 void AShooterCharacter::RotateInPlace(float DeltaTime)

@@ -83,4 +83,6 @@ private:
     float HUDMaxShield;
     float HUDScore;
     int32 HUDDefeats;
+
+    void InitHUD(class AShooterCharacter* ShooterCharacter);
 };

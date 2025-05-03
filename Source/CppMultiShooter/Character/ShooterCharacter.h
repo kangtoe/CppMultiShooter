@@ -58,6 +58,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ThrowAction;
 
+	void UpdateHUDHealth();
+	void UpdateHUDShield();
+	void UpdateHUDAmmo();
+	void UpdateHUDGrenade();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -79,10 +84,7 @@ protected:
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
-	void UpdateHUDHealth();
-	void UpdateHUDShield();
-	// Poll for any relelvant classes and initialize our HUD
-	void PollInit();
+	
 	void RotateInPlace(float DeltaTime);
 
 private:
@@ -188,7 +190,6 @@ private:
 	/**
 	* Elim bot
 	*/
-
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* ElimBotEffect;
 	UPROPERTY(VisibleAnywhere)

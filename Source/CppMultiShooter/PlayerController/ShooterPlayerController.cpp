@@ -27,30 +27,22 @@ void AShooterPlayerController::BeginPlay()
     ServerCheckMatchState();    
 }
 
-void AShooterPlayerController::OnPossess(APawn* InPawn)
+void AShooterPlayerController::OnPossess(APawn* InPawn) // call by server on possess
 {
     Super::OnPossess(InPawn);
     AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
     if (ShooterCharacter)
     {
-        SetHUDHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth()); // update health HUD
-        SetHUDShield(ShooterCharacter->GetShield(), ShooterCharacter->GetMaxShield());
-        SetHUDGrenades(ShooterCharacter->GetCombat()->GetGrenades());
-        SetHUDScore(HUDScore);
-        SetHUDDefeats(HUDDefeats);
+        InitHUD(ShooterCharacter);
     }
 }
 
-void AShooterPlayerController::OnRep_Pawn()
+void AShooterPlayerController::OnRep_Pawn() // call by client on possess
 {
     AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
     if (ShooterCharacter)
     {
-        SetHUDHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth()); // update health HUD
-        SetHUDShield(ShooterCharacter->GetShield(), ShooterCharacter->GetMaxShield());
-        SetHUDGrenades(ShooterCharacter->GetCombat()->GetGrenades());
-        SetHUDScore(HUDScore);
-        SetHUDDefeats(HUDDefeats);
+        InitHUD(ShooterCharacter);
     }
 }
 
@@ -114,7 +106,7 @@ void AShooterPlayerController::SetHUDWeaponAmmo(int32 Ammo)
         ShooterHUD->CharacterOverlay->WeaponAmmoAmount;
     if (bHUDValid)
     {
-        FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
+        FString AmmoText = Ammo == -1 ? "-" : FString::Printf(TEXT("%d"), Ammo);
         ShooterHUD->CharacterOverlay->WeaponAmmoAmount->SetText(FText::FromString(AmmoText));
     }
 }
@@ -127,7 +119,7 @@ void AShooterPlayerController::SetHUDCarriedAmmo(int32 Ammo)
         ShooterHUD->CharacterOverlay->CarriedAmmoAmount;
     if (bHUDValid)
     {
-        FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
+        FString AmmoText = Ammo == -1 ? "-" : FString::Printf(TEXT("%d"), Ammo);
         ShooterHUD->CharacterOverlay->CarriedAmmoAmount->SetText(FText::FromString(AmmoText));
     }
 }
@@ -360,6 +352,18 @@ void AShooterPlayerController::OnRep_MatchState()
     {
         HandleCooldown();
     }
+}
+
+void AShooterPlayerController::InitHUD(AShooterCharacter* ShooterCharacter)
+{
+    ShooterCharacter->UpdateHUDHealth();
+    ShooterCharacter->UpdateHUDShield();
+    ShooterCharacter->UpdateHUDAmmo();
+    ShooterCharacter->UpdateHUDGrenade();    
+
+    SetHUDScore(HUDScore);
+    SetHUDDefeats(HUDDefeats);
+
 }
 
 void AShooterPlayerController::HandleMatchHasStarted()
