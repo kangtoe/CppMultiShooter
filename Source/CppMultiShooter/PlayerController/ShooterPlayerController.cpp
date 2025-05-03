@@ -139,11 +139,6 @@ void AShooterPlayerController::SetHUDHealth(float Health, float MaxHealth)
         FString HealthText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
         ShooterHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
     }
-    else
-    {     
-        HUDHealth = Health;
-        HUDMaxHealth = MaxHealth;
-    }
 }
 
 void AShooterPlayerController::SetHUDShield(float Shield, float MaxShield)
@@ -159,11 +154,6 @@ void AShooterPlayerController::SetHUDShield(float Shield, float MaxShield)
         ShooterHUD->CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
         FString ShieldText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Shield), FMath::CeilToInt(MaxShield));
         ShooterHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));
-    }
-    else
-    {        
-        HUDShield = Shield;
-        HUDMaxShield = MaxShield;
     }
 }
 

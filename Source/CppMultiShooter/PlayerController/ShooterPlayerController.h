@@ -77,10 +77,6 @@ private:
     UPROPERTY()
     class UCharacterOverlay* CharacterOverlay;    
 
-    float HUDHealth;
-    float HUDMaxHealth;
-    float HUDShield;
-    float HUDMaxShield;
     float HUDScore;
     int32 HUDDefeats;
 
