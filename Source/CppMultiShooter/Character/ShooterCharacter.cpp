@@ -253,7 +253,7 @@ void AShooterCharacter::MulticastElim_Implementation()
 {
 	if (ShooterPlayerController)
 	{
-		ShooterPlayerController->SetHUDWeaponAmmo(0);
+		ShooterPlayerController->SetHUDWeaponAmmo(-1);
 	}
 
 	bElimmed = true;
@@ -322,8 +322,9 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UpdateHUDHealth();
-	UpdateHUDShield();
+	SpawnDefaultWeapon();
+	UpdateHUDAmmo();
+
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::ReceiveDamage);
@@ -630,6 +631,20 @@ void AShooterCharacter::UpdateHUDGrenade()
 		ShooterPlayerController->SetHUDGrenades(GetCombat()->GetGrenades());
 	}
 	
+}
+
+void AShooterCharacter::SpawnDefaultWeapon()
+{
+	AShooterGameMode* ShooterGameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+	UWorld* World = GetWorld();
+	if (ShooterGameMode && World && !bElimmed && DefaultWeaponClass)
+	{
+		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);		
+		if (Combat)
+		{
+			Combat->EquipWeapon(StartingWeapon);
+		}
+	}
 }
 
 void AShooterCharacter::RotateInPlace(float DeltaTime)
