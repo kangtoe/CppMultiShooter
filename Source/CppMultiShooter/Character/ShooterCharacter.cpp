@@ -227,9 +227,21 @@ void AShooterCharacter::PlayThrowMontage()
 
 void AShooterCharacter::Elim()
 {
-	if (Combat && Combat->EquippedWeapon)
+	if (Combat)
 	{
-		Combat->EquippedWeapon->Dropped();
+		TArray<AWeapon*> Weapons = { Combat->EquippedWeapon, Combat->SecondaryWeapon };
+		for (AWeapon* Weapon : Weapons)
+		{
+			if (Weapon == nullptr) continue;
+			if (Weapon->bDestroyOnElim)
+			{
+				Weapon->Destroy();
+			}
+			else
+			{
+				Weapon->Dropped();
+			}
+		}	
 	}
 
 	MulticastElim();

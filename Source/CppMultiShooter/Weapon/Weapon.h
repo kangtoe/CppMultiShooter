@@ -83,6 +83,8 @@ public:
 
 	void EnableCustomDepth(bool bEnable);
 
+	bool bDestroyOnElim = false;
+
 protected:	
 	virtual void BeginPlay() override;
 	virtual void OnWeaponStateSet();
