@@ -23,7 +23,7 @@ void AShooterHUD::AddScopeWidget()
     if (PlayerController && ScopeClass)
     {
         ScopeWidget = CreateWidget<UScopeWidget>(PlayerController, ScopeClass);
-        ScopeWidget->AddToViewport();
+        ScopeWidget->AddToViewport(-1);
     }
 }
 
