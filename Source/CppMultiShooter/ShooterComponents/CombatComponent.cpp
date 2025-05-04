@@ -125,6 +125,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::SwapWeapons()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	if (EquippedWeapon == nullptr || SecondaryWeapon == nullptr) return;
 
 	AWeapon* TempWeapon = EquippedWeapon;
@@ -370,12 +371,27 @@ void UCombatComponent::Fire()
 	if (CanFire())
 	{
 		bCanFire = false;
-		ServerFire(HitTarget);
+		ServerFire(HitTarget); // 실제 서버 사격 처리
+		if (Character && !Character->HasAuthority())
+		{
+			LocalFire(HitTarget); // 로컬에서 사격 효과 우선 처리
+		}
+
 		if (EquippedWeapon)
 		{		
 			//CrosshairShootingFactor = .75f; // SetHUDCrosshairs에서 보간으로 처리
 		}
 		StartFireTimer();
+	}
+}
+
+void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
+{
+	if (EquippedWeapon == nullptr) return;
+	if (Character && CombatState == ECombatState::ECS_Unoccupied)
+	{
+		Character->PlayFireMontage(bAiming);
+		EquippedWeapon->Fire(TraceHitTarget);
 	}
 }
 
@@ -408,12 +424,8 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 
 void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (EquippedWeapon == nullptr) return;	
-	if (Character && CombatState == ECombatState::ECS_Unoccupied)
-	{
-		Character->PlayFireMontage(bAiming);
-		EquippedWeapon->Fire(TraceHitTarget);
-	}
+	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return; // LocalFire 수행하지 않은 다른 클라이언트들에게 사격 효과 전파
+	LocalFire(TraceHitTarget);	
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
