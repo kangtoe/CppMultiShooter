@@ -378,8 +378,8 @@ void UCombatComponent::Fire()
 		}
 
 		if (EquippedWeapon)
-		{		
-			//CrosshairShootingFactor = .75f; // SetHUDCrosshairs에서 보간으로 처리
+		{					
+			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, GetWorld()->GetDeltaSeconds(), 20.f); // 사격 시 벌어짐
 		}
 		StartFireTimer();
 	}
@@ -701,15 +701,8 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 				{
 					CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 20.f);
 				}
-				
-				if (EquippedWeapon && bFireButtonPressed)
-				{
-					CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, DeltaTime, 20.f); // 사격 시 벌어짐
-				}
-				else
-				{
-					CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 10.f); // 벌어짐 줄이기
-				}				
+											
+				CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 10.f); // 벌어짐 줄이기
 
 				HUDPackage.CrosshairSpread =
 					0.5f + // 기본 벌어짐
