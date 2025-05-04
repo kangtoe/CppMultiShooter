@@ -474,7 +474,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		}
 
 		// 조준 중 크로스헤어 사라짐
-		if (EquippedWeapon && EquippedWeapon->bUseScope && bAiming)
+		if (EquippedWeapon && EquippedWeapon->GetScope() && bAiming)
 		{
 			HUDPackage.CrosshairsColor = FLinearColor::Transparent;
 		}
@@ -498,13 +498,14 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
 	}
 
-	//
-	if (Character->IsLocallyControlled() && EquippedWeapon->bUseScope)
+	// aim scope
+	auto scope = EquippedWeapon->GetScope();
+	if (Character->IsLocallyControlled() && scope)
 	{
 		Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
 		if (Controller)
 		{			
-			Controller->SetHUDScope(bIsAiming);			
+			Controller->SetHUDScope(bIsAiming, scope);
 
 			// play aim sound
 			/*if (bIsAiming)

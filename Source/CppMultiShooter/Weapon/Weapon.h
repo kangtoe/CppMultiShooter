@@ -45,9 +45,6 @@ public:
 	void Dropped();
 	void AddAmmo(int32 AmmoToAdd);
 
-	UPROPERTY(EditAnywhere)
-	bool bUseScope;
-
 	/**
 	* Textures for the weapon crosshairs
 	*/
@@ -155,6 +152,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
 
+	UPROPERTY(EditAnywhere, Category = "ScopeWidget")
+	TSubclassOf<class UScopeWidget> ScopeClass;
+
 public:
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
@@ -170,4 +170,5 @@ public:
 
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
+	FORCEINLINE TSubclassOf<class UScopeWidget> const GetScope() { return ScopeClass; }
 };

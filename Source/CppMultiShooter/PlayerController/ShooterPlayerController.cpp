@@ -441,7 +441,7 @@ void AShooterPlayerController::HandleCooldown()
     }
 }
 
-void AShooterPlayerController::SetHUDScope(bool bIsAiming)
+void AShooterPlayerController::SetHUDScope(bool bIsAiming, TSubclassOf<UScopeWidget> ScopeClass)
 {
     ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
 
@@ -453,7 +453,7 @@ void AShooterPlayerController::SetHUDScope(bool bIsAiming)
 
     if (!ShooterHUD->ScopeWidget)
     {
-        ShooterHUD->AddScopeWidget();
+        ShooterHUD->AddScopeWidget(ScopeClass);
     }
 
     if (bHUDValid)

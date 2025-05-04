@@ -33,7 +33,7 @@ public:
     void HandleMatchHasStarted();
     void HandleCooldown();
 
-    void SetHUDScope(bool bIsAiming);
+    void SetHUDScope(bool bIsAiming, TSubclassOf<UScopeWidget> ScopeClass);
 
 protected:
     virtual void BeginPlay() override;    

@@ -17,7 +17,7 @@ void AShooterHUD::AddAnnouncement()
     }
 }
 
-void AShooterHUD::AddScopeWidget()
+void AShooterHUD::AddScopeWidget(TSubclassOf<UScopeWidget> ScopeClass)
 {
     APlayerController* PlayerController = GetOwningPlayerController();
     if (PlayerController && ScopeClass)
