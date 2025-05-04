@@ -44,4 +44,7 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     UTextBlock* GrenadesText;
+
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* PingAmountText;
 };

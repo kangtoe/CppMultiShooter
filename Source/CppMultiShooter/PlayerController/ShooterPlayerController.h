@@ -58,6 +58,8 @@ protected:
     UFUNCTION(Client, Reliable)
     void ClientJoinMidgame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
 
+    void CheckPing(float DeltaTime);
+
 private:
     UPROPERTY()
     class AShooterHUD* ShooterHUD;

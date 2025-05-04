@@ -52,6 +52,7 @@ void AShooterPlayerController::Tick(float DeltaTime)
 
     SetHUDTime();
     CheckTimeSync(DeltaTime);
+    CheckPing(DeltaTime);
 }
 
 void AShooterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -259,6 +260,19 @@ void AShooterPlayerController::CheckTimeSync(float DeltaTime)
     {
         ServerRequestServerTime(GetWorld()->GetTimeSeconds());
         TimeSyncRunningTime = 0.f;
+    }
+}
+
+void AShooterPlayerController::CheckPing(float DeltaTime)
+{
+    if (PlayerState == nullptr) return;        
+
+    // this is different than his which is PlayerState->GetPing() * 4 because it is compressed or if(PlayerState->GetPingInMilliseconds() > HighPingThreshold)
+    float CurrentPing = PlayerState->GetPingInMilliseconds();
+    if (ShooterHUD && ShooterHUD->CharacterOverlay && ShooterHUD->CharacterOverlay->PingAmountText)
+    {
+        FString PingText = FString::Printf(TEXT("%d"), FMath::FloorToInt(CurrentPing));
+        ShooterHUD->CharacterOverlay->PingAmountText->SetText(FText::FromString(PingText));
     }
 }
 
