@@ -371,16 +371,19 @@ void UCombatComponent::Fire()
 	if (CanFire())
 	{
 		bCanFire = false;
+
+		if (EquippedWeapon)
+		{
+			HitTarget = EquippedWeapon->TraceEndWithScatter(HitTarget);
+			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, GetWorld()->GetDeltaSeconds(), 20.f); // 사격 시 벌어짐
+		}
+
 		ServerFire(HitTarget); // 실제 서버 사격 처리
 		if (Character && !Character->HasAuthority())
 		{
 			LocalFire(HitTarget); // 로컬에서 사격 효과 우선 처리
 		}
-
-		if (EquippedWeapon)
-		{					
-			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, GetWorld()->GetDeltaSeconds(), 20.f); // 사격 시 벌어짐
-		}
+		
 		StartFireTimer();
 	}
 }

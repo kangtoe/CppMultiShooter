@@ -44,6 +44,7 @@ public:
 	virtual void Fire(const FVector& HitTarget);
 	void Dropped();
 	void AddAmmo(int32 AmmoToAdd);
+	FVector TraceEndWithScatter(const FVector& HitTarget);
 
 	/**
 	* Textures for the weapon crosshairs
@@ -81,6 +82,9 @@ public:
 	void EnableCustomDepth(bool bEnable);
 
 	bool bDestroyOnElim = false;
+
+	UPROPERTY(EditAnywhere)
+ 	EFireType FireType;
 
 protected:	
 	virtual void BeginPlay() override;
@@ -154,6 +158,14 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "ScopeWidget")
 	TSubclassOf<class UScopeWidget> ScopeClass;
+
+	/**
+	* Trace end with scatter
+	*/
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	float DistanceToSphere = 800.f;
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	float SphereRadius = 75.f;
 
 public:
 	void SetWeaponState(EWeaponState State);
