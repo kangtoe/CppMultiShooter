@@ -17,7 +17,7 @@ class CPPMULTISHOOTER_API AProjectileWeapon : public AWeapon
 	
 
 public:
-	virtual void Fire(const FVector& HitTarget) override;
+	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 
 private:
 	UPROPERTY(EditAnywhere)

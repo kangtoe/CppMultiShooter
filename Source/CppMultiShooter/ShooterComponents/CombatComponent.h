@@ -55,11 +55,11 @@ protected:
 	void OnRep_SecondaryWeapon();
 	
 	void Fire();
-	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
+	void LocalFire(const TArray<FVector_NetQuantize>& HitTargets);
 	UFUNCTION(Server, Reliable)
-	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
+	void ServerFire(const TArray<FVector_NetQuantize>& HitTargets);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
+	void MulticastFire(const TArray<FVector_NetQuantize>& HitTargets);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 

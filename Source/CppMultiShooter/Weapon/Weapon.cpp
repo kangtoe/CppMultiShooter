@@ -235,7 +235,7 @@ void AWeapon::ShowPickupWidget(bool bShowWidget)
 	}
 }
 
-void AWeapon::Fire(const FVector& HitTarget)
+void AWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
 	if (FireAnimation)
 	{
@@ -310,7 +310,7 @@ FVector AWeapon::TraceEndWithScatter(const FVector& HitTarget)
 	return FVector(TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());
 }
 
-FVector AWeapon::TraceEndWithScatterMulti(const FVector& HitTarget, TArray<FVector>& HitTargets)
+void AWeapon::TraceEndWithScatterMulti(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets)
 {
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
 	if (MuzzleFlashSocket == nullptr) return;

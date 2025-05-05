@@ -374,30 +374,30 @@ void UCombatComponent::Fire()
 
 		if (EquippedWeapon)
 		{
-			TArray<FVector> HitTargets;
+			TArray<FVector_NetQuantize> HitTargets;
 			EquippedWeapon->TraceEndWithScatterMulti(HitTarget, HitTargets);
 
 			HitTarget = EquippedWeapon->TraceEndWithScatter(HitTarget);
 			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, GetWorld()->GetDeltaSeconds(), 20.f); // 사격 시 벌어짐
-		}
 
-		ServerFire(HitTarget); // 실제 서버 사격 처리
-		if (Character && !Character->HasAuthority())
-		{
-			LocalFire(HitTarget); // 로컬에서 사격 효과 우선 처리
-		}
-		
-		StartFireTimer();
+			ServerFire(HitTargets); // 실제 서버 사격 처리
+			if (Character && !Character->HasAuthority())
+			{
+				LocalFire(HitTargets); // 로컬에서 사격 효과 우선 처리
+			}
+
+			StartFireTimer();
+		}		
 	}
 }
 
-void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
+void UCombatComponent::LocalFire(const TArray<FVector_NetQuantize>& HitTargets)
 {
 	if (EquippedWeapon == nullptr) return;
 	if (Character && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		Character->PlayFireMontage(bAiming);
-		EquippedWeapon->Fire(TraceHitTarget);
+		EquippedWeapon->Fire(HitTargets);
 	}
 }
 
@@ -423,15 +423,15 @@ void UCombatComponent::FireTimerFinished()
 }
 
 // 서버에서 멀티캐스트 RPC를 호출하는 경우에만 실행 가능
-void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
+void UCombatComponent::ServerFire_Implementation(const TArray<FVector_NetQuantize>& HitTargets)
 {
-	MulticastFire(TraceHitTarget);
+	MulticastFire(HitTargets);
 }
 
-void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
+void UCombatComponent::MulticastFire_Implementation(const TArray<FVector_NetQuantize>& HitTargets)
 {
 	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return; // LocalFire 수행하지 않은 다른 클라이언트들에게 사격 효과 전파
-	LocalFire(TraceHitTarget);	
+	LocalFire(HitTargets);
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)

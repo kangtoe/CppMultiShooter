@@ -15,7 +15,7 @@ class CPPMULTISHOOTER_API AHitScanWeapon : public AWeapon
 	GENERATED_BODY()
 	
 public:
-    virtual void Fire(const FVector& HitTarget) override;
+    virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 
 protected:
     

@@ -11,9 +11,9 @@
 
 #include "DrawDebugHelpers.h"
 
-void AHitScanWeapon::Fire(const FVector& HitTarget) // shotgun tmp
+void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets) // shotgun tmp
 { 
-    Super::Fire(HitTarget);
+    Super::Fire(HitTargets);
 
     APawn* OwnerPawn = Cast<APawn>(GetOwner());
     if (OwnerPawn == nullptr) return;
@@ -22,8 +22,8 @@ void AHitScanWeapon::Fire(const FVector& HitTarget) // shotgun tmp
     const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
     if (MuzzleFlashSocket)
     {
-        FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-        FVector Start = SocketTransform.GetLocation();
+        const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
+ 		const FVector Start = SocketTransform.GetLocation();
 
         if (MuzzleFlash)
         {
@@ -43,14 +43,13 @@ void AHitScanWeapon::Fire(const FVector& HitTarget) // shotgun tmp
         }
 
         TMap<AShooterCharacter*, uint32> HitMap;
-        for (uint32 i = 0; i < NumberOfPellets; i++)
-        {
-            
+        for (FVector_NetQuantize HitTarget : HitTargets)
+        {          
             FHitResult FireHit;
             WeaponTraceHit(Start, HitTarget, FireHit);
 
             AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(FireHit.GetActor());
-            if (ShooterCharacter && HasAuthority() && InstigatorController)
+            if (ShooterCharacter)
             {
                 if (HitMap.Contains(ShooterCharacter))
                 {
@@ -87,8 +86,8 @@ void AHitScanWeapon::Fire(const FVector& HitTarget) // shotgun tmp
             if (HitPair.Key && HasAuthority() && InstigatorController)
             {
                 UGameplayStatics::ApplyDamage(
-                    HitPair.Key,
-                    Damage * HitPair.Value,
+                    HitPair.Key, // Character that was hit
+                    Damage * HitPair.Value, // Multiply Damage by number of times hit
                     InstigatorController,
                     this,
                     UDamageType::StaticClass()

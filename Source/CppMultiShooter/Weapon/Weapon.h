@@ -41,11 +41,11 @@ public:
 	virtual void OnRep_Owner() override;
 	void SetHUDAmmo();
 	void ShowPickupWidget(bool bShowWidget);
-	virtual void Fire(const FVector& HitTarget);
+	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets);
 	void Dropped();
 	void AddAmmo(int32 AmmoToAdd);
 	FVector TraceEndWithScatter(const FVector& HitTarget);
-	FVector TraceEndWithScatterMulti(const FVector& HitTarget, TArray<FVector>& HitTargets);
+	void TraceEndWithScatterMulti(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets);
 
 	/**
 	* Textures for the weapon crosshairs

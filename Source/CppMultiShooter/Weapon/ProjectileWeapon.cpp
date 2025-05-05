@@ -4,9 +4,9 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Projectile.h"
 
-void AProjectileWeapon::Fire(const FVector& HitTarget)
+void AProjectileWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
-    Super::Fire(HitTarget);
+    Super::Fire(HitTargets);
 
     if (!HasAuthority()) return;
 
@@ -17,26 +17,30 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
         // 발사체 위치 정보 구하기
         FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
 
-        // From muzzle flash socket, to hit location from TraceUnderCrosshairs
-        FVector ToTarget = HitTarget - SocketTransform.GetLocation();
-        FRotator TargetRotation = ToTarget.Rotation();
+		for (FVector_NetQuantize HitTarget : HitTargets)
+		{
+            // From muzzle flash socket, to hit location from TraceUnderCrosshairs
+            FVector ToTarget = HitTarget - SocketTransform.GetLocation();
+            FRotator TargetRotation = ToTarget.Rotation();
 
-        if (ProjectileClass && InstigatorPawn)
-        {
-            // 발사체 생성
-            FActorSpawnParameters SpawnParams;
-            SpawnParams.Owner = GetOwner();
-            SpawnParams.Instigator = InstigatorPawn;
-            UWorld* World = GetWorld();
-            if (World)
+            if (ProjectileClass && InstigatorPawn)
             {
-                World->SpawnActor<AProjectile>(
-                    ProjectileClass,
-                    SocketTransform.GetLocation(),
-                    TargetRotation,
-                    SpawnParams
-                );
+                // 발사체 생성
+                FActorSpawnParameters SpawnParams;
+                SpawnParams.Owner = GetOwner();
+                SpawnParams.Instigator = InstigatorPawn;
+                UWorld* World = GetWorld();
+                if (World)
+                {
+                    World->SpawnActor<AProjectile>(
+                        ProjectileClass,
+                        SocketTransform.GetLocation(),
+                        TargetRotation,
+                        SpawnParams
+                    );
+                }
             }
-        }
+		}
+
     }
 }
