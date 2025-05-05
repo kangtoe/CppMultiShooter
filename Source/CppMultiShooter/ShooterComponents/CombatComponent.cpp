@@ -374,6 +374,9 @@ void UCombatComponent::Fire()
 
 		if (EquippedWeapon)
 		{
+			TArray<FVector> HitTargets;
+			EquippedWeapon->TraceEndWithScatterMulti(HitTarget, HitTargets);
+
 			HitTarget = EquippedWeapon->TraceEndWithScatter(HitTarget);
 			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, GetWorld()->GetDeltaSeconds(), 20.f); // 사격 시 벌어짐
 		}

@@ -45,6 +45,7 @@ public:
 	void Dropped();
 	void AddAmmo(int32 AmmoToAdd);
 	FVector TraceEndWithScatter(const FVector& HitTarget);
+	FVector TraceEndWithScatterMulti(const FVector& HitTarget, TArray<FVector>& HitTargets);
 
 	/**
 	* Textures for the weapon crosshairs
