@@ -11,6 +11,7 @@
 #include "CppMultiShooter/Weapon/Weapon.h"
 #include "CppMultiShooter/ShooterComponents/CombatComponent.h"
 #include "CppMultiShooter/ShooterComponents/BuffComponent.h"
+#include "CppMultiShooter/ShooterComponents/LagCompensationComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -25,6 +26,7 @@
 #include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
 #include "CppMultiShooter/Weapon/WeaponTypes.h"
 #include "PhysicsEngine/PhysicsAsset.h"
+
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -54,6 +56,8 @@ AShooterCharacter::AShooterCharacter()
 
 	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
 	Buff->SetIsReplicated(true);
+
+	LagCompensation = CreateDefaultSubobject<ULagCompensationComponent>(TEXT("LagCompensation"));
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -102,17 +106,15 @@ void AShooterCharacter::PostInitializeComponents()
 			GetCharacterMovement()->MaxWalkSpeedCrouched
 		);
 		//Buff->SetInitialJumpVelocity(GetCharacterMovement()->JumpZVelocity);
-	}
-	/*
+	}	
 	if (LagCompensation)
 	{
 		LagCompensation->Character = this;
 		if (Controller)
 		{
-			LagCompensation->Controller = Cast<ABlasterPlayerController>(Controller);
+			LagCompensation->Controller = Cast<AShooterPlayerController>(Controller);
 		}
-	}
-	*/
+	}	
 
 	CreateCollisionBoxes();
 }
