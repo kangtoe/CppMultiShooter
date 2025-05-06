@@ -21,9 +21,26 @@ void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    FFramePackage Package;
-    SaveFramePackage(Package);
-    ShowFramePackage(Package, FColor::Orange);
+    if (FrameHistory.Num() <= 1)
+    {
+        FFramePackage ThisFrame;
+        SaveFramePackage(ThisFrame);
+        FrameHistory.AddHead(ThisFrame);
+    }
+    else
+    {
+        float HistoryLength = FrameHistory.GetHead()->GetValue().Time - FrameHistory.GetTail()->GetValue().Time;
+        while (HistoryLength > MaxRecordTime)
+        {
+            FrameHistory.RemoveNode(FrameHistory.GetTail());
+            HistoryLength = FrameHistory.GetHead()->GetValue().Time - FrameHistory.GetTail()->GetValue().Time;
+        }
+        FFramePackage ThisFrame;
+        SaveFramePackage(ThisFrame);
+        FrameHistory.AddHead(ThisFrame);
+
+        ShowFramePackage(ThisFrame, FColor::Red);
+    }
 }
 
 void ULagCompensationComponent::SaveFramePackage(FFramePackage& Package)
@@ -54,7 +71,7 @@ void ULagCompensationComponent::ShowFramePackage(const FFramePackage& Package, c
             FQuat(BoxInfo.Value.Rotation),
             Color,
             false,
-            0
+            MaxRecordTime
         );
     }
 }

@@ -55,6 +55,11 @@ private:
     UPROPERTY()
     class AShooterPlayerController* Controller;
 
+    TDoubleLinkedList<FFramePackage> FrameHistory;
+
+    UPROPERTY(EditAnywhere)
+    float MaxRecordTime = 4.f;
+
 public:
 
 
