@@ -77,8 +77,7 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AWeapon, WeaponState);
-	DOREPLIFETIME(AWeapon, Ammo);
+	DOREPLIFETIME(AWeapon, WeaponState);	
 	//DOREPLIFETIME_CONDITION(AWeapon, bUseServerSideRewind, COND_OwnerOnly);
 }
 
@@ -122,13 +121,59 @@ void AWeapon::SpendRound()
 {
 	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
 	SetHUDAmmo();
+	if (HasAuthority())
+	{
+		ClientUpdateAmmo(Ammo);
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
+				FString::Printf(TEXT("Ammo: %d"), Ammo));
+		}
+	}
+	else
+	{
+		ServerUnprocessedUsedAmmo++;
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
+				FString::Printf(TEXT("Ammo: %d"), Ammo));
+		}
+	}
 }
 
-void AWeapon::OnRep_Ammo()
+void AWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo) // 서버 -> 클라이언트 호출, 서버 탄약으로 클라이언트 업데이트
 {
+	if (HasAuthority()) return;
+	Ammo = ServerAmmo;
+	ServerUnprocessedUsedAmmo--;
+	Ammo -= ServerUnprocessedUsedAmmo;
+	SetHUDAmmo();
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
+			FString::Printf(TEXT("Ammo: %d"), Ammo));
+	}
+}
+
+void AWeapon::AddAmmo(int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	SetHUDAmmo();
+	ClientAddAmmo(AmmoToAdd);
+}
+
+void AWeapon::ClientAddAmmo_Implementation(int32 AmmoToAdd) // 예측 발사 처리 후, 클라이언트가 예측 소모한 탄약 수 만큼을 되돌려 줌
+{
+	if (HasAuthority()) return;
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
 	ShooterOwnerCharacter = ShooterOwnerCharacter == nullptr ? Cast<AShooterCharacter>(GetOwner()) : ShooterOwnerCharacter;
 	SetHUDAmmo();
 }
+
+
 
 void AWeapon::OnRep_Owner()
 {
@@ -260,10 +305,7 @@ void AWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 			}
 		}
 	}
-	if (HasAuthority())
-	{
-		SpendRound();
-	}
+	SpendRound();
 }
 
 void AWeapon::Dropped()
@@ -275,12 +317,6 @@ void AWeapon::Dropped()
 
 	ShooterOwnerCharacter = nullptr;
 	ShooterOwnerController = nullptr;
-}
-
-void AWeapon::AddAmmo(int32 AmmoToAdd)
-{
-	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
-	SetHUDAmmo();
 }
 
 FVector AWeapon::TraceEndWithScatter(const FVector& HitTarget)

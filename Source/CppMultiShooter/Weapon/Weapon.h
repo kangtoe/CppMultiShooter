@@ -137,16 +137,23 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ACasing> CasingClass;
 
-	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	UPROPERTY(EditAnywhere)
 	int32 Ammo;
 
-	UFUNCTION()
-	void OnRep_Ammo();
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAmmo(int32 ServerAmmo);
+
+	UFUNCTION(Client, Reliable)
+	void ClientAddAmmo(int32 AmmoToAdd);
 
 	void SpendRound();
 
 	UPROPERTY(EditAnywhere)
 	int32 MagCapacity;
+
+	// 서버로부터 아직 확인받지 못했지만 로컬에서 발사했다고 판단한 탄약 소모 횟수
+	// Incremented in SpendRound, decremented in ClientUpdateAmmo.
+	int32 ServerUnprocessedUsedAmmo = 0;
 
 	UPROPERTY()
 	class AShooterCharacter* ShooterOwnerCharacter;
