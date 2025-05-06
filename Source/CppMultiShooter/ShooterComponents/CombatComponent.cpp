@@ -289,6 +289,14 @@ void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
 	}
 }
 
+void UCombatComponent::OnRep_Aiming()
+{
+	if (Character && Character->IsLocallyControlled())
+	{
+		bAiming = bIsAimingLocal;
+	}
+}
+
 void UCombatComponent::UpdateHUDGrenades()
 {
 	Controller = Controller == nullptr ? Cast<AShooterPlayerController>(Character->Controller) : Controller;
@@ -524,6 +532,7 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 			}*/
 		}
 	}
+	if (Character->IsLocallyControlled()) bIsAimingLocal = bIsAiming;
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
