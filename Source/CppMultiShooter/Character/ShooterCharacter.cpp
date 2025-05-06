@@ -382,43 +382,6 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	RotateInPlace(DeltaTime);	
 	HideCameraIfCharacterClose();	
-
-	// for hitbox debug
-	TArray<UBoxComponent*> HitCollisionBoxesArray;
-	HitCollisionBoxes.GenerateValueArray(HitCollisionBoxesArray);
-	if (GEngine)
-	{		
-		GEngine->AddOnScreenDebugMessage(
-			0,                     // 메시지 ID (고정)
-			0.0f,
-			FColor::Red,
-			FString::Printf(TEXT("HitCollisionBoxesDebug: %d"), HitCollisionBoxes.Num())
-		);
-	}
-	for (USceneComponent* BoxComponent : HitCollisionBoxesArray)
-	{
-		if (!IsValid(BoxComponent)) continue;
-
-		FVector Location = BoxComponent->GetComponentLocation();
-		FRotator Rotation = BoxComponent->GetComponentRotation();
-
-		UBoxComponent* Box = Cast<UBoxComponent>(BoxComponent);
-		if (!Box) continue;
-
-		FVector BoxExtent = Box->GetUnscaledBoxExtent();
-
-		DrawDebugBox(
-			GetWorld(),
-			Location,
-			BoxExtent,
-			Rotation.Quaternion(),
-			FColor::Blue,
-			false,     // PersistentLines: false → 한 프레임만
-			0.0f,      // Duration
-			0,         // DepthPriority
-			1.0f       // LineThickness
-		);
-	}
 }
 
 #pragma region 캐릭터 입력 처리

@@ -275,10 +275,6 @@ public:
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE UBuffComponent* GetBuff() const { return Buff; }
 
-
-	FORCEINLINE TArray<UBoxComponent*> GetHitCollisionBoxes() { 
-		TArray<UBoxComponent*> HitCollisionBoxesArray;
-		HitCollisionBoxes.GenerateValueArray(HitCollisionBoxesArray);
-		return HitCollisionBoxesArray;
-	}
+	
+	FORCEINLINE TMap<FName, class UBoxComponent*> GetHitCollisionBoxes() { return HitCollisionBoxes; }
 };

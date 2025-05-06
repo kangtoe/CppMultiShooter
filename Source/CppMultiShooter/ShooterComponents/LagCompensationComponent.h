@@ -43,9 +43,10 @@ public:
     friend class AShooterCharacter;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+    void ShowFramePackage(const FFramePackage& Package, const FColor& Color);
 protected:
     virtual void BeginPlay() override;
-
+    void SaveFramePackage(FFramePackage& Package);
 private:
 
     UPROPERTY()
