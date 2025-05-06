@@ -12,6 +12,7 @@
 #include "CppMultiShooter/ShooterComponents/CombatComponent.h"
 #include "CppMultiShooter/ShooterComponents/BuffComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ShooterAnimInstance.h"
 #include "CppMultiShooter/CppMultiShooter.h"
@@ -23,6 +24,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
 #include "CppMultiShooter/Weapon/WeaponTypes.h"
+#include "PhysicsEngine/PhysicsAsset.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -111,6 +113,8 @@ void AShooterCharacter::PostInitializeComponents()
 		}
 	}
 	*/
+
+	CreateCollisionBoxes();
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -376,6 +380,43 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	RotateInPlace(DeltaTime);	
 	HideCameraIfCharacterClose();	
+
+	// for hitbox debug
+	TArray<UBoxComponent*> HitCollisionBoxesArray;
+	HitCollisionBoxes.GenerateValueArray(HitCollisionBoxesArray);
+	if (GEngine)
+	{		
+		GEngine->AddOnScreenDebugMessage(
+			0,                     // 메시지 ID (고정)
+			0.0f,
+			FColor::Red,
+			FString::Printf(TEXT("HitCollisionBoxesDebug: %d"), HitCollisionBoxes.Num())
+		);
+	}
+	for (USceneComponent* BoxComponent : HitCollisionBoxesArray)
+	{
+		if (!IsValid(BoxComponent)) continue;
+
+		FVector Location = BoxComponent->GetComponentLocation();
+		FRotator Rotation = BoxComponent->GetComponentRotation();
+
+		UBoxComponent* Box = Cast<UBoxComponent>(BoxComponent);
+		if (!Box) continue;
+
+		FVector BoxExtent = Box->GetUnscaledBoxExtent();
+
+		DrawDebugBox(
+			GetWorld(),
+			Location,
+			BoxExtent,
+			Rotation.Quaternion(),
+			FColor::Blue,
+			false,     // PersistentLines: false → 한 프레임만
+			0.0f,      // Duration
+			0,         // DepthPriority
+			1.0f       // LineThickness
+		);
+	}
 }
 
 #pragma region 캐릭터 입력 처리
@@ -690,6 +731,90 @@ void AShooterCharacter::StartDissolve()
 	{
 		DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
 		DissolveTimeline->Play();
+	}
+}
+
+void AShooterCharacter::AddCollisionBox(const FName& BoneName, const FVector& RelativeLocation, const FRotator& RelativeRotation, const FVector& BoxExtent)
+{
+	if (GetMesh())
+    {
+        UBoxComponent* BoxComponent = NewObject<UBoxComponent>(this);
+        if (BoxComponent)
+        {
+            BoxComponent->SetupAttachment(GetMesh(), BoneName);
+            BoxComponent->RegisterComponent();
+            //BoxComponent->SetCollisionObjectType(ECC_HitBox);
+            //BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+            //BoxComponent->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
+            BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            BoxComponent->SetRelativeLocation(RelativeLocation);
+            BoxComponent->SetRelativeRotation(RelativeRotation);
+            BoxComponent->SetBoxExtent(BoxExtent);
+
+            // If entry exists, append an index to the name
+            uint32 i = 1;
+            FName UniqueName = BoneName;
+            while (HitCollisionBoxes.Find(UniqueName))
+            {
+                UniqueName = FName(FString::Printf(TEXT("%s_%d"), *BoneName.ToString(), i));
+            }
+
+            HitCollisionBoxes.Add(UniqueName, BoxComponent);
+        }
+    }
+}
+
+void AShooterCharacter::CreateCollisionBoxes()
+{
+	UPhysicsAsset* PhysicsAsset = GetMesh()->GetPhysicsAsset();
+	if (PhysicsAsset)
+	{
+		for (USkeletalBodySetup* BodySetup : PhysicsAsset->SkeletalBodySetups)
+		{
+			FName BoneName = BodySetup->BoneName;
+
+			// Capsule elements - Cylinder with spherical top/bottom (sphyinder).
+			for (const FKSphylElem& Capsule : BodySetup->AggGeom.SphylElems)
+			{
+				// Calculate extent (measured from center of box)
+				float HalfCylinderLength = Capsule.Length / 2;
+				float Radius = Capsule.Radius;
+				FVector BoxExtent(Radius, Radius, HalfCylinderLength + Radius);
+				AddCollisionBox(BoneName, Capsule.Center, Capsule.Rotation, BoxExtent);
+			}
+
+			// Box elements
+			for (const FKBoxElem& Box : BodySetup->AggGeom.BoxElems)
+			{
+				FVector BoxExtent(Box.X, Box.Y, Box.Z);
+				AddCollisionBox(BoneName, Box.Center, Box.Rotation, BoxExtent);
+			}
+
+			// Sphere elements
+			for (const FKSphereElem& Sphere : BodySetup->AggGeom.SphereElems)
+			{
+				FVector BoxExtent(Sphere.Radius, Sphere.Radius, Sphere.Radius);
+				AddCollisionBox(BoneName, Sphere.Center, FRotator::ZeroRotator, BoxExtent);
+			}
+
+			// Convex elements
+			for (const FKConvexElem& Convex : BodySetup->AggGeom.ConvexElems)
+			{
+				unimplemented();
+			}
+
+			// Tapered Capsule elements
+			for (const FKTaperedCapsuleElem& Capsule : BodySetup->AggGeom.TaperedCapsuleElems)
+			{
+				unimplemented();
+			}
+
+			// LevelSet elements
+			for (const FKLevelSetElem& LevelSet : BodySetup->AggGeom.LevelSetElems)
+			{
+				unimplemented();
+			}
+		}
 	}
 }
 

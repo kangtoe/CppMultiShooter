@@ -12,6 +12,21 @@
 
 #include "ShooterCharacter.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPhysAssetInformation
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName BoneName;
+	UPROPERTY()
+	float HalfHeight;
+	UPROPERTY()
+	float radius;
+	UPROPERTY()
+	FTransform BoneWorldTransfrom;
+};
+
 UCLASS()
 class CPPMULTISHOOTER_API AShooterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
@@ -219,6 +234,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AWeapon> DefaultWeaponClass;
 
+	/**
+	* Hit Boxes (for server rewind)
+	*/
+	UPROPERTY()
+	TMap<FName, class UBoxComponent*> HitCollisionBoxes;
+	void AddCollisionBox(const FName& BoneName, const FVector& RelativeLocation, const FRotator& RelativeRotation, const FVector& BoxExtent);
+	void CreateCollisionBoxes();
+
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
@@ -247,4 +270,11 @@ public:
 	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE UBuffComponent* GetBuff() const { return Buff; }
+
+
+	FORCEINLINE TArray<UBoxComponent*> GetHitCollisionBoxes() { 
+		TArray<UBoxComponent*> HitCollisionBoxesArray;
+		HitCollisionBoxes.GenerateValueArray(HitCollisionBoxesArray);
+		return HitCollisionBoxesArray;
+	}
 };
