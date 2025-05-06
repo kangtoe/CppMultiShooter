@@ -131,7 +131,7 @@ void AWeapon::SpendRound()
 				FString::Printf(TEXT("Ammo: %d"), Ammo));
 		}
 	}
-	else
+	else if (ShooterOwnerCharacter && ShooterOwnerCharacter->IsLocallyControlled())
 	{
 		ServerUnprocessedUsedAmmo++;
 
