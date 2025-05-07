@@ -5,6 +5,8 @@
 #include "CppMultiShooter/Character/ShooterCharacter.h"
 #include "Components/BoxComponent.h"
 #include "DrawDebugHelpers.h"
+#include "CppMultiShooter/Weapon/Weapon.h"
+#include "Kismet/GameplayStatics.h"
 
 ULagCompensationComponent::ULagCompensationComponent()
 {
@@ -21,6 +23,29 @@ void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+    SaveFramePackage();
+}
+
+void ULagCompensationComponent::SaveFramePackage(FFramePackage& Package) // 시간과 히트박스 정보 저장
+{
+    Character = Character == nullptr ? Cast<AShooterCharacter>(GetOwner()) : Character;
+    if (Character)
+    {
+        Package.Time = GetWorld()->GetTimeSeconds();
+        for (auto& BoxPair : Character->GetHitCollisionBoxes())
+        {
+            FBoxInformation BoxInformation;
+            BoxInformation.Location = BoxPair.Value->GetComponentLocation();
+            BoxInformation.Rotation = BoxPair.Value->GetComponentRotation();
+            BoxInformation.BoxExtent = BoxPair.Value->GetScaledBoxExtent();
+            Package.HitBoxInfo.Add(BoxPair.Key, BoxInformation);
+        }
+    }
+}
+
+void ULagCompensationComponent::SaveFramePackage() // 시간과 히트박스 정보 저장 + 데이터 정리 (삭제&정렬)
+{
+    if (Character == nullptr || !Character->HasAuthority()) return;
     if (FrameHistory.Num() <= 1)
     {
         FFramePackage ThisFrame;
@@ -39,24 +64,7 @@ void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickTy
         SaveFramePackage(ThisFrame);
         FrameHistory.AddHead(ThisFrame);
 
-        ShowFramePackage(ThisFrame, FColor::Red);
-    }
-}
-
-void ULagCompensationComponent::SaveFramePackage(FFramePackage& Package)
-{
-    Character = Character == nullptr ? Cast<AShooterCharacter>(GetOwner()) : Character;
-    if (Character)
-    {
-        Package.Time = GetWorld()->GetTimeSeconds();
-        for (auto& BoxPair : Character->GetHitCollisionBoxes())
-        {
-            FBoxInformation BoxInformation;
-            BoxInformation.Location = BoxPair.Value->GetComponentLocation();
-            BoxInformation.Rotation = BoxPair.Value->GetComponentRotation();
-            BoxInformation.BoxExtent = BoxPair.Value->GetScaledBoxExtent();
-            Package.HitBoxInfo.Add(BoxPair.Key, BoxInformation);
-        }
+        //ShowFramePackage(ThisFrame, FColor::Red);
     }
 }
 
@@ -277,4 +285,20 @@ FServerSideRewindResult ULagCompensationComponent::ServerSideRewind(AShooterChar
     }
 
     if (bReturn) return;
+}
+
+void ULagCompensationComponent::ServerScoreRequest_Implementation(AShooterCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime, AWeapon* DamageCauser)
+{
+    FServerSideRewindResult Confirm = ServerSideRewind(HitCharacter, TraceStart, HitLocation, HitTime);
+
+    if (Character && HitCharacter && DamageCauser && Confirm.bHitConfirmed)
+    {
+        UGameplayStatics::ApplyDamage(
+            HitCharacter,
+            DamageCauser->GetDamage(),
+            Character->Controller,
+            DamageCauser,
+            UDamageType::StaticClass()
+        );
+    }
 }

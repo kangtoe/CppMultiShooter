@@ -61,9 +61,20 @@ public:
         const FVector_NetQuantize& TraceStart,
         const FVector_NetQuantize& HitLocation,
         float HitTime);
+
+    UFUNCTION(Server, Reliable)
+    void ServerScoreRequest(
+        AShooterCharacter* HitCharacter,
+        const FVector_NetQuantize& TraceStart,
+        const FVector_NetQuantize& HitLocation,
+        float HitTime,
+        class AWeapon* DamageCauser
+    );
+
 protected:
     virtual void BeginPlay() override;
     void SaveFramePackage(FFramePackage& Package);
+    void SaveFramePackage();
     FFramePackage InterpBetweenFrames(const FFramePackage& OlderFrame, const FFramePackage& YoungerFrame, float HitTime);
 
     FServerSideRewindResult ConfirmHit(
