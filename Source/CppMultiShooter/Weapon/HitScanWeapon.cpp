@@ -43,7 +43,7 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets) // shot
         }
 
         TMap<AShooterCharacter*, uint32> HitMap;
-        for (FVector_NetQuantize HitTarget : HitTargets)
+        for (const FVector_NetQuantize& HitTarget : HitTargets)
         {          
             FHitResult FireHit;
             WeaponTraceHit(Start, HitTarget, FireHit);
