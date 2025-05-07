@@ -32,12 +32,13 @@ void AProjectileWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
                 UWorld* World = GetWorld();
                 if (World)
                 {
-                    World->SpawnActor<AProjectile>(
+                    AProjectile* prj = World->SpawnActor<AProjectile>(
                         ProjectileClass,
                         SocketTransform.GetLocation(),
                         TargetRotation,
                         SpawnParams
                     );
+                    prj->SetDamage(Damage);
                 }
             }
 		}

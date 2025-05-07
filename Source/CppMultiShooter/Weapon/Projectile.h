@@ -75,4 +75,5 @@ private:
 
 public:
     FORCEINLINE UPrimitiveComponent* GetCollisionComponent() { return CollisionBox; }
+    FORCEINLINE UPrimitiveComponent* SetDamage(float Damage) { return; }
 };

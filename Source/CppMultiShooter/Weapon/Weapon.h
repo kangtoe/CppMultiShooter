@@ -115,6 +115,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	uint32 NumberOfPellets = 1;
 
+	UPROPERTY(EditAnywhere)
+	float Damage = 20.f;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -191,4 +194,5 @@ public:
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 	FORCEINLINE TSubclassOf<class UScopeWidget> const GetScope() { return ScopeClass; }
+	FORCEINLINE float GetDamage() const { return Damage; }
 };
