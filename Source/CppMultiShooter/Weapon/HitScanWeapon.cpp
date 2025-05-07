@@ -81,7 +81,7 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets) // shot
                 );
             }
         }
-        for (auto HitPair : HitMap)
+        for (auto& HitPair : HitMap)
         {
             if (HitPair.Key && HasAuthority() && InstigatorController)
             {
