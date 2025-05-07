@@ -117,6 +117,16 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
+	UPROPERTY(EditAnywhere)
+	float HeadShotDamage = 40.f;
+
+	UPROPERTY(EditAnywhere)
+	bool bUseServerSideRewind = true;
+
+	UPROPERTY()
+	class AShooterCharacter* ShooterOwnerCharacter;
+	UPROPERTY()
+	class AShooterPlayerController* ShooterOwnerController;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
@@ -158,12 +168,6 @@ private:
 	// Incremented in SpendRound, decremented in ClientUpdateAmmo.
 	int32 ServerUnprocessedUsedAmmo = 0;
 
-	UPROPERTY()
-	class AShooterCharacter* ShooterOwnerCharacter;
-	
-	UPROPERTY()
-	class AShooterPlayerController* ShooterOwnerController;	
-
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
 
@@ -195,4 +199,5 @@ public:
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 	FORCEINLINE TSubclassOf<class UScopeWidget> const GetScope() { return ScopeClass; }
 	FORCEINLINE float GetDamage() const { return Damage; }
+	FORCEINLINE float GetHeadShotDamage() const { return HeadShotDamage; }
 };
