@@ -33,6 +33,8 @@ public:
     void HandleMatchHasStarted();
     void HandleCooldown();
 
+    float SingleTripTime = 0.f;
+
     void SetHUDScope(bool bIsAiming, TSubclassOf<UScopeWidget> ScopeClass);
 
 protected:
