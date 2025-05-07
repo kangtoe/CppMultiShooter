@@ -87,6 +87,123 @@ FFramePackage ULagCompensationComponent::InterpBetweenFrames(const FFramePackage
     return InterpFramePackage;
 }
 
+FServerSideRewindResult ULagCompensationComponent::ConfirmHit(const FFramePackage& Package, AShooterCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation)
+{
+    if (HitCharacter == nullptr) return FServerSideRewindResult();
+
+    FFramePackage CurrentFrame;
+    CacheBoxPositions(HitCharacter, CurrentFrame); // 현재 캐릭터의 히트박스 상태 백업
+    MoveBoxes(HitCharacter, Package); // 과거 위치로 히트박스 이동 (리와인드)
+    EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::NoCollision); // 메시 충돌 비활성화 (히트박스 충돌만 사용)
+
+    // 우선적으로 'head' 박스에만 충돌 활성화
+    UBoxComponent* HeadBox = HitCharacter->GetHitCollisionBoxes()[FName("head")];
+    HeadBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    HeadBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+
+    FHitResult ConfirmHitResult;
+    const FVector TraceEnd = TraceStart + (HitLocation - TraceStart) * 1.25f;
+    UWorld* World = GetWorld();
+    if (World)
+    {
+        World->LineTraceSingleByChannel( // 첫 번째 라인트레이스로 헤드샷 여부 확인
+            ConfirmHitResult,
+            TraceStart,
+            TraceEnd,
+            ECollisionChannel::ECC_Visibility
+        );
+        if (ConfirmHitResult.bBlockingHit) // 헤드에 명중: 히트박스 복구 및 메시 충돌 복원 후 헤드샷 반환
+        {
+            ResetHitBoxes(HitCharacter, CurrentFrame);
+            EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::QueryOnly);
+            return FServerSideRewindResult{ true, true };
+        }
+        else // 헤드샷이 아니므로 모든 히트박스에 충돌 활성화
+        {
+            for (auto& HitBoxPair : HitCharacter->GetHitCollisionBoxes()) 
+            {
+                if (HitBoxPair.Value != nullptr)
+                {
+                    HitBoxPair.Value->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+                    HitBoxPair.Value->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+                }
+            }
+            World->LineTraceSingleByChannel( // 두 번째 라인트레이스로 몸통 등 다른 부위 명중 확인
+                ConfirmHitResult,
+                TraceStart,
+                TraceEnd,
+                ECollisionChannel::ECC_Visibility
+            );
+            if (ConfirmHitResult.bBlockingHit)  // 명중 시: 히트박스 복구 및 메시 충돌 복원 후 바디샷 반환
+            {
+                ResetHitBoxes(HitCharacter, CurrentFrame);
+                EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::QueryOnly);
+                return FServerSideRewindResult{ true, false };
+            }
+        }
+    }
+
+    // 어떤 부위에도 명중하지 않음: 복구 후 실패 반환
+    ResetHitBoxes(HitCharacter, CurrentFrame);
+    EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::QueryOnly);
+    return FServerSideRewindResult{ false, false };
+}
+
+void ULagCompensationComponent::CacheBoxPositions(AShooterCharacter* HitCharacter, FFramePackage& OutFramePackage)
+{
+    if (HitCharacter == nullptr) return;
+    for (auto& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+    {
+        if (HitBoxPair.Value != nullptr)
+        {
+            FBoxInformation BoxInfo;
+            BoxInfo.Location = HitBoxPair.Value->GetComponentLocation();
+            BoxInfo.Rotation = HitBoxPair.Value->GetComponentRotation();
+            BoxInfo.BoxExtent = HitBoxPair.Value->GetScaledBoxExtent();
+            OutFramePackage.HitBoxInfo.Add(HitBoxPair.Key, BoxInfo);
+        }
+    }
+}
+
+void ULagCompensationComponent::MoveBoxes(AShooterCharacter* HitCharacter, const FFramePackage& Package)
+{
+    if (HitCharacter == nullptr) return;
+    for (auto& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+    {
+        if (HitBoxPair.Value != nullptr)
+        {
+            HitBoxPair.Value->SetWorldLocation(Package.HitBoxInfo[HitBoxPair.Key].Location);
+            HitBoxPair.Value->SetWorldRotation(Package.HitBoxInfo[HitBoxPair.Key].Rotation);
+            HitBoxPair.Value->SetBoxExtent(Package.HitBoxInfo[HitBoxPair.Key].BoxExtent);
+        }
+    }
+}
+
+void ULagCompensationComponent::ResetHitBoxes(AShooterCharacter* HitCharacter, const FFramePackage& Package)
+{
+    if (HitCharacter == nullptr) return;
+    for (auto& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+    {
+        if (HitBoxPair.Value != nullptr)
+        {
+            HitBoxPair.Value->SetWorldLocation(Package.HitBoxInfo[HitBoxPair.Key].Location);
+            HitBoxPair.Value->SetWorldRotation(Package.HitBoxInfo[HitBoxPair.Key].Rotation);
+            HitBoxPair.Value->SetBoxExtent(Package.HitBoxInfo[HitBoxPair.Key].BoxExtent);
+            HitBoxPair.Value->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        }
+    }
+}
+
+void ULagCompensationComponent::EnableCharacterMeshCollision(AShooterCharacter* HitCharacter, ECollisionEnabled::Type CollisionEnabled)
+{
+    if (HitCharacter && HitCharacter->GetMesh())
+    {
+        HitCharacter->GetMesh()->SetCollisionEnabled(CollisionEnabled);
+    }
+}
+
+
+
 void ULagCompensationComponent::ShowFramePackage(const FFramePackage& Package, const FColor& Color)
 {
     for (auto& BoxInfo : Package.HitBoxInfo)
@@ -103,7 +220,7 @@ void ULagCompensationComponent::ShowFramePackage(const FFramePackage& Package, c
     }
 }
 
-void ULagCompensationComponent::ServerSideRewind(AShooterCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime)
+FServerSideRewindResult ULagCompensationComponent::ServerSideRewind(AShooterCharacter* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime)
 {
     bool bReturn =
         HitCharacter == nullptr ||
