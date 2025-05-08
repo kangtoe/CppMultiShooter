@@ -79,7 +79,7 @@ void AProjectile::BeginPlay()
     ImpactParticles = ImpactObstacleParticles ? ImpactObstacleParticles : ImpactCharacterParticles; 
 
     // show path
-    FPredictProjectilePathParams PathParams;
+    /*FPredictProjectilePathParams PathParams;
     PathParams.bTraceWithChannel = true;
     PathParams.bTraceWithCollision = true;
     PathParams.DrawDebugTime = 5.f;
@@ -92,7 +92,7 @@ void AProjectile::BeginPlay()
     PathParams.TraceChannel = ECollisionChannel::ECC_Visibility;
     PathParams.ActorsToIgnore.Add(this);
     FPredictProjectilePathResult PathResult;
-    UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
+    UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);*/
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
