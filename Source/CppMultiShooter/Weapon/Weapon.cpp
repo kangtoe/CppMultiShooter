@@ -125,21 +125,21 @@ void AWeapon::SpendRound()
 	{
 		ClientUpdateAmmo(Ammo);
 
-		if (GEngine)
+		/*if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
 				FString::Printf(TEXT("Ammo: %d"), Ammo));
-		}
+		}*/
 	}
 	else if (ShooterOwnerCharacter && ShooterOwnerCharacter->IsLocallyControlled())
 	{
 		ServerUnprocessedUsedAmmo++;
 
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
-				FString::Printf(TEXT("Ammo: %d"), Ammo));
-		}
+		//if (GEngine)
+		//{
+		//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
+		//		FString::Printf(TEXT("Ammo: %d"), Ammo));
+		//}
 	}
 }
 
@@ -151,11 +151,11 @@ void AWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo) // 서버 -> 클
 	Ammo -= ServerUnprocessedUsedAmmo;
 	SetHUDAmmo();
 
-	if (GEngine)
+	/*if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
 			FString::Printf(TEXT("Ammo: %d"), Ammo));
-	}
+	}*/
 }
 
 void AWeapon::AddAmmo(int32 AmmoToAdd)
