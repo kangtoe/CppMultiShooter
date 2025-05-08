@@ -73,10 +73,25 @@ public:
 
     void ShowFramePackage(const FFramePackage& Package, const FColor& Color);
 
+    FServerSideRewindResult ProjectileServerSideRewind(
+        AShooterCharacter* HitCharacter,
+        const FVector_NetQuantize& TraceStart,
+        const FVector_NetQuantize100& InitialVelocity,
+        float HitTime
+    );
+
     FShotgunServerSideRewindResult ShotgunServerSideRewind(
         const TArray<AShooterCharacter*>& HitCharacters,
         const FVector_NetQuantize& TraceStart,
         const TArray<FVector_NetQuantize>& HitLocations,
+        float HitTime
+    );
+
+    UFUNCTION(Server, Reliable)
+    void ProjectileServerScoreRequest(
+        AShooterCharacter* HitCharacter,
+        const FVector_NetQuantize& TraceStart,
+        const FVector_NetQuantize100& InitialVelocity,
         float HitTime
     );
 
@@ -98,6 +113,14 @@ protected:
         const TArray<FFramePackage>& FramePackages,
         const FVector_NetQuantize& TraceStart,
         const TArray<FVector_NetQuantize>& HitLocations
+    );
+
+    FServerSideRewindResult ProjectileConfirmHit(
+        const FFramePackage& Package,
+        AShooterCharacter* HitCharacter,
+        const FVector_NetQuantize& TraceStart,
+        const FVector_NetQuantize100& InitialVelocity,
+        float HitTime
     );
 
     void CacheBoxPositions(AShooterCharacter* HitCharacter, FFramePackage& OutFramePackage);
