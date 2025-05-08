@@ -28,3 +28,4 @@
 - 재장전 애니메이션이 멀티플레이에서 정상 동작하는 지 확인하고 문제 잇는 경우 개선 - [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/31975848#questions/18778318)
 - 클라이언트에서 수납무기 장비 시 사운드 재생되지 않는 문제 수정
 - 발사체 무기 클래스에서 사격 분산 정보가 동기화 되고 있는 지 확인할 것
+- 발사체 SSR 정확한 PathParams.ProjectileRadius 설정 [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/32182616#questions/19142128)
