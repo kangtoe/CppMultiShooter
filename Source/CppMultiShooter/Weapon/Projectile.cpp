@@ -27,7 +27,31 @@ AProjectile::AProjectile()
     CollisionBox->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Block);
     ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
     ProjectileMovementComponent->bRotationFollowsVelocity = true;
+
+    ProjectileMovementComponent->InitialSpeed = InitialSpeed;
+    ProjectileMovementComponent->MaxSpeed = InitialSpeed;
 }
+
+#if WITH_EDITOR
+void AProjectile::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+    Super::PostEditChangeProperty(PropertyChangedEvent);
+
+    // 변경된 프로퍼티의 이름을 가져온다.
+    FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+    // 변경된 프로퍼티에 따라 작업을 수행
+    if (PropertyName == GET_MEMBER_NAME_CHECKED(AProjectile, InitialSpeed))
+    {
+        if (ProjectileMovementComponent)
+        {
+            // InitialSpeed를 에디터에서 수정하면 자동으로 ProjectileMovementComponent->InitialSpeed, MaxSpeed 값 둘다 변경이 된다.
+            ProjectileMovementComponent->InitialSpeed = InitialSpeed;
+            ProjectileMovementComponent->MaxSpeed = InitialSpeed;
+        }
+    }
+}
+#endif
 
 void AProjectile::BeginPlay()
 {
@@ -53,6 +77,22 @@ void AProjectile::BeginPlay()
 
     // 임시코드 - 기본 적중 파티클 효과 설정
     ImpactParticles = ImpactObstacleParticles ? ImpactObstacleParticles : ImpactCharacterParticles; 
+
+    // show path
+    FPredictProjectilePathParams PathParams;
+    PathParams.bTraceWithChannel = true;
+    PathParams.bTraceWithCollision = true;
+    PathParams.DrawDebugTime = 5.f;
+    PathParams.DrawDebugType = EDrawDebugTrace::ForDuration;
+    PathParams.LaunchVelocity = GetActorForwardVector() * InitialSpeed;
+    PathParams.MaxSimTime = 4.f;
+    PathParams.ProjectileRadius = 5.f;
+    PathParams.SimFrequency = 30.f;
+    PathParams.StartLocation = GetActorLocation();
+    PathParams.TraceChannel = ECollisionChannel::ECC_Visibility;
+    PathParams.ActorsToIgnore.Add(this);
+    FPredictProjectilePathResult PathResult;
+    UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
