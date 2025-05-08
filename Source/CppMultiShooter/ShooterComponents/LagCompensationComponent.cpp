@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "CppMultiShooter/Weapon/Weapon.h"
 #include "Kismet/GameplayStatics.h"
+#include "CppMultiShooter/CppMultiShooter.h"
 
 ULagCompensationComponent::ULagCompensationComponent()
 {
@@ -120,7 +121,7 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
         // Enable collision for the head first
         UBoxComponent* HeadBox = Frame.Character->GetHitCollisionBoxes()[FName("head")];
         HeadBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-        HeadBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+        HeadBox->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
     }
 
     UWorld* World = GetWorld();
@@ -135,7 +136,7 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
                 ConfirmHitResult,
                 TraceStart,
                 TraceEnd,
-                ECollisionChannel::ECC_Visibility
+                ECC_HitBox
             );
             AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(ConfirmHitResult.GetActor());
             if (ShooterCharacter)
@@ -148,7 +149,17 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
                 {
                     ShotgunResult.HeadShots.Emplace(ShooterCharacter, 1);
                 }
-            }
+
+                // for head shot debug
+                if (ConfirmHitResult.Component.IsValid())
+                {
+                    UBoxComponent* Box = Cast<UBoxComponent>(ConfirmHitResult.Component);
+                    if (Box)
+                    {
+                        DrawDebugBox(GetWorld(), Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Red, false, 8.f);
+                    }
+                }
+            }            
         }
     }
 
@@ -160,7 +171,7 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
             if (HitBoxPair.Value != nullptr)
             {
                 HitBoxPair.Value->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-                HitBoxPair.Value->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+                HitBoxPair.Value->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
             }
         }
         UBoxComponent* HeadBox = Frame.Character->GetHitCollisionBoxes()[FName("head")];
@@ -178,11 +189,11 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
                 ConfirmHitResult,
                 TraceStart,
                 TraceEnd,
-                ECollisionChannel::ECC_Visibility
+                ECC_HitBox
             );
             AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(ConfirmHitResult.GetActor());
             if (ShooterCharacter)
-            {
+            {                
                 if (ShotgunResult.BodyShots.Contains(ShooterCharacter))
                 {
                     ShotgunResult.BodyShots[ShooterCharacter]++;
@@ -190,6 +201,16 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
                 else
                 {
                     ShotgunResult.BodyShots.Emplace(ShooterCharacter, 1);
+                }
+
+                // for body shot debug
+                if (ConfirmHitResult.Component.IsValid())
+                {
+                    UBoxComponent* Box = Cast<UBoxComponent>(ConfirmHitResult.Component);
+                    if (Box)
+                    {
+                        DrawDebugBox(GetWorld(), Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Blue, false, 8.f);
+                    }
                 }
             }
         }

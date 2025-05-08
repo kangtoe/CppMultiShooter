@@ -708,9 +708,9 @@ void AShooterCharacter::AddCollisionBox(const FName& BoneName, const FVector& Re
         {
             BoxComponent->SetupAttachment(GetMesh(), BoneName);
             BoxComponent->RegisterComponent();
-            //BoxComponent->SetCollisionObjectType(ECC_HitBox);
-            //BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-            //BoxComponent->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
+            BoxComponent->SetCollisionObjectType(ECC_HitBox);
+            BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+            BoxComponent->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
             BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             BoxComponent->SetRelativeLocation(RelativeLocation);
             BoxComponent->SetRelativeRotation(RelativeRotation);
