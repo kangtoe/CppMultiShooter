@@ -272,7 +272,11 @@ void AShooterPlayerController::CheckPing(float DeltaTime)
     if (ShooterHUD && ShooterHUD->CharacterOverlay && ShooterHUD->CharacterOverlay->PingAmountText)
     {
         FString PingText = FString::Printf(TEXT("%d"), FMath::FloorToInt(CurrentPing));
-        ShooterHUD->CharacterOverlay->PingAmountText->SetText(FText::FromString(PingText));
+
+        auto& text = ShooterHUD->CharacterOverlay->PingAmountText;
+        text->SetText(FText::FromString(PingText));
+        if(HighPingThreshold < CurrentPing) text->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
+        else text->SetColorAndOpacity(FSlateColor(FLinearColor::White));        
     }
 }
 

@@ -60,6 +60,8 @@ protected:
     UFUNCTION(Client, Reliable)
     void ClientJoinMidgame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
 
+    UPROPERTY(EditAnywhere)
+    float HighPingThreshold = 250.f;
     void CheckPing(float DeltaTime);
 
 private:
