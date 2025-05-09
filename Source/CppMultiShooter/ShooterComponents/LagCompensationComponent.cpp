@@ -320,13 +320,20 @@ void ULagCompensationComponent::CacheBoxPositions(AShooterCharacter* HitCharacte
 void ULagCompensationComponent::MoveBoxes(AShooterCharacter* HitCharacter, const FFramePackage& Package)
 {
     if (HitCharacter == nullptr) return;
-    for (auto& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+
+    for (TTuple<FName, UBoxComponent*>& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
     {
         if (HitBoxPair.Value != nullptr)
         {
-            HitBoxPair.Value->SetWorldLocation(Package.HitBoxInfo[HitBoxPair.Key].Location);
-            HitBoxPair.Value->SetWorldRotation(Package.HitBoxInfo[HitBoxPair.Key].Rotation);
-            HitBoxPair.Value->SetBoxExtent(Package.HitBoxInfo[HitBoxPair.Key].BoxExtent);
+            const FBoxInformation* BoxValue = Package.HitBoxInfo.Find(HitBoxPair.Key);
+
+            if (BoxValue)
+            {
+                HitBoxPair.Value->SetWorldLocation(BoxValue->Location);
+                HitBoxPair.Value->SetWorldRotation(BoxValue->Rotation);
+                HitBoxPair.Value->SetBoxExtent(BoxValue->BoxExtent);
+            }
+
         }
     }
 }
@@ -334,14 +341,20 @@ void ULagCompensationComponent::MoveBoxes(AShooterCharacter* HitCharacter, const
 void ULagCompensationComponent::ResetHitBoxes(AShooterCharacter* HitCharacter, const FFramePackage& Package)
 {
     if (HitCharacter == nullptr) return;
-    for (auto& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+
+    for (TTuple<FName, UBoxComponent*>& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
     {
         if (HitBoxPair.Value != nullptr)
         {
-            HitBoxPair.Value->SetWorldLocation(Package.HitBoxInfo[HitBoxPair.Key].Location);
-            HitBoxPair.Value->SetWorldRotation(Package.HitBoxInfo[HitBoxPair.Key].Rotation);
-            HitBoxPair.Value->SetBoxExtent(Package.HitBoxInfo[HitBoxPair.Key].BoxExtent);
-            HitBoxPair.Value->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            const FBoxInformation* BoxValue = Package.HitBoxInfo.Find(HitBoxPair.Key);
+
+            if (BoxValue)
+            {
+                HitBoxPair.Value->SetWorldLocation(BoxValue->Location);
+                HitBoxPair.Value->SetWorldRotation(BoxValue->Rotation);
+                HitBoxPair.Value->SetBoxExtent(BoxValue->BoxExtent);
+                HitBoxPair.Value->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            }
         }
     }
 }
