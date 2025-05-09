@@ -29,3 +29,6 @@
 - 클라이언트에서 수납무기 장비 시 사운드 재생되지 않는 문제 수정
 - 발사체 무기 클래스에서 사격 분산 정보가 동기화 되고 있는 지 확인할 것
 - 발사체 SSR 정확한 PathParams.ProjectileRadius 설정 [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/32182616#questions/19142128)
+- 배낭과 모자 끝 부분 히트 박스 지우기
+- 핑이 너무 높은 경우, SSR 사용 비활성화 [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/32182626#questions)
+- 무기 교체 또는 획득 시 SSR이 작동하지 않는 문제 수정 [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/32182626#questions/18556222)
