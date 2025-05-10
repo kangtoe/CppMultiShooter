@@ -304,7 +304,7 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 void ULagCompensationComponent::CacheBoxPositions(AShooterCharacter* HitCharacter, FFramePackage& OutFramePackage)
 {
     if (HitCharacter == nullptr) return;
-    for (auto& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+    for (const TTuple<FName, UBoxComponent*>& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
     {
         if (HitBoxPair.Value != nullptr)
         {
@@ -321,7 +321,7 @@ void ULagCompensationComponent::MoveBoxes(AShooterCharacter* HitCharacter, const
 {
     if (HitCharacter == nullptr) return;
 
-    for (TTuple<FName, UBoxComponent*>& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+    for (const TTuple<FName, UBoxComponent*>& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
     {
         if (HitBoxPair.Value != nullptr)
         {
@@ -342,7 +342,7 @@ void ULagCompensationComponent::ResetHitBoxes(AShooterCharacter* HitCharacter, c
 {
     if (HitCharacter == nullptr) return;
 
-    for (TTuple<FName, UBoxComponent*>& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
+    for (const TTuple<FName, UBoxComponent*>& HitBoxPair : HitCharacter->GetHitCollisionBoxes())
     {
         if (HitBoxPair.Value != nullptr)
         {
