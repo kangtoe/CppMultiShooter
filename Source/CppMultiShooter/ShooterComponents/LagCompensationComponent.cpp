@@ -110,9 +110,9 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
     {
         FFramePackage CurrentFrame;
         CurrentFrame.Character = Frame.Character;
-        CacheBoxPositions(Frame.Character, CurrentFrame);
-        MoveBoxes(Frame.Character, Frame);
-        EnableCharacterMeshCollision(Frame.Character, ECollisionEnabled::NoCollision);
+        CacheBoxPositions(Frame.Character.Get(), CurrentFrame);
+        MoveBoxes(Frame.Character.Get(), Frame);
+        EnableCharacterMeshCollision(Frame.Character.Get(), ECollisionEnabled::NoCollision);
         CurrentFrames.Add(CurrentFrame);
     }
 
@@ -218,8 +218,8 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
 
     for (auto& Frame : CurrentFrames)
     {
-        ResetHitBoxes(Frame.Character, Frame);
-        EnableCharacterMeshCollision(Frame.Character, ECollisionEnabled::QueryAndPhysics);
+        ResetHitBoxes(Frame.Character.Get(), Frame);
+        EnableCharacterMeshCollision(Frame.Character.Get(), ECollisionEnabled::QueryAndPhysics);
     }
 
     return ShotgunResult;

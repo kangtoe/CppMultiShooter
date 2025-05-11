@@ -33,7 +33,7 @@ struct FFramePackage
     TMap<FName, FBoxInformation> HitBoxInfo;
 
     UPROPERTY()
-    AShooterCharacter* Character;
+    TWeakObjectPtr<class AShooterCharacter> Character;
 };
 
 USTRUCT(BlueprintType)
