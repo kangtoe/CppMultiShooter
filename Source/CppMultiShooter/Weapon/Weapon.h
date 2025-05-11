@@ -121,7 +121,7 @@ protected:
 	float HeadShotDamage = 40.f;
 
 	UPROPERTY(EditAnywhere)
-	bool bUseServerSideRewind = true;
+	bool bUseServerSideRewind = false;
 
 	UPROPERTY()
 	class AShooterCharacter* ShooterOwnerCharacter;
