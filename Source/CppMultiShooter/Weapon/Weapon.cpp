@@ -12,6 +12,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "CppMultiShooter/PlayerController/ShooterPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CppMultiShooter/HUD/ScopeWidget.h"
 
 // Sets default values
 AWeapon::AWeapon()

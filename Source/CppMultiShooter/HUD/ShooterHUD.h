@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "ScopeWidget.h"
+
 #include "ShooterHUD.generated.h"
 
 // BP에 사용 가능하도록 구조체 선언
@@ -49,7 +51,7 @@ public:
        
     UPROPERTY()
     class UScopeWidget* ScopeWidget;
-    void AddScopeWidget(TSubclassOf<UScopeWidget> ScopeClass);
+    void AddScopeWidget(TSubclassOf<class UScopeWidget> ScopeClass);
 
 protected:
     virtual void BeginPlay() override;    
