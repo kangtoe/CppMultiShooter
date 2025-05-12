@@ -260,7 +260,6 @@ void UCombatComponent::ThrowGrenade()
 	{
 		ServerThrowGrenade();
 	}
-
 	if (Character && Character->HasAuthority())
 	{
 		Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
@@ -278,6 +277,8 @@ void UCombatComponent::ServerThrowGrenade_Implementation()
 		AttachActorToLeftHand(EquippedWeapon);
 		ShowAttachedGrenade(true);
 	}
+	Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
+	UpdateHUDGrenades();
 }
 
 void UCombatComponent::ThrowGrenadeFinished() // 몽타주 노티파이 이벤트에서 호출
