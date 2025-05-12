@@ -226,10 +226,15 @@ void AShooterCharacter::PlayThrowMontage()
 		AnimInstance->Montage_Play(ThrowMontage, 1, EMontagePlayReturnType::MontageLength, 0, false);
 	}
 }
+void AShooterCharacter::PlaySwapMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && SwapMontage)
+	{
+		AnimInstance->Montage_Play(SwapMontage, 1, EMontagePlayReturnType::MontageLength, 0, false);
+	}
+}
 #pragma endregion
-
-
-
 
 void AShooterCharacter::Elim()
 {

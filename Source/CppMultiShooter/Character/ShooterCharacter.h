@@ -42,6 +42,7 @@ public:
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
 	void PlayThrowMontage();
+	void PlaySwapMontage();
 	
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
@@ -81,6 +82,7 @@ public:
 	void UpdateHUDGrenade();
 
 	void SpawnDefaultWeapon();
+	bool bFinishedSwapping = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -159,6 +161,8 @@ private:
 	UAnimMontage* ElimMontage;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ThrowMontage;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* SwapMontage;
 
 	void HideCameraIfCharacterClose();
 
