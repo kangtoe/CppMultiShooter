@@ -264,19 +264,20 @@ void AShooterPlayerController::CheckTimeSync(float DeltaTime)
 }
 
 void AShooterPlayerController::CheckPing(float DeltaTime)
-{
+{    
     if (PlayerState == nullptr) return;        
 
     // this is different than his which is PlayerState->GetPing() * 4 because it is compressed or if(PlayerState->GetPingInMilliseconds() > HighPingThreshold)
     float CurrentPing = PlayerState->GetPingInMilliseconds();
     if (ShooterHUD && ShooterHUD->CharacterOverlay && ShooterHUD->CharacterOverlay->PingAmountText)
     {
-        FString PingText = FString::Printf(TEXT("%d"), FMath::FloorToInt(CurrentPing));
+        FString PingText = FString::Printf(TEXT("%d"), FMath::FloorToInt(CurrentPing));        
+        ShooterHUD->CharacterOverlay->PingAmountText->SetText(FText::FromString(PingText));
 
-        auto& text = ShooterHUD->CharacterOverlay->PingAmountText;
-        text->SetText(FText::FromString(PingText));
-        if(HighPingThreshold < CurrentPing) text->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
-        else text->SetColorAndOpacity(FSlateColor(FLinearColor::White));        
+        FColor color = FColor::White;
+        if (HighPingThreshold < CurrentPing) color = FColor::Red;
+        ShooterHUD->CharacterOverlay->SetPingUIColor(color);
+  
     }
 }
 

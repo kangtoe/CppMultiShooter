@@ -47,4 +47,10 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     UTextBlock* PingAmountText;
+
+    UPROPERTY(meta = (BindWidget))
+    class UImage* PingImage;
+
+    UFUNCTION()
+    void SetPingUIColor(FColor color);
 };

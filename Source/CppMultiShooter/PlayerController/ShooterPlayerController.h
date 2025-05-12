@@ -35,7 +35,7 @@ public:
 
     float SingleTripTime = 0.f;
 
-    void SetHUDScope(bool bIsAiming, TSubclassOf<UScopeWidget> ScopeClass);
+    void SetHUDScope(bool bIsAiming, TSubclassOf<class UScopeWidget> ScopeClass);
 
 protected:
     virtual void BeginPlay() override;    
