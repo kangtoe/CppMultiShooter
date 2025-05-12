@@ -387,6 +387,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	RotateInPlace(DeltaTime);	
 	HideCameraIfCharacterClose();	
+
 }
 
 #pragma region 캐릭터 입력 처리
@@ -468,6 +469,37 @@ void AShooterCharacter::ServerOnInputEquip_Implementation()
 	}
 }
 
+void AShooterCharacter::OnInputSwap(const FInputActionInstance& Instance)
+{
+
+	/*if (GEngine)
+	{
+		FColor color = HasAuthority() ? FColor::Red : FColor::Blue;
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, color,
+			FString::Printf(TEXT("OnInputSwap")));
+	}*/
+
+	if (Combat->CombatState == ECombatState::ECS_Unoccupied)
+	{
+		ServerOnInputSwap();
+		if (Combat) Combat->SwapWeapons();
+	}
+}
+
+void AShooterCharacter::ServerOnInputSwap_Implementation()
+{
+	/*if (GEngine)
+	{
+		FColor color = HasAuthority() ? FColor::Red : FColor::Blue;
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, color,
+			FString::Printf(TEXT("ServerOnInputSwap_Implementation")));
+	}*/
+
+	if (Combat) Combat->SwapWeapons();
+}
+
 void AShooterCharacter::OnInputCrouch(const FInputActionInstance& Instance)
 {	
 	if (bDisableGameplay) return;
@@ -529,16 +561,6 @@ void AShooterCharacter::OnInputThrow(const FInputActionInstance& Instance)
 	{
 		Combat->ThrowGrenade();
 	}
-}
-
-void AShooterCharacter::OnInputSwap(const FInputActionInstance& Instance)
-{
-	ServerOnInputSwap();
-}
-
-void AShooterCharacter::ServerOnInputSwap_Implementation()
-{
-	if (Combat) Combat->SwapWeapons();
 }
 
 #pragma endregion

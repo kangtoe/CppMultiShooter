@@ -82,7 +82,7 @@ public:
 	void UpdateHUDGrenade();
 
 	void SpawnDefaultWeapon();
-	bool bFinishedSwapping = false;
+	//bool bFinishedSwapping = false;
 
 protected:
 	// Called when the game starts or when spawned

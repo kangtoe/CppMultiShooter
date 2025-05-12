@@ -73,6 +73,6 @@ void UShooterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	}
 
 	bUseFABRIK = ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
-	bUseAimOffsets = !ShooterCharacter->GetDisableGameplay(); // && BlasterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
+	bUseAimOffsets = !ShooterCharacter->GetDisableGameplay() && ShooterCharacter->GetCombatState() != ECombatState::ECS_SwappingWeapons; // && ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
 	bTransformRightHand = ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !ShooterCharacter->GetDisableGameplay();
 }

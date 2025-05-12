@@ -34,7 +34,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
-	//DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
+	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 	DOREPLIFETIME(UCombatComponent, CombatState);
@@ -125,8 +125,50 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::SwapWeapons()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr ) return;
 	if (EquippedWeapon == nullptr || SecondaryWeapon == nullptr) return;
+
+	/*if (GEngine)
+	{
+		FColor color = Character->HasAuthority() ? FColor::Red : FColor::Blue;
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, color,
+			FString::Printf(TEXT("SwapWeapons")));
+	}*/
+
+	Character->PlaySwapMontage();
+	CombatState = ECombatState::ECS_SwappingWeapons;
+	//Character->bFinishedSwapping = false;
+	//if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(false);
+}
+
+void UCombatComponent::FinishSwap_Implementation()
+{
+	/*if (GEngine)
+	{
+		FColor color = Character->HasAuthority() ? FColor::Red : FColor::Blue;
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, color,
+			FString::Printf(TEXT("FinishSwap_Implementation")));
+	}*/
+
+	if (Character && Character->HasAuthority())
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
+	}
+	//if (Character) Character->bFinishedSwapping = true;
+	//if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(true);
+}
+
+void UCombatComponent::FinishSwapAttachWeapons_Implementation()
+{
+	/*if (GEngine)
+	{
+		FColor color = Character->HasAuthority() ? FColor::Red : FColor::Blue;
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, color,
+			FString::Printf(TEXT("FinishSwapAttachWeapons_Implementation")));
+	}*/
 
 	AWeapon* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
@@ -640,6 +682,12 @@ void UCombatComponent::OnRep_CombatState()
 				Character->PlayThrowMontage();
 				AttachActorToLeftHand(EquippedWeapon);
 				ShowAttachedGrenade(true);
+			}
+			break;
+		case ECombatState::ECS_SwappingWeapons:
+			if (Character && !Character->IsLocallyControlled())
+			{
+				Character->PlaySwapMontage();
 			}
 			break;
 	}

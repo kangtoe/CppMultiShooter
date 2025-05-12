@@ -42,6 +42,11 @@ public:
 
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void FinishSwap();
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void FinishSwapAttachWeapons();
+
 protected:
 	virtual void BeginPlay() override;
 	
