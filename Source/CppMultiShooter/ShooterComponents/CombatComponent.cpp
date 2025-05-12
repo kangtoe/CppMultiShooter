@@ -431,7 +431,7 @@ void UCombatComponent::Fire()
 			HitTarget = EquippedWeapon->TraceEndWithScatter(HitTarget);
 			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, .75f, GetWorld()->GetDeltaSeconds(), 20.f); // 사격 시 벌어짐
 
-			ServerFire(HitTargets); // 실제 서버 사격 처리
+			ServerFire(HitTargets, EquippedWeapon->FireDelay); // 실제 서버 사격 처리
 			if (Character && !Character->HasAuthority())
 			{
 				LocalFire(HitTargets); // 로컬에서 사격 효과 우선 처리
@@ -474,9 +474,19 @@ void UCombatComponent::FireTimerFinished()
 }
 
 // 서버에서 멀티캐스트 RPC를 호출하는 경우에만 실행 가능
-void UCombatComponent::ServerFire_Implementation(const TArray<FVector_NetQuantize>& HitTargets)
+void UCombatComponent::ServerFire_Implementation(const TArray<FVector_NetQuantize>& HitTargets, float FireDelay)
 {
 	MulticastFire(HitTargets);
+}
+
+bool UCombatComponent::ServerFire_Validate(const TArray<FVector_NetQuantize>& TraceHitTargets, float FireDelay)
+{
+	if (EquippedWeapon)
+	{
+		bool bNearlyEqual = FMath::IsNearlyEqual(EquippedWeapon->FireDelay, FireDelay, 0.001f);
+		return bNearlyEqual;
+	}
+	return true;
 }
 
 void UCombatComponent::MulticastFire_Implementation(const TArray<FVector_NetQuantize>& HitTargets)

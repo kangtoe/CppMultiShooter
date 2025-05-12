@@ -61,8 +61,8 @@ protected:
 	
 	void Fire();
 	void LocalFire(const TArray<FVector_NetQuantize>& HitTargets);
-	UFUNCTION(Server, Reliable)
-	void ServerFire(const TArray<FVector_NetQuantize>& HitTargets);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire(const TArray<FVector_NetQuantize>& HitTargets, float FireDelay);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire(const TArray<FVector_NetQuantize>& HitTargets);
 
