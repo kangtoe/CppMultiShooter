@@ -151,14 +151,14 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
                 }
 
                 // for head shot debug
-                if (ConfirmHitResult.Component.IsValid())
+                /*if (ConfirmHitResult.Component.IsValid())
                 {
                     UBoxComponent* Box = Cast<UBoxComponent>(ConfirmHitResult.Component);
                     if (Box)
                     {
                         DrawDebugBox(GetWorld(), Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Red, false, 8.f);
                     }
-                }
+                }*/
             }            
         }
     }
@@ -204,14 +204,14 @@ FShotgunServerSideRewindResult ULagCompensationComponent::ShotgunConfirmHit(cons
                 }
 
                 // for body shot debug
-                if (ConfirmHitResult.Component.IsValid())
+                /*if (ConfirmHitResult.Component.IsValid())
                 {
                     UBoxComponent* Box = Cast<UBoxComponent>(ConfirmHitResult.Component);
                     if (Box)
                     {
                         DrawDebugBox(GetWorld(), Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Blue, false, 8.f);
                     }
-                }
+                }*/
             }
         }
     }

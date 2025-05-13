@@ -69,7 +69,7 @@ void AShooterPlayerController::PawnLeavingGame()
     AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());    
     if (ShooterCharacter && !ShooterCharacter->bLeftGame)
     {
-        UE_LOG(LogTemp, Warning, TEXT("PawnLeavingGame"));
+        //UE_LOG(LogTemp, Warning, TEXT("PawnLeavingGame"));
         ShooterCharacter->Elim(true);
     }
 
@@ -497,11 +497,11 @@ void AShooterPlayerController::SetHUDScope(bool bIsAiming, TSubclassOf<UScopeWid
 {
     ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
 
-    UE_LOG(LogTemp, Warning, TEXT("bIsAiming: %d"), bIsAiming);
+    //UE_LOG(LogTemp, Warning, TEXT("bIsAiming: %d"), bIsAiming);
     bool bHUDValid = ShooterHUD &&
         ShooterHUD->ScopeWidget &&
         ShooterHUD->ScopeWidget->ScopeZoomIn;
-    UE_LOG(LogTemp, Warning, TEXT("bIsAiming: %d"), bIsAiming);
+    //UE_LOG(LogTemp, Warning, TEXT("bIsAiming: %d"), bIsAiming);
 
     if (!ShooterHUD->ScopeWidget)
     {
