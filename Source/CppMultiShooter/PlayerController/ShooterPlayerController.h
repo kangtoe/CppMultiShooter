@@ -43,6 +43,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
     class UInputAction* QuitAction;
 
+    void BroadcastElim(APlayerState* Attacker, APlayerState* Victim);
+
 protected:
     virtual void BeginPlay() override;    
     void SetHUDTime();
@@ -69,6 +71,9 @@ protected:
     UPROPERTY(EditAnywhere)
     float HighPingThreshold = 250.f;
     void CheckPing(float DeltaTime);
+
+    UFUNCTION(Client, Reliable)
+    void ClientElimAnnouncement(APlayerState* Attacker, APlayerState* Victim);
 
 private:
     UPROPERTY()

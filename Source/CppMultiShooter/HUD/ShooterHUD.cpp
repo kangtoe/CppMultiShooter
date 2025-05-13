@@ -6,6 +6,7 @@
 #include "CharacterOverlay.h"
 #include "Announcement.h"
 #include "ScopeWidget.h"
+#include "ElimAnnouncement.h"
 
 void AShooterHUD::AddAnnouncement()
 {
@@ -14,6 +15,20 @@ void AShooterHUD::AddAnnouncement()
     {
         Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
         Announcement->AddToViewport();
+    }
+}
+
+void AShooterHUD::AddElimAnnouncement(FString Attacker, FString Victim)
+{
+    OwningPlayer = OwningPlayer == nullptr ? GetOwningPlayerController() : OwningPlayer;
+    if (OwningPlayer && ElimAnnouncementClass)
+    {
+        UElimAnnouncement* ElimAnouncementWidget = CreateWidget<UElimAnnouncement>(OwningPlayer, ElimAnnouncementClass);
+        if (ElimAnouncementWidget)
+        {
+            ElimAnouncementWidget->SetElimAnnouncementText(Attacker, Victim);
+            ElimAnouncementWidget->AddToViewport();
+        }
     }
 }
 

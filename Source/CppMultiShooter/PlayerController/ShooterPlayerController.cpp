@@ -20,6 +20,11 @@
 #include "CppMultiShooter/HUD/ReturnToMainMenu.h"
 #include "EnhancedInputComponent.h"
 
+void AShooterPlayerController::BroadcastElim(APlayerState* Attacker, APlayerState* Victim)
+{
+    ClientElimAnnouncement(Attacker, Victim);
+}
+
 void AShooterPlayerController::BeginPlay()
 {
     Super::BeginPlay();
@@ -292,6 +297,39 @@ void AShooterPlayerController::CheckPing(float DeltaTime)
         if (HighPingThreshold < CurrentPing) color = FColor::Red;
         ShooterHUD->CharacterOverlay->SetPingUIColor(color);
   
+    }
+}
+
+void AShooterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)
+{
+    APlayerState* Self = GetPlayerState<APlayerState>();
+    if (Attacker && Victim && Self)
+    {
+        ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+        if (ShooterHUD)
+        {
+            if (Attacker == Self && Victim != Self)
+            {
+                ShooterHUD->AddElimAnnouncement("You", Victim->GetPlayerName());
+                return;
+            }
+            if (Victim == Self && Attacker != Self)
+            {
+                ShooterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), "you");
+                return;
+            }
+            if (Attacker == Victim && Attacker == Self)
+            {
+                ShooterHUD->AddElimAnnouncement("You", "yourself");
+                return;
+            }
+            if (Attacker == Victim && Attacker != Self)
+            {
+                ShooterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), "themselves");
+                return;
+            }
+            ShooterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), Victim->GetPlayerName());
+        }
     }
 }
 
