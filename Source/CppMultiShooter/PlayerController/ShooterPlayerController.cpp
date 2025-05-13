@@ -17,6 +17,8 @@
 #include "CppMultiShooter/Weapon/Weapon.h"
 #include "CppMultiShooter/GameState/ShooterGameState.h"
 #include "CppMultiShooter/HUD/ScopeWidget.h"
+#include "CppMultiShooter/HUD/ReturnToMainMenu.h"
+#include "EnhancedInputComponent.h"
 
 void AShooterPlayerController::BeginPlay()
 {
@@ -443,6 +445,38 @@ void AShooterPlayerController::HandleCooldown()
         {
             ShooterCharacter->bDisableGameplay = true;
             ShooterCharacter->GetCombat()->SetFiring(false);
+        }
+    }
+}
+
+void AShooterPlayerController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+
+    if (InputComponent == nullptr) return;
+    if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+    {
+        EnhancedInputComponent->BindAction(QuitAction, ETriggerEvent::Completed, this, &AShooterPlayerController::ShowReturnToMainMenu);
+    }
+}
+
+void AShooterPlayerController::ShowReturnToMainMenu()
+{
+    if (ReturnToMainMenuWidget == nullptr) return;
+    if (ReturnToMainMenu == nullptr)
+    {
+        ReturnToMainMenu = CreateWidget<UReturnToMainMenu>(this, ReturnToMainMenuWidget);
+    }
+    if (ReturnToMainMenu)
+    {
+        bReturnToMainMenuOpen = !bReturnToMainMenuOpen;
+        if (bReturnToMainMenuOpen)
+        {
+            ReturnToMainMenu->MenuSetup();
+        }
+        else
+        {
+            ReturnToMainMenu->MenuTearDown();
         }
     }
 }

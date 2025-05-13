@@ -21,6 +21,7 @@ public:
     void SetHUDMatchCountdown(float CountdownTime);
     void SetHUDAnnouncementCountdown(float CountdownTime);
     void SetHUDGrenades(int32 Grenades);
+    void SetHUDScope(bool bIsAiming, TSubclassOf<class UScopeWidget> ScopeClass);
 
     virtual void OnPossess(APawn* InPawn) override;
     virtual void OnRep_Pawn() override;
@@ -34,8 +35,12 @@ public:
     void HandleCooldown();
 
     float SingleTripTime = 0.f;
+  
+    virtual void SetupInputComponent() override;
+    void ShowReturnToMainMenu();
 
-    void SetHUDScope(bool bIsAiming, TSubclassOf<class UScopeWidget> ScopeClass);
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    class UInputAction* QuitAction;
 
 protected:
     virtual void BeginPlay() override;    
@@ -67,6 +72,15 @@ protected:
 private:
     UPROPERTY()
     class AShooterHUD* ShooterHUD;
+
+    /**
+    * Return to main menu
+    */
+    UPROPERTY(EditAnywhere, Category = HUD)
+    TSubclassOf<class UUserWidget> ReturnToMainMenuWidget;
+    UPROPERTY()
+    class UReturnToMainMenu* ReturnToMainMenu;
+    bool bReturnToMainMenuOpen = false;
 
     float LevelStartingTime = 0.f;
     float MatchTime = 0.f;
