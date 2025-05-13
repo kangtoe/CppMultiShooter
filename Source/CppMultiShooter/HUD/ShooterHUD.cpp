@@ -7,6 +7,9 @@
 #include "Announcement.h"
 #include "ScopeWidget.h"
 #include "ElimAnnouncement.h"
+#include "Components/HorizontalBox.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanelSlot.h"
 
 void AShooterHUD::AddAnnouncement()
 {
@@ -23,11 +26,40 @@ void AShooterHUD::AddElimAnnouncement(FString Attacker, FString Victim)
     OwningPlayer = OwningPlayer == nullptr ? GetOwningPlayerController() : OwningPlayer;
     if (OwningPlayer && ElimAnnouncementClass)
     {
-        UElimAnnouncement* ElimAnouncementWidget = CreateWidget<UElimAnnouncement>(OwningPlayer, ElimAnnouncementClass);
-        if (ElimAnouncementWidget)
+        UElimAnnouncement* ElimAnnouncementWidget = CreateWidget<UElimAnnouncement>(OwningPlayer, ElimAnnouncementClass);
+        if (ElimAnnouncementWidget)
         {
-            ElimAnouncementWidget->SetElimAnnouncementText(Attacker, Victim);
-            ElimAnouncementWidget->AddToViewport();
+            ElimAnnouncementWidget->SetElimAnnouncementText(Attacker, Victim);
+			ElimAnnouncementWidget->AddToViewport();
+
+            for (UElimAnnouncement* Msg : ElimMessages)
+            {
+                if (Msg && Msg->AnnouncementBox)
+                {
+                    UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(Msg->AnnouncementBox); // HorizontalBox 형식 변환 오류는 무시 가능함 (알수 없는 인텔리센스 누락으로 보임)
+                    if (CanvasSlot)
+                    {
+                        FVector2D Position = CanvasSlot->GetPosition();
+                        FVector2D NewPosition(
+                            CanvasSlot->GetPosition().X,
+                            Position.Y - CanvasSlot->GetSize().Y
+                        );
+                        CanvasSlot->SetPosition(NewPosition);
+                    }
+                }
+            }
+
+            ElimMessages.Add(ElimAnnouncementWidget);
+
+            FTimerHandle ElimMsgTimer;
+            FTimerDelegate ElimMsgDelegate;
+            ElimMsgDelegate.BindUFunction(this, FName("ElimAnnouncementTimerFinished"), ElimAnnouncementWidget);
+            GetWorldTimerManager().SetTimer(
+                ElimMsgTimer,
+                ElimMsgDelegate,
+                ElimAnnouncementTime,
+                false
+            );
         }
     }
 }
@@ -122,4 +154,12 @@ void AShooterHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
         1.f,
         CrosshairColor
     );
+}
+
+void AShooterHUD::ElimAnnouncementTimerFinished(UElimAnnouncement* MsgToRemove)
+{
+    if (MsgToRemove)
+    {
+        MsgToRemove->RemoveFromParent();
+    }
 }
