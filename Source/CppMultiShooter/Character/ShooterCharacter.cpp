@@ -236,7 +236,7 @@ void AShooterCharacter::PlaySwapMontage()
 }
 #pragma endregion
 
-void AShooterCharacter::Elim()
+void AShooterCharacter::Elim(bool bPlayerLeftGame)
 {
 	if (Combat)
 	{
@@ -255,26 +255,25 @@ void AShooterCharacter::Elim()
 		}	
 	}
 
-	MulticastElim();
-	GetWorldTimerManager().SetTimer(
-		ElimTimer,
-		this,
-		&AShooterCharacter::ElimTimerFinished,
-		ElimDelay
-	);
+	MulticastElim(bPlayerLeftGame);	
 }
 
 void AShooterCharacter::ElimTimerFinished()
 {
 	AShooterGameMode* ShooterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
-	if (ShooterGameMode)
+	if (ShooterGameMode && !bLeftGame)
 	{
 		ShooterGameMode->RequestRespawn(this, Controller);
 	}
+	if (bLeftGame && IsLocallyControlled())
+	{
+		OnLeftGame.Broadcast();
+	}
 }
 
-void AShooterCharacter::MulticastElim_Implementation()
+void AShooterCharacter::MulticastElim_Implementation(bool bPlayerLeftGame)
 {
+	bLeftGame = bPlayerLeftGame;
 	if (ShooterPlayerController)
 	{
 		ShooterPlayerController->SetHUDWeaponAmmo(-1);
@@ -322,6 +321,23 @@ void AShooterCharacter::MulticastElim_Implementation()
 			ElimBotSound,
 			GetActorLocation()
 		);
+	}
+
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&AShooterCharacter::ElimTimerFinished,
+		ElimDelay
+	);
+}
+
+void AShooterCharacter::ServerLeaveGame_Implementation()
+{
+	AShooterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+	ShooterPlayerState = ShooterPlayerState == nullptr ? GetPlayerState<AShooterPlayerState>() : ShooterPlayerState;
+	if (BlasterGameMode && ShooterPlayerState)
+	{
+		BlasterGameMode->PlayerLeftGame(ShooterPlayerState);
 	}
 }
 

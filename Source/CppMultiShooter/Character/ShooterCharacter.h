@@ -12,6 +12,8 @@
 
 #include "ShooterCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
+
 USTRUCT(BlueprintType)
 struct FPhysAssetInformation
 {
@@ -44,9 +46,9 @@ public:
 	void PlayThrowMontage();
 	void PlaySwapMontage();
 	
-	void Elim();
+	void Elim(bool bPlayerLeftGame);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastElim();
+	void MulticastElim(bool bPlayerLeftGame);
 	virtual void Destroyed() override;
 
 	UPROPERTY(Replicated)
@@ -83,6 +85,10 @@ public:
 
 	void SpawnDefaultWeapon();
 	//bool bFinishedSwapping = false;
+
+	UFUNCTION(Server, Reliable)
+	void ServerLeaveGame();
+	FOnLeftGame OnLeftGame;
 
 protected:
 	// Called when the game starts or when spawned
@@ -200,6 +206,8 @@ private:
 	float ElimDelay = 3.f;
 
 	void ElimTimerFinished();
+
+	bool bLeftGame = false;
 
 	/**
 	* Dissolve effect
