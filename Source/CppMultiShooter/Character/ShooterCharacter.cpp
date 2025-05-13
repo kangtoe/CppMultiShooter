@@ -26,6 +26,9 @@
 #include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
 #include "CppMultiShooter/Weapon/WeaponTypes.h"
 #include "PhysicsEngine/PhysicsAsset.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "CppMultiShooter/GameState/ShooterGameState.h"
 
 
 // Sets default values
@@ -329,6 +332,40 @@ void AShooterCharacter::MulticastElim_Implementation(bool bPlayerLeftGame)
 		&AShooterCharacter::ElimTimerFinished,
 		ElimDelay
 	);
+
+	if (CrownComponent)
+	{
+		CrownComponent->DestroyComponent();
+	}
+}
+
+void AShooterCharacter::MulticastGainedTheLead_Implementation()
+{
+	if (CrownSystem == nullptr) return;
+	if (CrownComponent == nullptr)
+	{
+		CrownComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			CrownSystem,
+			GetCapsuleComponent(),
+			FName(),
+			GetActorLocation() + FVector(0.f, 0.f, 110.f),
+			GetActorRotation(),
+			EAttachLocation::KeepWorldPosition,
+			false
+		);
+	}
+	if (CrownComponent)
+	{
+		CrownComponent->Activate();
+	}
+}
+
+void AShooterCharacter::MulticastLostTheLead_Implementation()
+{
+	if (CrownComponent)
+	{
+		CrownComponent->DestroyComponent();
+	}
 }
 
 void AShooterCharacter::ServerLeaveGame_Implementation()
@@ -403,6 +440,12 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	RotateInPlace(DeltaTime);	
 	HideCameraIfCharacterClose();	
+
+	AShooterGameState* ShooterGameState = Cast<AShooterGameState>(UGameplayStatics::GetGameState(this));
+	if (ShooterGameState && ShooterGameState->TopScoringPlayers.Contains(ShooterPlayerState))
+	{
+		MulticastGainedTheLead();
+	}
 
 }
 

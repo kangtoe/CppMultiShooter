@@ -91,6 +91,11 @@ public:
 	FOnLeftGame OnLeftGame;
 	bool bLeftGame = false;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastGainedTheLead();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLostTheLead();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -236,6 +241,12 @@ private:
 
 	UPROPERTY()
 	class AShooterPlayerState* ShooterPlayerState;
+
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* CrownSystem;
+	UPROPERTY()
+	class UNiagaraComponent* CrownComponent;
 
 	/**
 	* Grenade
