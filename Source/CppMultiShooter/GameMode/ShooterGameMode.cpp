@@ -112,6 +112,21 @@ void AShooterGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController*
     }
 }
 
+void AShooterGameMode::Logout(AController* Exiting)
+{
+    if (Exiting == nullptr) { return; }
+
+    AShooterGameState* ShooterGameState = GetGameState<AShooterGameState>();
+    AShooterPlayerState* ShooterPlayerState = Cast<AShooterPlayerState>(Exiting->PlayerState);
+    if (ShooterGameState && ShooterGameState->TopScoringPlayers.Contains(ShooterPlayerState))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Logout"));
+        ShooterGameState->TopScoringPlayers.Remove(ShooterPlayerState);
+    }
+
+    Super::Logout(Exiting);
+}
+
 void AShooterGameMode::PlayerLeftGame(AShooterPlayerState* PlayerLeaving)
 {
     if (PlayerLeaving == nullptr) return;

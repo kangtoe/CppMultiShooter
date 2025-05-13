@@ -27,6 +27,7 @@ public:
     virtual void OnRep_Pawn() override;
     virtual void Tick(float DeltaTime) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;    
+    virtual void PawnLeavingGame() override;
 
     virtual float GetServerTime(); // Synced with server world clock
     virtual void ReceivedPlayer() override; // Sync with server clock as soon as possible

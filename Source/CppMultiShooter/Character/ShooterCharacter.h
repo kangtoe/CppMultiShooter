@@ -89,6 +89,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerLeaveGame();
 	FOnLeftGame OnLeftGame;
+	bool bLeftGame = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -205,9 +206,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float ElimDelay = 3.f;
 
-	void ElimTimerFinished();
-
-	bool bLeftGame = false;
+	void ElimTimerFinished();	
 
 	/**
 	* Dissolve effect

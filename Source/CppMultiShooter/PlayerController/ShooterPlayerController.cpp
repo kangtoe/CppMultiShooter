@@ -64,6 +64,18 @@ void AShooterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
     DOREPLIFETIME(AShooterPlayerController, MatchState);
 }
 
+void AShooterPlayerController::PawnLeavingGame()
+{
+    AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());    
+    if (ShooterCharacter && !ShooterCharacter->bLeftGame)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PawnLeavingGame"));
+        ShooterCharacter->Elim(true);
+    }
+
+    Super::PawnLeavingGame();
+}
+
 
 
 void AShooterPlayerController::SetHUDScore(float Score)
