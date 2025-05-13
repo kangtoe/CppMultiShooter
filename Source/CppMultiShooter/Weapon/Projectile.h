@@ -42,9 +42,11 @@ protected:
     virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
     UFUNCTION(NetMulticast, Reliable)
     void MultiCast_OnHit(bool bCharacterHit);
-
+    
     UPROPERTY(EditAnywhere)
     float Damage = 20.f;
+    UPROPERTY(EditAnywhere)
+    float HeadShotDamage = 40.f;     // Doesn't matter for Grenades and Rockets
 
     UPROPERTY(EditAnywhere)
     class UPrimitiveComponent* CollisionBox;
@@ -91,4 +93,6 @@ public:
     FORCEINLINE UPrimitiveComponent* GetCollisionComponent() { return CollisionBox; }
     FORCEINLINE float GetDamage() const { return Damage; }
     FORCEINLINE void SetDamage(float _Damage) { Damage = _Damage; }
+    FORCEINLINE float GetHeadDamage() const { return HeadShotDamage; }
+    FORCEINLINE void SetHeadDamage(float _Damage) { HeadShotDamage = _Damage; }
 };
