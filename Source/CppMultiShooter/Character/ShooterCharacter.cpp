@@ -342,7 +342,7 @@ void AShooterCharacter::MulticastElim_Implementation(bool bPlayerLeftGame)
 void AShooterCharacter::MulticastGainedTheLead_Implementation()
 {
 	if (CrownSystem == nullptr) return;
-	if (CrownComponent == nullptr)
+	if (!IsValid(CrownComponent))
 	{
 		CrownComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 			CrownSystem,
