@@ -161,5 +161,6 @@ void AShooterHUD::ElimAnnouncementTimerFinished(UElimAnnouncement* MsgToRemove)
     if (MsgToRemove)
     {
         MsgToRemove->RemoveFromParent();
+        ElimMessages.Remove(MsgToRemove);
     }
 }
