@@ -962,6 +962,10 @@ void AShooterCharacter::HideCameraIfCharacterClose() // 카메라에 캐릭터�
 	{
 		Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = bCameraTooClose;
 	}
+	if (Combat && Combat->SecondaryWeapon && Combat->SecondaryWeapon->GetWeaponMesh())
+	{
+		Combat->SecondaryWeapon->GetWeaponMesh()->bOwnerNoSee = bCameraTooClose;
+	}
 }
 
 bool AShooterCharacter::IsWeaponEquipped()
