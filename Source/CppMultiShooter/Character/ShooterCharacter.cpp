@@ -680,8 +680,12 @@ void AShooterCharacter::OnRep_Health(float LastHealth)
 }
 
 void AShooterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
-{
+{	
 	if (bElimmed) return;
+
+	ShooterGameMode = ShooterGameMode == nullptr ? GetWorld()->GetAuthGameMode<AShooterGameMode>() : ShooterGameMode;
+	if (ShooterGameMode == nullptr) return;
+	Damage = ShooterGameMode->CalculateDamage(InstigatorController, Controller, Damage);	
 	
 	float DamageToHealth = Damage;
 	if (Shield > 0.f)

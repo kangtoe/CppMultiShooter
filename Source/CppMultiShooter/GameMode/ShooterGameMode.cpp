@@ -164,6 +164,11 @@ void AShooterGameMode::Logout(AController* Exiting)
     Super::Logout(Exiting);
 }
 
+float AShooterGameMode::CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage)
+{
+    return BaseDamage;
+}
+
 void AShooterGameMode::PlayerLeftGame(AShooterPlayerState* PlayerLeaving)
 {
     if (PlayerLeaving == nullptr) return;
