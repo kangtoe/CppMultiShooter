@@ -67,6 +67,67 @@ void AShooterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(AShooterPlayerController, MatchState);
+    DOREPLIFETIME(AShooterPlayerController, bShowTeamScores);
+}
+
+void AShooterPlayerController::HideTeamScores()
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->RedTeamScore &&
+        ShooterHUD->CharacterOverlay->BlueTeamScore &&
+        ShooterHUD->CharacterOverlay->ScoreSpacerText;
+    if (bHUDValid)
+    {
+        ShooterHUD->CharacterOverlay->RedTeamScore->SetText(FText());
+        ShooterHUD->CharacterOverlay->BlueTeamScore->SetText(FText());
+        ShooterHUD->CharacterOverlay->ScoreSpacerText->SetText(FText());
+    }
+}
+
+void AShooterPlayerController::InitTeamScores()
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->RedTeamScore &&
+        ShooterHUD->CharacterOverlay->BlueTeamScore &&
+        ShooterHUD->CharacterOverlay->ScoreSpacerText;
+    if (bHUDValid)
+    {
+        FString Zero("0");
+        FString Spacer("vs");
+        ShooterHUD->CharacterOverlay->RedTeamScore->SetText(FText::FromString(Zero));
+        ShooterHUD->CharacterOverlay->BlueTeamScore->SetText(FText::FromString(Zero));
+        ShooterHUD->CharacterOverlay->ScoreSpacerText->SetText(FText::FromString(Spacer));
+    }
+}
+
+void AShooterPlayerController::SetHUDRedTeamScore(int32 RedScore)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->RedTeamScore;
+    if (bHUDValid)
+    {
+        FString ScoreText = FString::Printf(TEXT("%d"), RedScore);
+        ShooterHUD->CharacterOverlay->RedTeamScore->SetText(FText::FromString(ScoreText));
+    }
+}
+
+void AShooterPlayerController::SetHUDBlueTeamScore(int32 BlueScore)
+{
+    ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
+    bool bHUDValid = ShooterHUD &&
+        ShooterHUD->CharacterOverlay &&
+        ShooterHUD->CharacterOverlay->BlueTeamScore;
+    if (bHUDValid)
+    {
+        FString ScoreText = FString::Printf(TEXT("%d"), BlueScore);
+        ShooterHUD->CharacterOverlay->BlueTeamScore->SetText(FText::FromString(ScoreText));
+    }
 }
 
 void AShooterPlayerController::PawnLeavingGame()
@@ -80,8 +141,6 @@ void AShooterPlayerController::PawnLeavingGame()
 
     Super::PawnLeavingGame();
 }
-
-
 
 void AShooterPlayerController::SetHUDScore(float Score)
 {
@@ -191,7 +250,7 @@ void AShooterPlayerController::SetHUDTime()
         if (ShooterGameMode)
         {
             LevelStartingTime = ShooterGameMode->LevelStartingTime;
-            //or -> LevelStartingTime = BlasterGameMode->GetLevelStartingTime();
+            //or -> LevelStartingTime = ShooterGameMode->GetLevelStartingTime();
         }
     }
 
@@ -390,13 +449,13 @@ void AShooterPlayerController::ReceivedPlayer()
     }
 }
 
-void AShooterPlayerController::OnMatchStateSet(FName State)
+void AShooterPlayerController::OnMatchStateSet(FName State, bool bTeamsMatch)
 {
     MatchState = State;
 
     if (MatchState == MatchState::InProgress)
     {
-        HandleMatchHasStarted();
+        HandleMatchHasStarted(bTeamsMatch);
     }
     else if (MatchState == MatchState::Cooldown)
     {
@@ -428,8 +487,10 @@ void AShooterPlayerController::InitHUD(AShooterCharacter* ShooterCharacter)
 
 }
 
-void AShooterPlayerController::HandleMatchHasStarted()
+void AShooterPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 {
+    if (HasAuthority()) bShowTeamScores = bTeamsMatch;
+
     ShooterHUD = ShooterHUD == nullptr ? Cast<AShooterHUD>(GetHUD()) : ShooterHUD;
     if (ShooterHUD)
     {
@@ -437,6 +498,16 @@ void AShooterPlayerController::HandleMatchHasStarted()
         if (ShooterHUD->Announcement)
         {            
             ShooterHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+        }
+
+        if (!HasAuthority()) return;
+        if (bTeamsMatch)
+        {
+            InitTeamScores();
+        }
+        else
+        {
+            HideTeamScores();
         }
     }
 }
@@ -528,6 +599,18 @@ void AShooterPlayerController::ShowReturnToMainMenu()
         {
             ReturnToMainMenu->MenuTearDown();
         }
+    }
+}
+
+void AShooterPlayerController::OnRep_ShowTeamScores()
+{
+    if (bShowTeamScores)
+    {
+        InitTeamScores();
+    }
+    else
+    {
+        HideTeamScores();
     }
 }
 

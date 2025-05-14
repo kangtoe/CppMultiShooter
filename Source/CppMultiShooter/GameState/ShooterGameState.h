@@ -23,6 +23,8 @@ public:
 	/**
 	* Teams
 	*/
+	void RedTeamScores();
+	void BlueTeamScores();
 	TArray<AShooterPlayerState*> RedTeam;
 	TArray<AShooterPlayerState*> BlueTeam;
 	UPROPERTY(ReplicatedUsing = OnRep_RedTeamScore)

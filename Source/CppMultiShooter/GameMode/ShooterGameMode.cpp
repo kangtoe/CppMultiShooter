@@ -35,7 +35,7 @@ void AShooterGameMode::OnMatchStateSet()
         AShooterPlayerController* ShooterPlayer = Cast<AShooterPlayerController>(*It);
         if (ShooterPlayer)
         {
-            ShooterPlayer->OnMatchStateSet(MatchState);
+            ShooterPlayer->OnMatchStateSet(MatchState, bTeamsMatch);
         }
     }
 }

@@ -6,6 +6,11 @@
 #include "CppMultiShooter/PlayerState/ShooterPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
+ATeamsGameMode::ATeamsGameMode()
+{
+	bTeamsMatch = true;
+}
+
 void ATeamsGameMode::PostLogin(APlayerController * NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
