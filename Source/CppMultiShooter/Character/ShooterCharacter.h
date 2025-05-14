@@ -285,6 +285,9 @@ private:
 	void AddCollisionBox(const FName& BoneName, const FVector& RelativeLocation, const FRotator& RelativeRotation, const FVector& BoxExtent);
 	void CreateCollisionBoxes();
 
+	UPROPERTY()
+	class AShooterGameMode* ShooterGameMode;
+
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();

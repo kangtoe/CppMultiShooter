@@ -262,8 +262,9 @@ void AShooterCharacter::Elim(bool bPlayerLeftGame)
 }
 
 void AShooterCharacter::ElimTimerFinished()
-{
-	AShooterGameMode* ShooterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+{	
+	ShooterGameMode = ShooterGameMode == nullptr ? GetWorld()->GetAuthGameMode<AShooterGameMode>() : ShooterGameMode;
+
 	if (ShooterGameMode && !bLeftGame)
 	{
 		ShooterGameMode->RequestRespawn(this, Controller);
@@ -371,11 +372,11 @@ void AShooterCharacter::MulticastLostTheLead_Implementation()
 
 void AShooterCharacter::ServerLeaveGame_Implementation()
 {
-	AShooterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+	ShooterGameMode = ShooterGameMode == nullptr ? GetWorld()->GetAuthGameMode<AShooterGameMode>() : ShooterGameMode;
 	ShooterPlayerState = ShooterPlayerState == nullptr ? GetPlayerState<AShooterPlayerState>() : ShooterPlayerState;
-	if (BlasterGameMode && ShooterPlayerState)
+	if (ShooterGameMode && ShooterPlayerState)
 	{
-		BlasterGameMode->PlayerLeftGame(ShooterPlayerState);
+		ShooterGameMode->PlayerLeftGame(ShooterPlayerState);
 	}
 }
 
@@ -388,7 +389,7 @@ void AShooterCharacter::Destroyed()
 		ElimBotComponent->DestroyComponent();
 	}
 
-	AShooterGameMode* ShooterGameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+	ShooterGameMode = ShooterGameMode == nullptr ? GetWorld()->GetAuthGameMode<AShooterGameMode>() : ShooterGameMode;
 	bool bMatchNotInProgress = ShooterGameMode && ShooterGameMode->GetMatchState() != MatchState::InProgress;
 	if (Combat && Combat->EquippedWeapon && bMatchNotInProgress)
 	{
@@ -705,7 +706,7 @@ void AShooterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 
 	if (Health == 0.f)
 	{
-		AShooterGameMode* ShooterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+		ShooterGameMode = ShooterGameMode == nullptr ? GetWorld()->GetAuthGameMode<AShooterGameMode>() : ShooterGameMode;
 		if (ShooterGameMode)
 		{
 			ShooterPlayerController = ShooterPlayerController == nullptr ? Cast<AShooterPlayerController>(Controller) : ShooterPlayerController;
@@ -771,10 +772,9 @@ void AShooterCharacter::UpdateHUDGrenade()
 }
 
 void AShooterCharacter::SpawnDefaultWeapon()
-{
-	AShooterGameMode* ShooterGameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+{	
 	UWorld* World = GetWorld();
-	if (ShooterGameMode && World && !bElimmed && DefaultWeaponClass)
+	if (World && !bElimmed && DefaultWeaponClass)
 	{
 		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);		
 		if (Combat)
