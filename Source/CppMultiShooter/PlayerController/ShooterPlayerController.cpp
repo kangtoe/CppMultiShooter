@@ -19,6 +19,7 @@
 #include "CppMultiShooter/HUD/ScopeWidget.h"
 #include "CppMultiShooter/HUD/ReturnToMainMenu.h"
 #include "EnhancedInputComponent.h"
+#include "CppMultiShooter/CustomTypes/Announcement.h"
 
 void AShooterPlayerController::BroadcastElim(APlayerState* Attacker, APlayerState* Victim)
 {
@@ -526,7 +527,7 @@ void AShooterPlayerController::HandleCooldown()
         if (bHUDValid)
         {
             ShooterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
-            FString AnnouncementText("New Match Starts In:");
+            FString AnnouncementText = Announcement::NewMatchStartsIn;
             ShooterHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
             
             // set text top players
@@ -535,27 +536,7 @@ void AShooterPlayerController::HandleCooldown()
             if (ShooterGameState && ShooterPlayerState)
             {
                 TArray<AShooterPlayerState*> TopPlayers = ShooterGameState->TopScoringPlayers;
-                FString InfoTextString;
-                if (TopPlayers.Num() == 0)
-                {
-                    InfoTextString = FString("There is no winner.");
-                }
-                else if (TopPlayers.Num() == 1 && TopPlayers[0] == ShooterPlayerState)
-                {
-                    InfoTextString = FString("You are the winner!");
-                }
-                else if (TopPlayers.Num() == 1)
-                {
-                    InfoTextString = FString::Printf(TEXT("Winner: \n%s"), *TopPlayers[0]->GetPlayerName());
-                }
-                else if (TopPlayers.Num() > 1)
-                {
-                    InfoTextString = FString("Players tied for the win:\n");
-                    for (auto TiedPlayer : TopPlayers)
-                    {
-                        InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
-                    }
-                }
+                FString InfoTextString = bShowTeamScores ? GetTeamsInfoText(ShooterGameState) : GetInfoText(TopPlayers);
                 ShooterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
             }
         }
@@ -645,4 +626,72 @@ void AShooterPlayerController::SetHUDScope(bool bIsAiming, TSubclassOf<UScopeWid
             );
         }
     }
+}
+
+FString AShooterPlayerController::GetInfoText(const TArray<class AShooterPlayerState*>& Players)
+{
+    AShooterPlayerState* ShooterPlayerState = GetPlayerState<AShooterPlayerState>();
+    if (ShooterPlayerState == nullptr) return FString();
+    FString InfoTextString;
+    if (Players.Num() == 0)
+    {
+        InfoTextString = Announcement::ThereIsNoWinner;
+    }
+    else if (Players.Num() == 1 && Players[0] == ShooterPlayerState)
+    {
+        InfoTextString = Announcement::YouAreTheWinner;
+    }
+    else if (Players.Num() == 1)
+    {
+        InfoTextString = FString::Printf(TEXT("Winner: \n%s"), *Players[0]->GetPlayerName());
+    }
+    else if (Players.Num() > 1)
+    {
+        InfoTextString = Announcement::PlayersTiedForTheWin;
+        InfoTextString.Append(FString("\n"));
+        for (auto TiedPlayer : Players)
+        {
+            InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+        }
+    }
+
+    return InfoTextString;
+}
+
+FString AShooterPlayerController::GetTeamsInfoText(AShooterGameState* ShooterGameState)
+{
+    if (ShooterGameState == nullptr) return FString();
+    FString InfoTextString;
+
+    const int32 RedTeamScore = ShooterGameState->RedTeamScore;
+    const int32 BlueTeamScore = ShooterGameState->BlueTeamScore;
+
+    if (RedTeamScore == 0 && BlueTeamScore == 0)
+    {
+        InfoTextString = Announcement::ThereIsNoWinner;
+    }
+    else if (RedTeamScore == BlueTeamScore)
+    {
+        InfoTextString = FString::Printf(TEXT("%s\n"), *Announcement::TeamsTiedForTheWin);
+        InfoTextString.Append(Announcement::RedTeam);
+        InfoTextString.Append(TEXT("\n"));
+        InfoTextString.Append(Announcement::BlueTeam);
+        InfoTextString.Append(TEXT("\n"));
+    }
+    else if (RedTeamScore > BlueTeamScore)
+    {
+        InfoTextString = Announcement::RedTeamWins;
+        InfoTextString.Append(TEXT("\n"));
+        InfoTextString.Append(FString::Printf(TEXT("%s: %d\n"), *Announcement::RedTeam, RedTeamScore));
+        InfoTextString.Append(FString::Printf(TEXT("%s: %d\n"), *Announcement::BlueTeam, BlueTeamScore));
+    }
+    else if (BlueTeamScore > RedTeamScore)
+    {
+        InfoTextString = Announcement::BlueTeamWins;
+        InfoTextString.Append(TEXT("\n"));
+        InfoTextString.Append(FString::Printf(TEXT("%s: %d\n"), *Announcement::BlueTeam, BlueTeamScore));
+        InfoTextString.Append(FString::Printf(TEXT("%s: %d\n"), *Announcement::RedTeam, RedTeamScore));
+    }
+
+    return InfoTextString;
 }
