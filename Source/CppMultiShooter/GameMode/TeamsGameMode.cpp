@@ -58,10 +58,18 @@ void ATeamsGameMode::HandleMatchHasStarted()
 	if (BGameState)
 	{
 		for (auto PState : BGameState->PlayerArray)
-		{
+		{		
 			AShooterPlayerState* BPState = Cast<AShooterPlayerState>(PState.Get());
-			if (BPState && BPState->GetTeam() == ETeam::ET_NoTeam)
+			if (BPState)
 			{
+				if (GEngine)
+				{
+					FString f = UEnum::GetValueAsString(BPState->GetTeam());
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, f);
+				}
+
+				if (BPState->GetTeam() != ETeam::ET_NoTeam)return;				
+
 				if (BGameState->BlueTeam.Num() >= BGameState->RedTeam.Num())
 				{
 					BGameState->RedTeam.AddUnique(BPState);

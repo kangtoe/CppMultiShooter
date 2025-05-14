@@ -9,6 +9,7 @@
 #include "CppMultiShooter/Interfaces/InteractWithCrosshairsInterface.h"
 #include "Components/TimelineComponent.h"
 #include "CppMultiShooter/CustomTypes/CombatState.h"
+#include "CppMultiShooter/CustomTypes/Team.h"
 
 #include "ShooterCharacter.generated.h"
 
@@ -95,6 +96,8 @@ public:
 	void MulticastGainedTheLead();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastLostTheLead();
+
+	void SetTeamColor(ETeam Team);
 
 protected:
 	// Called when the game starts or when spawned
@@ -226,11 +229,25 @@ private:
 	void StartDissolve();	
 	UPROPERTY(VisibleAnywhere, Category = Elim) // Dynamic instance that we can change at runtime (by code)
 	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;	
-	UPROPERTY(EditAnywhere, Category = Elim) // Material instance set on the Blueprint, used with the dynamic material instance
+	UPROPERTY(VisibleAnywhere, Category = Elim) // Material instance set on the Blueprint, used with the dynamic material instance
 	UMaterialInstance* DissolveMaterialInstance;
 
 	/**
-	* Elim bot
+	* Team colors
+	*/
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UMaterialInstance* RedDissolveMatInst;
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UMaterialInstance* RedMaterial;
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UMaterialInstance* BlueDissolveMatInst;
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UMaterialInstance* BlueMaterial;
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UMaterialInstance* OriginalMaterial;
+
+	/**
+	* Elim Effects
 	*/
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* ElimBotEffect;

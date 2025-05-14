@@ -69,3 +69,29 @@ void AShooterPlayerState::OnRep_Defeats()
         }
     }
 }
+
+void AShooterPlayerState::SetTeam(ETeam TeamToSet)
+{
+    /*if (GEngine)
+    {
+        FString f = UEnum::GetValueAsString(TeamToSet);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, f);
+    }*/
+
+    Team = TeamToSet;
+
+    AShooterCharacter* BCharacter = Cast <AShooterCharacter>(GetPawn());
+    if (BCharacter)
+    {
+        BCharacter->SetTeamColor(Team);
+    }
+}
+
+void AShooterPlayerState::OnRep_Team()
+{
+    AShooterCharacter* BCharacter = Cast <AShooterCharacter>(GetPawn());
+    if (BCharacter)
+    {
+        BCharacter->SetTeamColor(Team);
+    }
+}

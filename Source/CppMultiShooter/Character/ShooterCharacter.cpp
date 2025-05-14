@@ -396,6 +396,32 @@ void AShooterCharacter::Destroyed()
 	}
 }
 
+void AShooterCharacter::SetTeamColor(ETeam Team)
+{
+	/*if (GEngine)
+	{
+		FString f = UEnum::GetValueAsString(Team);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, f);
+	}*/
+
+	if (GetMesh() == nullptr || OriginalMaterial == nullptr) return;
+	switch (Team)
+	{
+	case ETeam::ET_NoTeam:
+		GetMesh()->SetMaterial(0, OriginalMaterial);
+		DissolveMaterialInstance = BlueDissolveMatInst;
+		break;
+	case ETeam::ET_BlueTeam:
+		GetMesh()->SetMaterial(0, BlueMaterial);
+		DissolveMaterialInstance = BlueDissolveMatInst;
+		break;
+	case ETeam::ET_RedTeam:
+		GetMesh()->SetMaterial(0, RedMaterial);
+		DissolveMaterialInstance = RedDissolveMatInst;
+		break;
+	}
+}
+
 void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -432,7 +458,7 @@ void AShooterCharacter::BeginPlay()
 	if (AttachedGrenade)
 	{
 		AttachedGrenade->SetVisibility(false);
-	}
+	}		
 }
 
 void AShooterCharacter::Tick(float DeltaTime)
@@ -446,8 +472,13 @@ void AShooterCharacter::Tick(float DeltaTime)
 	if (ShooterGameState && ShooterGameState->TopScoringPlayers.Contains(ShooterPlayerState))
 	{
 		MulticastGainedTheLead();
-	}
+	}	
 
+	ShooterPlayerState = ShooterPlayerState == nullptr ? GetPlayerState<AShooterPlayerState>() : ShooterPlayerState;
+	if (ShooterPlayerState)
+	{
+		SetTeamColor(ShooterPlayerState->GetTeam());
+	}	
 }
 
 #pragma region 캐릭터 입력 처리
