@@ -428,7 +428,11 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SpawnDefaultWeapon();
+
 	UpdateHUDAmmo();
+	UpdateHUDHealth();
+	UpdateHUDShield();
+	UpdateHUDGrenade();
 
 	if (HasAuthority())
 	{
