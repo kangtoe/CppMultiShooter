@@ -52,6 +52,8 @@ void ATeamsGameMode::Logout(AController* Exiting)
 
 float ATeamsGameMode::CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage)
 {
+	if (Attacker == nullptr || Victim == nullptr) return BaseDamage;
+
 	AShooterPlayerState* AttackerPState = Attacker->GetPlayerState<AShooterPlayerState>();
 	AShooterPlayerState* VictimPState = Victim->GetPlayerState<AShooterPlayerState>();
 	if (AttackerPState == nullptr || VictimPState == nullptr) return BaseDamage;
