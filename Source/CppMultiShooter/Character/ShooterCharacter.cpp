@@ -133,10 +133,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		Input->BindAction(JumpAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputJump);
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputMove);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputLook);
-		Input->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputEquip);
-		Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputCrouch);
-		Input->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputEquip);
-		Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputCrouch);
+		Input->BindAction(EquipAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputEquip);
+		Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnInputCrouch);		
 		Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputAim);
 		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputFire);
 		Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnInputReload);

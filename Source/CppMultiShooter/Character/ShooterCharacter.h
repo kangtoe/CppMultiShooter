@@ -290,6 +290,7 @@ private:
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
+	FORCEINLINE AWeapon* GetOverlappingWeapon() const { return OverlappingWeapon; }
 	bool IsWeaponEquipped();
 	bool IsAiming();
 

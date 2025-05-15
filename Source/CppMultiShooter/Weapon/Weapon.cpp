@@ -36,6 +36,7 @@ AWeapon::AWeapon()
 	AreaSphere->SetupAttachment(RootComponent);
 	AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AreaSphere->SetSphereRadius(75.f);
 
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(RootComponent);
@@ -101,7 +102,11 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	{
 		/*if (WeaponType == EWeaponType::EWT_Flag && ShooterCharacter->GetTeam() == Team) return;
 		if (ShooterCharacter->IsHoldingTheFlag()) return;*/
-		ShooterCharacter->SetOverlappingWeapon(nullptr);
+		if (ShooterCharacter->GetOverlappingWeapon() == this)
+		{
+			ShooterCharacter->SetOverlappingWeapon(nullptr);
+		}
+		
 	}
 }
 
