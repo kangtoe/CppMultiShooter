@@ -391,8 +391,10 @@ void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
 	FTransform RelativeTransform = RightSocket.GetRelativeTransform(LeftSocket);
 
 	// 실제 TargetSocket에 Actor 붙이기
+	FVector OriginalScale = ActorToAttach->GetActorScale3D();
 	ActorToAttach->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LEFT_HAND_SOCKET);
 	ActorToAttach->SetActorRelativeTransform(RelativeTransform);
+	ActorToAttach->SetActorScale3D(OriginalScale);
 }
 
 void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
