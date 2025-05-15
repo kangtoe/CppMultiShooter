@@ -51,8 +51,8 @@ AShooterCharacter::AShooterCharacter()
 	bUseControllerRotationYaw = false; // 컨트롤러의 Yaw 회전을 사용하지 않음
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향으로 회전하도록 설정
 
-	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
-	OverheadWidget->SetupAttachment(RootComponent);
+	//OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	//OverheadWidget->SetupAttachment(RootComponent);
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
