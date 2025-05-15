@@ -82,6 +82,8 @@ void ATeamsGameMode::PlayerEliminated(AShooterCharacter* ElimmedCharacter, AShoo
 	AShooterPlayerState* AttackerPlayerState = AttackerController ? Cast<AShooterPlayerState>(AttackerController->PlayerState) : nullptr;
 	if (BGameState && AttackerPlayerState)
 	{
+		if (VictimController == AttackerController) return;
+
 		if (AttackerPlayerState->GetTeam() == ETeam::ET_BlueTeam)
 		{
 			BGameState->BlueTeamScores();
