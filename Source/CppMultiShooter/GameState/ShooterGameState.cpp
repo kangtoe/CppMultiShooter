@@ -51,7 +51,7 @@ void AShooterGameState::BlueTeamScores()
    AShooterPlayerController* BPlayer = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController());
    if (BPlayer)
    {
-       BPlayer->SetHUDRedTeamScore(BlueTeamScore);
+       BPlayer->SetHUDBlueTeamScore(BlueTeamScore);
    }
 
 }
