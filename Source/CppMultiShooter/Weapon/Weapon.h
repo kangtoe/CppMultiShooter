@@ -180,7 +180,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	float DistanceToSphere = 800.f;
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
-	float SphereRadius = 75.f;
+	float SphereRadius = 50.f;
 
 public:
 	void SetWeaponState(EWeaponState State);
