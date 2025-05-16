@@ -49,27 +49,34 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets) // shot
                 {
                     if (HitMap.Contains(ShooterCharacter)) HitMap[ShooterCharacter]++;
                     else HitMap.Emplace(ShooterCharacter, 1);
-                }
+                }                
 
-                if (ImpactParticles)
-                {
-                    UGameplayStatics::SpawnEmitterAtLocation(
-                        GetWorld(),
-                        ImpactParticles,
-                        FireHit.ImpactPoint,
-                        FireHit.ImpactNormal.Rotation()
-                    );
-                }
-                if (HitSound)
-                {
-                    UGameplayStatics::PlaySoundAtLocation(
-                        this,
-                        HitSound,
-                        FireHit.ImpactPoint,
-                        .5f,
-                        FMath::FRandRange(-.5f, .5f)
-                    );
-                }
+                // ImpactParticles = character
+            }
+            else
+            {
+                // ImpactParticles = surface
+            }
+
+
+            if (ImpactParticles)
+            {
+                UGameplayStatics::SpawnEmitterAtLocation(
+                    GetWorld(),
+                    ImpactParticles,
+                    FireHit.ImpactPoint,
+                    FireHit.ImpactNormal.Rotation()
+                );
+            }
+            if (HitSound)
+            {
+                UGameplayStatics::PlaySoundAtLocation(
+                    this,
+                    HitSound,
+                    FireHit.ImpactPoint,
+                    .5f,
+                    FMath::FRandRange(-.5f, .5f)
+                );
             }
         }
 
@@ -183,5 +190,6 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& Hi
                 Beam->SetVectorParameter(FName("Target"), BeamEnd);
             }
         }
+        
     }
 }
