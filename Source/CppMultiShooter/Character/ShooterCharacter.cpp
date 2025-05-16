@@ -344,7 +344,7 @@ void AShooterCharacter::MulticastGainedTheLead_Implementation()
 	if (CrownSystem == nullptr) return;
 	if (!IsValid(CrownComponent))
 	{
-		CrownComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+		/*CrownComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 			CrownSystem,
 			GetCapsuleComponent(),
 			FName(),
@@ -352,7 +352,7 @@ void AShooterCharacter::MulticastGainedTheLead_Implementation()
 			GetActorRotation(),
 			EAttachLocation::KeepWorldPosition,
 			false
-		);
+		);*/
 	}
 	if (CrownComponent)
 	{
