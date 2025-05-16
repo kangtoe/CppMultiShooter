@@ -779,10 +779,12 @@ void AShooterCharacter::UpdateHUDGrenade()
 
 void AShooterCharacter::SpawnDefaultWeapon()
 {	
+	ShooterGameMode = ShooterGameMode == nullptr ? GetWorld()->GetAuthGameMode<AShooterGameMode>() : ShooterGameMode;
 	UWorld* World = GetWorld();
-	if (World && !bElimmed && DefaultWeaponClass)
+	if (ShooterGameMode && World && !bElimmed && DefaultWeaponClass)
 	{
 		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);		
+		StartingWeapon->bDestroyOnElim = true;
 		if (Combat)
 		{
 			Combat->EquipWeapon(StartingWeapon);
