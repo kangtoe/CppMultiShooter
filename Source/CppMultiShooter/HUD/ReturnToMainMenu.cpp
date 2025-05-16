@@ -53,9 +53,24 @@ bool UReturnToMainMenu::Initialize()
 
 void UReturnToMainMenu::OnDestroySession(bool bWasSuccessful)
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnDestroySession(): %s"), bWasSuccessful ? TEXT("Success") : TEXT("Fail"));
+
 	if (!bWasSuccessful)
 	{
 		ReturnButton->SetIsEnabled(true);
+
+		// 이미 세션 없음 → 직접 메인메뉴로
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			APlayerController* PC = World->GetFirstPlayerController();
+			if (PC)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("세션 없음: 클라이언트에서 바로 로비로 이동"));
+				PC->ClientReturnToMainMenuWithTextReason(FText());
+			}
+		}
+
 		return;
 	}
 
@@ -65,6 +80,7 @@ void UReturnToMainMenu::OnDestroySession(bool bWasSuccessful)
 		AGameModeBase* GameMode = World->GetAuthGameMode<AGameModeBase>();
 		if (GameMode)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Calling ReturnToMainMenuHost()"));
 			GameMode->ReturnToMainMenuHost();
 		}
 		else
@@ -72,6 +88,7 @@ void UReturnToMainMenu::OnDestroySession(bool bWasSuccessful)
 			PlayerController = PlayerController == nullptr ? World->GetFirstPlayerController() : PlayerController;
 			if (PlayerController)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Calling ClientReturnToMainMenuWithTextReason()"));
 				PlayerController->ClientReturnToMainMenuWithTextReason(FText());
 			}
 		}
@@ -80,6 +97,8 @@ void UReturnToMainMenu::OnDestroySession(bool bWasSuccessful)
 
 void UReturnToMainMenu::MenuTearDown()
 {
+	UE_LOG(LogTemp, Warning, TEXT("MenuTearDown()"))
+
 	RemoveFromParent();
 	UWorld* World = GetWorld();
 	if (World)
@@ -105,12 +124,13 @@ void UReturnToMainMenu::MenuTearDown()
 
 void UReturnToMainMenu::ReturnButtonClicked()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ReturnButtonClicked()"))
+
 	ReturnButton->SetIsEnabled(false);
 	
 	UWorld* World = GetWorld();
 	if (World)
-	{
-		MultiplayerSessionsSubsystem->DestroySession();
+	{		
 		APlayerController* FirstPlayerController = World->GetFirstPlayerController();
 		if (FirstPlayerController)
 		{
@@ -133,9 +153,9 @@ void UReturnToMainMenu::ReturnButtonClicked()
 void UReturnToMainMenu::OnPlayerLeftGame()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnPlayerLeftGame()"))
-		if (MultiplayerSessionsSubsystem)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("MultiplayerSessionsSubsystem valid"))
-				MultiplayerSessionsSubsystem->DestroySession();
-		}
+	if (MultiplayerSessionsSubsystem)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MultiplayerSessionsSubsystem valid"))
+		MultiplayerSessionsSubsystem->DestroySession();
+	}
 }
