@@ -180,11 +180,17 @@ void AWeapon::ClientAddAmmo_Implementation(int32 AmmoToAdd) // 예측 발사 처
 	SetHUDAmmo();
 }
 
-
-
 void AWeapon::OnRep_Owner()
 {
 	Super::OnRep_Owner();
+
+	if (GetOwner() == nullptr)
+	{
+		ShooterOwnerCharacter = nullptr;
+		ShooterOwnerController = nullptr;
+		return;
+	}
+
 	ShooterOwnerCharacter = ShooterOwnerCharacter == nullptr ? Cast<AShooterCharacter>(GetOwner()) : ShooterOwnerCharacter;
 	if (ShooterOwnerCharacter)
 	{
@@ -277,6 +283,8 @@ void AWeapon::OnDropped()
 			BlasterOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
 		}
 	}*/
+
+	ServerUnprocessedUsedAmmo = 0;
 }
 
 void AWeapon::ShowPickupWidget(bool bShowWidget)
