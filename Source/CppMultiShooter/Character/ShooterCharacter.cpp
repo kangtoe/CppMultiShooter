@@ -478,7 +478,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 	}	
 
 	ShooterPlayerState = ShooterPlayerState == nullptr ? GetPlayerState<AShooterPlayerState>() : ShooterPlayerState;
-	if (ShooterPlayerState)
+	if (ShooterPlayerState && !bElimmed)
 	{
 		SetTeamColor(ShooterPlayerState->GetTeam());
 	}	
