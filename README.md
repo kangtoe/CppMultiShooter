@@ -27,3 +27,4 @@
 - 배낭과 모자 끝 부분 히트 박스 지우기
 - 핑이 너무 높은 경우, SSR 사용 비활성화 [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/32182626#questions)
 - 무기 교체 또는 획득 시 SSR 적용 [참조](https://www.udemy.com/course/unreal-engine-5-cpp-multiplayer-shooter/learn/lecture/32182626#questions/18556222)
+- 체력에 따른 디졸브 효과 적용하여 직관적으로 남은 체력을 알 수 있도록 하기
