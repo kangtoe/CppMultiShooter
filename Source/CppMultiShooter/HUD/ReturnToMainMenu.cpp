@@ -67,7 +67,7 @@ void UReturnToMainMenu::OnDestroySession(bool bWasSuccessful)
 			if (PC)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("세션 없음: 클라이언트에서 바로 로비로 이동"));
-				PC->ClientReturnToMainMenuWithTextReason(FText());
+				PC->ClientTravel(TEXT("/Game/Maps/Start"), ETravelType::TRAVEL_Absolute);				
 			}
 		}
 
